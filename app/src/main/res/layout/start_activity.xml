@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -35,7 +36,6 @@
         android:layout_height="49dp"
         android:layout_below="@id/textViewTitle"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
         android:backgroundTint="@color/white"
         android:text="Sign up free"
         android:textColor="#000000"
@@ -68,43 +68,16 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Nút Facebook -->
-    <LinearLayout
-        android:id="@+id/buttonFacebook"
+    <!-- Nút Đăng nhập -->
+    <Button
+        android:id="@+id/buttonLogin"
         android:layout_width="337dp"
         android:layout_height="49dp"
         android:layout_below="@id/buttonGoogle"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="12dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="@color/white">
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:contentDescription="Facebook icon" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="70dp"
-            android:text="Continue with Facebook"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <!-- Nút Đăng nhập -->
-    <Button
-        android:id="@+id/buttonLogin"
-        android:layout_width="100dp"
-        android:layout_height="38dp"
-        android:layout_below="@id/buttonFacebook"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#121212"
+        android:backgroundTint="@color/white"
         android:text="Log in"
-        android:textColor="#F5F5F5"
+        android:textColor="@color/black"
         android:textStyle="bold" />
 </RelativeLayout>
