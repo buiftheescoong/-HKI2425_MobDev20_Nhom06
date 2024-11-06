@@ -11,6 +11,4 @@ class Validator {
     fun checkPassword(password: String) : String{
         return ""
     }
-
-
 }
