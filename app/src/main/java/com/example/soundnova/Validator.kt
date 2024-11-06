@@ -32,14 +32,17 @@ class Validator {
 
     fun isValidPassword(password: String): Boolean {
         val passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}$"
-        return Regex(passwordRegex).matches(password) && !password.contains(" ")
+        return Regex(passwordRegex).matches(password)
     }
 
 }
 
 fun main() {
     val email : String = "user@gmail.com"
+    val password: String = "Cong23032004*"
     val validator = Validator()
 
     println(validator.isValidEmail(email))
+    println(validator.isValidPassword(password))
 }
+
