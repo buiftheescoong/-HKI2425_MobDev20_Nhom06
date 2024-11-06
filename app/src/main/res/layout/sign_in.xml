@@ -45,7 +45,7 @@
 
     <!-- Nút đăng nhập -->
     <Button
-        android:id="@+id/buttonLogin"
+        android:id="@+id/buttonConfirmLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -61,6 +61,7 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="Quên mật khẩu?"
+        android:clickable="true"
         android:textColor="@android:color/black" />
 
     <!-- Liên kết đăng ký tài khoản -->
@@ -70,6 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
+        android:clickable="true"
         android:text="Chưa có tài khoản? Đăng ký"
         android:textColor="@color/black" />
 
