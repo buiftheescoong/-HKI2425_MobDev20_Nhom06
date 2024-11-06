@@ -7,15 +7,17 @@
     android:padding="16dp">
 
     <!-- Ảnh trên cùng -->
+
+    <!-- Dòng chữ chính -->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:layout_alignParentTop="true"
-        android:scaleType="centerCrop"
-        android:contentDescription="image description" />
+        android:layout_marginTop="14dp"
+        android:contentDescription="image description"
+        android:scaleType="centerCrop" />
 
-    <!-- Dòng chữ chính -->
     <TextView
         android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
@@ -70,7 +72,7 @@
 
     <!-- Nút Đăng nhập -->
     <Button
-        android:id="@+id/buttonLogin"
+        android:id="@+id/buttonConfirmLogin"
         android:layout_width="337dp"
         android:layout_height="49dp"
         android:layout_below="@id/buttonGoogle"
