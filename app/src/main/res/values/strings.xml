@@ -22,4 +22,5 @@
     <string name="tabRnB"><![CDATA[R&B]]></string>
     <string name="tabFestival">Festival</string>
     <string name="textFavorite">Your favorites</string>
+    <string name="textKaraoke">Karaoke</string>
 </resources>
