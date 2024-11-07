@@ -25,4 +25,10 @@
     <string name="textViewChangePassword">Change Password</string>
     <string name="back">Back</string>
     <string name="buttonSendBTN">Send Authentication Email</string>
+    <string name="textViewPlz">Please enter all fields</string>
+    <string name="editTextCurrentPass">Current password</string>
+    <string name="editTextNewPass">New password</string>
+    <string name="editTextConfirmNewPass">Confirm new password</string>
+    <string name="buttonSendChange">Change</string>
+    <string name="cancel">Cancel</string>
 </resources>
