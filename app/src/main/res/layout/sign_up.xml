@@ -93,7 +93,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="null"
+        android:text=""
         android:textStyle="italic"
         android:textSize="18sp"
         android:layout_marginBottom="12dp"/>
