@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">SoundNova</string>
+    <string name="textViewLogin">Welcome back!\nLet\'s start the journey</string>
+    <string name="editTextEmail">Phone number/Email</string>
+    <string name="editTextPassword">Password</string>
+    <string name="buttonConfirmSignIn">Log in</string>
+    <string name="textViewForgetPassword">Forget password?</string>
+    <string name="textViewSignUp1">You don\'t have an account yet. Click</string>
+    <string name="textViewSignUp2">Sign up</string>
+    <string name="editTextSignUpUsername">Full Name</string>
+    <string name="editTextSignUpEmail">Email</string>
+    <string name="editTextSignUpPhoneNumber">Phone number</string>
+    <string name="editTextRepeatPassword">Repeat password</string>
+    <string name="buttonRegister">Sign up</string>
+    <string name="textViewSignIn">You already have an account. Click</string>
 </resources>
