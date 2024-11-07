@@ -62,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="null"
+        android:text=""
         android:textStyle="italic"
         android:textSize="18sp"
         android:layout_marginBottom="24dp"/>
@@ -107,7 +107,7 @@
             android:id="@+id/textViewSignUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
+            android:layout_marginStart="3dp"
             android:focusable="true"
             android:clickable="true"
             android:text="@string/textViewSignUp2"
