@@ -13,4 +13,22 @@
     <string name="editTextRepeatPassword">Repeat password</string>
     <string name="buttonRegister">Sign up</string>
     <string name="textViewSignIn">You already have an account. Click</string>
+    <string name="textWelcome">Welcome back!</string>
+    <string name="textFeelLikeToday">What do you feel like today?</string>
+    <string name="editTextSearch">Search song, playlist, artist…</string>
+    <string name="tabRecent">Recent</string>
+    <string name="tabTop50">Top 50</string>
+    <string name="tabChill">Chill</string>
+    <string name="tabRnB"><![CDATA[R&B]]></string>
+    <string name="tabFestival">Festival</string>
+    <string name="textFavorite">Your favorites</string>
+    <string name="textViewChangePassword">Change Password</string>
+    <string name="back">Back</string>
+    <string name="buttonSendBTN">Send Authentication Email</string>
+    <string name="textViewPlz">Please enter all fields</string>
+    <string name="editTextCurrentPass">Current password</string>
+    <string name="editTextNewPass">New password</string>
+    <string name="editTextConfirmNewPass">Confirm new password</string>
+    <string name="buttonSendChange">Change</string>
+    <string name="cancel">Cancel</string>
 </resources>
