@@ -2,9 +2,6 @@ package com.example.soundnova
 
 class Validator {
     fun checkEmail(email : String) : String {
-//        "valid"
-//        "invalid"
-//        "empty"
         if (email.isNotEmpty()) {
             if (isValidEmail(email)) {
                 return "valid";
@@ -45,4 +42,3 @@ fun main() {
     println(validator.isValidEmail(email))
     println(validator.isValidPassword(password))
 }
-

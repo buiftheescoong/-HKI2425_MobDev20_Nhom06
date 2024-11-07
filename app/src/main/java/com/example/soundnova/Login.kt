@@ -23,10 +23,10 @@ class Login : ComponentActivity() {
         setContentView(R.layout.sign_in)
         firebaseAuth = FirebaseAuth.getInstance()
 
-        editTextEmail = findViewById(R.id.editTextEmail)
-        editTextPassword = findViewById(R.id.editTextPassword)
+        editTextEmail = findViewById(R.id.editTextSignInUsername)
+        editTextPassword = findViewById(R.id.editTextSignInPassword)
         buttonConfirmLogin = findViewById(R.id.buttonConfirmLogin)
-        textViewForgotPassword = findViewById(R.id.textViewForgotPassword)
+        textViewForgotPassword = findViewById(R.id.textViewForgetPassword)
         textViewSignUp = findViewById(R.id.textViewSignUp)
 
         buttonConfirmLogin.setOnClickListener {
