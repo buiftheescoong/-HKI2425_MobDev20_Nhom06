@@ -66,6 +66,7 @@
         android:text=""
         android:textStyle="italic"
         android:textSize="18sp"
+        android:textColor="@color/white"
         android:layout_marginBottom="24dp"/>
 
 

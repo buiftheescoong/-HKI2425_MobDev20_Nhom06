@@ -92,11 +92,11 @@
         android:id="@+id/note"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:gravity="center"
-        android:text=""
-        android:textStyle="italic"
+        android:textColor="@color/white"
         android:textSize="18sp"
-        android:layout_marginBottom="12dp"/>
+        android:textStyle="italic" />
 
     <!-- Nút đăng ký -->
     <Button
