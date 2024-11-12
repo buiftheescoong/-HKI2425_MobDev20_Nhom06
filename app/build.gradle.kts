@@ -15,7 +15,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -71,5 +72,21 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(kotlin("script-runtime"))
-    implementation("com.google.android.material:material:1.9.0")
+    testImplementation("junit:junit:4.13.2") // JUnit cho test đơn vị
+
+    // Android Instrumentation Test
+    androidTestImplementation("androidx.test.ext:junit:1.1.5") // JUnit cho Android
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1") // Espresso cho UI test
+
+    // AndroidX Test Core
+    androidTestImplementation("androidx.test:core:1.5.0")
+
+    // AndroidX Test Rules
+    androidTestImplementation("androidx.test:rules:1.5.0")
+
+    // AndroidX Test Runner
+    androidTestImplementation("androidx.test:runner:1.5.2")
+
+    // Mockito (Nếu bạn muốn sử dụng cho mock test)
+    testImplementation("org.mockito:mockito-core:4.2.0")
 }
