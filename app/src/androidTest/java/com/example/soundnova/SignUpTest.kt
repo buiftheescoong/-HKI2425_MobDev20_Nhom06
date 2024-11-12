@@ -18,7 +18,7 @@ import java.util.regex.Pattern.matches
 @LargeTest
 class SignUpTest {
     @get:Rule
-    val activityRule = ActivityScenarioRule(Login::class.java)
+    val activityRule = ActivityScenarioRule(Register::class.java)
 
     @Test
     fun testSignUpSuccess() {
