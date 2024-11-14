@@ -72,15 +72,22 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
 
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.androidx.palette.ktx)
     testImplementation(libs.junit)
+    implementation (libs.androidx.media)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+    implementation ("com.github.bumptech.glide:glide:4.13.0") // Glide library
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.13.0") // Glide annotation processor
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(kotlin("script-runtime"))
     implementation("com.google.android.material:material:1.9.0")
+
+    implementation ("androidx.room:room-runtime:2.6.1")
+    annotationProcessor ("androidx.room:room-compiler:2.5.2")
 
     // API
     implementation ("com.google.code.gson:gson:2.10.1")
