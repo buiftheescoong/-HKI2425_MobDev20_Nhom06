@@ -128,6 +128,8 @@
         android:layout_marginTop="16dp"
         android:orientation="horizontal"
         android:overScrollMode="never"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/horizontalScrollTabs" />
@@ -150,10 +152,11 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFavoriteSongs"
         android:layout_width="382dp"
-        android:layout_height="171dp"
+        android:layout_height="180dp"
         android:orientation="horizontal"
         android:overScrollMode="never"
-        android:paddingTop="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
