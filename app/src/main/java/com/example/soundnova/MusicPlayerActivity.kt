@@ -25,9 +25,17 @@ class MusicPlayerActivity : ComponentActivity() {
             return
         }
 
-        val songName = intent.getStringExtra("songName")
-        val artistName = intent.getStringExtra("artistName")
-        val songImage = intent.getStringExtra("songImage")
+        val song = intent.getParcelableExtra<Song>("song")
+        val songName = song?.name
+        val artistName = song?.artist
+        val songImage = song?.imageUrl
+//        val songName = intent.getStringExtra("songName")
+//        val artistName = intent.getStringExtra("artistName")
+//        val songImage = intent.getStringExtra("songImage")
+
+//        val songName = intent.getStringExtra("songName")
+//        val artistName = intent.getStringExtra("artistName")
+//        val songImage = intent.getStringExtra("songImage")
 //        val songUrl = intent.getStringExtra("songUrl")
 
         imageViewSong = findViewById(R.id.imageViewSong)

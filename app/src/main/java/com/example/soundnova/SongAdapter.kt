@@ -30,9 +30,10 @@ class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdap
         Glide.with(holder.itemView.context).load(song.imageUrl).into(holder.songImage)
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, MusicPlayerActivity::class.java).apply {
-                putExtra("songName", song.name)
-                putExtra("artistName", song.artist)
-                putExtra("songImage", song.imageUrl)
+//                putExtra("songName", song.name)
+//                putExtra("artistName", song.artist)
+//                putExtra("songImage", song.imageUrl)
+                putExtra("song", song)
 //                putExtra("songUrl", song.previewUrl)
             }
             holder.itemView.context.startActivity(intent)
