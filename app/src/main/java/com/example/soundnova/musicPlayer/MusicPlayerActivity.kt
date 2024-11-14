@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -19,12 +17,16 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.palette.graphics.Palette
+import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.soundnova.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.Random
-import com.bumptech.glide.Glide
 
 class MusicPlayerActivity : AppCompatActivity(), ActionPlaying, ServiceConnection {
 
@@ -78,6 +80,12 @@ class MusicPlayerActivity : AppCompatActivity(), ActionPlaying, ServiceConnectio
         nextBtn = findViewById(R.id.id_next)
         repeatBtn = findViewById(R.id.id_repeat)
 
+        try {
+            getIntentMethod()
+        } catch (e: IOException) {
+            throw java.lang.RuntimeException(e)
+        }
+
         //Seek Bar
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -104,6 +112,7 @@ class MusicPlayerActivity : AppCompatActivity(), ActionPlaying, ServiceConnectio
                 handler.postDelayed(this, 1000)
             }
         })
+
         shuffleBtn.setOnClickListener {
             shuffleBoolean = !shuffleBoolean
             val shuffleIcon = if (shuffleBoolean) {
@@ -117,9 +126,9 @@ class MusicPlayerActivity : AppCompatActivity(), ActionPlaying, ServiceConnectio
         repeatBtn.setOnClickListener {
             repeatBoolean = !repeatBoolean
             val repeatIcon = if (repeatBoolean) {
-                R.drawable.icon_repeat
-            } else {
                 R.drawable.icon_repeat_on
+            } else {
+                R.drawable.icon_repeat
             }
             repeatBtn.setImageResource(repeatIcon)
         }
@@ -325,11 +334,29 @@ class MusicPlayerActivity : AppCompatActivity(), ActionPlaying, ServiceConnectio
 //            else -> null
 //        }
 
-        if (listSongs != null && position in 0 until listSongs.size) {
-            playPauseBtn.setImageResource(R.drawable.icon_pause)
-            uri = Uri.parse(listSongs[position].songLink)
-        } else {
-            throw RuntimeException("Invalid position")
+        val db = MusicConnectDatabase.getDatabase(this)
+        lifecycleScope.launch(Dispatchers.IO) {
+             listSongs = db.musicFilesDao().getAllSongs() as ArrayList<MusicFiles>
+
+            // Kiểm tra xem danh sách có dữ liệu không
+            if (listSongs.isNotEmpty()) {
+                if (position >= 0 && position < listSongs.size) {
+                    withContext(Dispatchers.Main) {
+                        playPauseBtn.setImageResource(R.drawable.icon_pause)
+                        uri = Uri.parse(listSongs[position].songLink)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Log.e("MusicPlayerActivity", "Invalid position: $position")
+                        Toast.makeText(this@MusicPlayerActivity, "Invalid position", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    Log.e("MusicPlayerActivity", "No songs found")
+                    Toast.makeText(this@MusicPlayerActivity, "No songs available", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         val i = Intent(this, MusicService::class.java).apply {

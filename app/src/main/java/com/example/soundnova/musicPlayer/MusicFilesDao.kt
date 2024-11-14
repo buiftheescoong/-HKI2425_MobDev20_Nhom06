@@ -8,7 +8,7 @@ import androidx.room.Query
 @Dao
 interface MusicFilesDao {
     @Query("SELECT * FROM music_files")
-    fun getAllSongs(): List<MusicFiles>
+    suspend fun getAllSongs(): List<MusicFiles>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSongs(songs: List<MusicFiles>)

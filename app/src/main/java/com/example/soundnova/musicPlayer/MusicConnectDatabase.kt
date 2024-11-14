@@ -11,40 +11,38 @@ import kotlinx.coroutines.launch
 
 @Database(entities = [MusicFiles::class], version = 1)
 abstract class MusicConnectDatabase : RoomDatabase() {
-    abstract fun musicDao(): MusicFilesDao
+    abstract fun musicFilesDao(): MusicFilesDao
 
     companion object {
         @Volatile
         private var INSTANCE: MusicConnectDatabase? = null
 
+        @OptIn(DelicateCoroutinesApi::class)
         fun getDatabase(context: Context): MusicConnectDatabase {
-            return INSTANCE ?: synchronized(this) {
+            return (INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     MusicConnectDatabase::class.java,
                     "music_database"
-                ).addCallback(roomCallback).build()
+                ).build()
+
+                // Gọi populateDatabase sau khi database được tạo
                 INSTANCE = instance
-                instance
-            }
+                GlobalScope.launch {
+                    populateDatabase(INSTANCE!!)
+                }
+                INSTANCE
+            })!!
         }
 
-        private val roomCallback = object : RoomDatabase.Callback() {
-            override fun onCreate(db: SupportSQLiteDatabase) {
-                super.onCreate(db)
-                populateDatabase()
-            }
-        }
-
-        @OptIn(DelicateCoroutinesApi::class)
-        private fun populateDatabase() {
+        private suspend fun populateDatabase(db: MusicConnectDatabase) {
             val sampleSongs = listOf(
                 MusicFiles(
                     songsCategory = "Pop",
                     songTitle = "Shape of You",
                     artist = "Ed Sheeran",
                     songDuration = "263000",
-                    songLink = "https://example.com/shape_of_you.mp3",
+                    songLink = "https://drive.google.com/file/d/1RK3xC6iWne5Oe5tS1m7Xhs0DfP20rjvg/view?fbclid=IwY2xjawGiX75leHRuA2FlbQIxMAABHeqDW5HUO6iUY-YOOeBRE2CTJg6KoiIov5Y0VO5-mEuMHqF3qO8g3VaLXg_aem_k7F7V0aBDRgdCTjh7KIxpg",
                     mKey = "C",
                     lyrics = "The club isn't the best place to find a lover..."
                 ),
@@ -64,13 +62,10 @@ abstract class MusicConnectDatabase : RoomDatabase() {
                     songDuration = "165000",
                     songLink = "https://example.com/fur_elise.mp3",
                     mKey = "A minor",
-                    lyrics = null //
+                    lyrics = null
                 )
             )
-
-            GlobalScope.launch {
-                INSTANCE?.musicDao()?.insertSongs(sampleSongs)
-            }
+            db.musicFilesDao().insertSongs(sampleSongs)
         }
     }
 }
