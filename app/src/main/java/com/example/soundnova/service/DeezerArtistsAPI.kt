@@ -30,3 +30,9 @@ object DeezerArtistApiHelper {
         }
     }
 }
+
+suspend fun main() {
+    val deezerArtistApi = DeezerArtistApiHelper
+    val response = deezerArtistApi.fetchArtists("Charlie Puth")
+    println(response.data + " " + response.categoryName)
+}

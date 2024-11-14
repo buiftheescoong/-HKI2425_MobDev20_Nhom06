@@ -57,6 +57,7 @@ class Register: ComponentActivity() {
                             val user = firebaseAuth.currentUser
                             val intent = Intent(applicationContext, Login::class.java)
                             startActivity(intent)
+                            finish()
                         } else {
                             Toast.makeText(
                                 baseContext,
@@ -81,11 +82,23 @@ class Register: ComponentActivity() {
         textViewLoginLink.setOnClickListener {
             val intent = Intent(applicationContext, Login::class.java)
             startActivity(intent)
+            finish()
         }
-
-
     }
 
-
-
+    override fun onStart() {
+        super.onStart()
+        val currentUser = firebaseAuth.currentUser
+        if (firebaseAuth.currentUser != null) {
+            currentUser?.reload()?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val intent = Intent(applicationContext, HomeActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Log.w("", "Failed to reload user", task.exception)
+                }
+            }
+        }
+    }
 }
