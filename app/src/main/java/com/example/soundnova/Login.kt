@@ -2,6 +2,7 @@ package com.example.soundnova
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -38,7 +39,9 @@ class Login : ComponentActivity() {
                 firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
                     if (it.isSuccessful) {
                         val intent = Intent(applicationContext, HomeActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
+                        finish()
                     } else {
                         note.setText("Email or Password is not correct")
                         Toast.makeText(this,  "Email or Password is not correct", Toast.LENGTH_SHORT).show()
@@ -55,19 +58,29 @@ class Login : ComponentActivity() {
         textViewSignUp.setOnClickListener {
             val intent = Intent(applicationContext, Register::class.java)
             startActivity(intent)
+            finish()
         }
 
         textViewForgotPassword.setOnClickListener {
             val intent = Intent(applicationContext, ForgotPassword::class.java)
             startActivity(intent)
+            finish()
         }
     }
 
     override fun onStart() {
         super.onStart()
+        val currentUser = firebaseAuth.currentUser
         if (firebaseAuth.currentUser != null) {
-            val intent = Intent(applicationContext, HomeActivity::class.java)
-            startActivity(intent)
+            currentUser?.reload()?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val intent = Intent(applicationContext, HomeActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Log.w("", "Failed to reload user", task.exception)
+                }
+            }
         }
     }
 
