@@ -1,5 +1,7 @@
 package com.example.soundnova
 
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +28,15 @@ class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdap
         holder.songName.text = song.name
         holder.songArtist.text = song.artist
         Glide.with(holder.itemView.context).load(song.imageUrl).into(holder.songImage)
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, MusicPlayerActivity::class.java).apply {
+                putExtra("songName", song.name)
+                putExtra("artistName", song.artist)
+                putExtra("songImage", song.imageUrl)
+//                putExtra("songUrl", song.previewUrl)
+            }
+            holder.itemView.context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int = songs.size
