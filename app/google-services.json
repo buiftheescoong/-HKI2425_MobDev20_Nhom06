@@ -3,6 +3,7 @@
     "project_number": "515800054720",
     "project_id": "login-register-app-511bb",
     "storage_bucket": "login-register-app-511bb.firebasestorage.app"
+
   },
   "client": [
     {
@@ -23,30 +24,7 @@
           "other_platform_oauth_client": []
         }
       }
-    },
-
-
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1022615476353:android:549cf04d67192f90cd5580",
-        "android_client_info": {
-          "package_name": "com.example.soundnova"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBTxijc23SOQGYgfy-rmHzHSSAarUId_zU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
     }
-
-
   ],
   "configuration_version": "1"
 }
