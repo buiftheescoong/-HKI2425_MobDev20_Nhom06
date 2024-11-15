@@ -38,7 +38,7 @@ class MusicData : ComponentActivity() {
                 Log.w("Song", "Error getting documents.", exception)
             }
         val newSong = SongData("Bài hát mới", "Ca sĩ mới", "album" ,"https://...", "180s","Pop","thongtinbaihat","2024" )
-        db.collection("song")
+        db.collection("songs")
             .add(newSong)
             .addOnSuccessListener { documentReference ->
                 Log.d("Song", "DocumentSnapshot added with ID: ${documentReference.id}")

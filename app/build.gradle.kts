@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     id("kotlin-parcelize")
+
 }
 
 android {
@@ -69,23 +70,18 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("com.google.code.gson:gson:2.8.9")
 
-
-    implementation(libs.androidx.recyclerview)
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("com.google.code.gson:gson:2.8.9")
-
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore.ktx)
 
     implementation(libs.firebase.database.ktx)
     implementation ("com.github.bumptech.glide:glide:4.16.0")
 
-
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
-
     testImplementation(libs.junit)
+    implementation (libs.androidx.media)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+    implementation ("com.github.bumptech.glide:glide:4.13.0") // Glide library
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.13.0") // Glide annotation processor
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
@@ -93,7 +89,7 @@ dependencies {
     implementation(kotlin("script-runtime"))
     implementation("com.google.android.material:material:1.9.0")
 
-    // API
+//    API
     implementation ("com.google.code.gson:gson:2.10.1")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")

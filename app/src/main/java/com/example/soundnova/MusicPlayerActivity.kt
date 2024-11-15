@@ -49,7 +49,7 @@ class MusicPlayerActivity : ComponentActivity() {
 
         mediaPlayer = MediaPlayer()
         mediaPlayer.setDataSource("https://drive.google.com/uc?export=download&id=1RK3xC6iWne5Oe5tS1m7Xhs0DfP20rjvg")
-        mediaPlayer.prepare()
+        mediaPlayer.prepareAsync()
 
         buttonPlayPause.setOnClickListener {
             if (mediaPlayer.isPlaying) {
