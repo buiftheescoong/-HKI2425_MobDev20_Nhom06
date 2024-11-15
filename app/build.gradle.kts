@@ -64,13 +64,25 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.constraintlayout)
+
     implementation(libs.androidx.recyclerview)
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("com.google.code.gson:gson:2.8.9")
+
+
+    implementation(libs.androidx.recyclerview)
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.google.code.gson:gson:2.8.9")
+
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore.ktx)
+
     implementation(libs.firebase.database.ktx)
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+
+
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
