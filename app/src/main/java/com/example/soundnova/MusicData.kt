@@ -23,15 +23,13 @@ class MusicData : ComponentActivity() {
     private lateinit var database: DatabaseReference
     private val db = Firebase.firestore
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         db.collection("songs")
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    val song = document.toObject(Song::class.java)
+                    val song = document.toObject(SongData::class.java)
                     // Sử dụng thông tin của bài hát, ví dụ:
                     Log.d("Song", "${song.title} - ${song.artist}")
                 }
@@ -39,7 +37,7 @@ class MusicData : ComponentActivity() {
             .addOnFailureListener { exception ->
                 Log.w("Song", "Error getting documents.", exception)
             }
-        val newSong = Song("Bài hát mới", "Ca sĩ mới", "album" ,"https://...", "180s","Pop","thongtinbaihat","2024" )
+        val newSong = SongData("Bài hát mới", "Ca sĩ mới", "album" ,"https://...", "180s","Pop","thongtinbaihat","2024" )
         db.collection("song")
             .add(newSong)
             .addOnSuccessListener { documentReference ->
@@ -53,7 +51,7 @@ class MusicData : ComponentActivity() {
 }
 
 
-data class Song(
+data class SongData(
     val title: String? = null,
     val artist: String? = null,
     val album: String? = null,

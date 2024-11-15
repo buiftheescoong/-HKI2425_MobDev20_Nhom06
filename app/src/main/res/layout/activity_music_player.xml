@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/black">
+
+    <!-- Ảnh bài hát -->
+    <ImageView
+        android:id="@+id/imageViewSong"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Tên bài hát -->
+    <TextView
+        android:id="@+id/textViewSongName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Tên nghệ sĩ -->
+    <TextView
+        android:id="@+id/textViewArtistName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@color/light_gray"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Nút play/pause -->
+    <ImageView
+        android:id="@+id/buttonPlayPause"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:src="@drawable/play"/>
+</LinearLayout>
