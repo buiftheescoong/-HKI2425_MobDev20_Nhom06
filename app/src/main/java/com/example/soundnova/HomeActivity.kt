@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 
 class HomeActivity : ComponentActivity() {
     private lateinit var recentRecyclerView: RecyclerView
@@ -15,7 +16,7 @@ class HomeActivity : ComponentActivity() {
 
         recentRecyclerView = findViewById(R.id.recyclerViewTabsSongs)
         favoriteRecyclerView = findViewById(R.id.recyclerViewFavoriteSongs)
-
+        FirebaseAuth.getInstance().signOut()
         SpotifyService.getAccessToken { token ->
             if (token != null) {
                 loadSongs()

@@ -7,6 +7,9 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import android.util.Log
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 class ForgotPassword : ComponentActivity() {
     private lateinit var editSignUpEmail: EditText
@@ -39,9 +42,7 @@ class ForgotPassword : ComponentActivity() {
                 note.setText("Email is empty")
             } else {
                 // gui thong bao ve email
-                    val intent = Intent(applicationContext, ChangePassword::class.java)
-                    startActivity(intent)
-
+                Firebase.auth.sendPasswordResetEmail(email)
             }
         }
 
