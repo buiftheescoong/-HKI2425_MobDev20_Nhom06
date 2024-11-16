@@ -37,7 +37,7 @@ class MusicData : ComponentActivity() {
             .addOnFailureListener { exception ->
                 Log.w("Song", "Error getting documents.", exception)
             }
-        val newSong = SongData("Bài hát mới", "Ca sĩ mới", "album" ,"https://...", "180s","Pop","thongtinbaihat","2024" )
+        val newSong = SongData("test2", "Ca sĩ mới", "album" ,"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", "180s","Pop","thongtinbaihat","2024" )
         db.collection("songs")
             .add(newSong)
             .addOnSuccessListener { documentReference ->
