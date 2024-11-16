@@ -16,6 +16,7 @@ class ForgotPassword : ComponentActivity() {
     private lateinit var buttonSendBTN: Button
     private lateinit var buttonBack : Button
     private lateinit var note : TextView
+    private lateinit var validator : Validator
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -27,6 +28,7 @@ class ForgotPassword : ComponentActivity() {
         buttonSendBTN = findViewById(R.id.buttonSendBTN)
         buttonBack = findViewById(R.id.buttonBack)
         note = findViewById(R.id.note)
+        validator = Validator()
 
 
         buttonBack.setOnClickListener {
@@ -38,12 +40,14 @@ class ForgotPassword : ComponentActivity() {
 
         buttonSendBTN.setOnClickListener {
             val email = editSignUpEmail.text.toString()
+            val emailStatus = validator.checkEmail(email)
             if (email.isEmpty()) {
                 note.setText("Email is empty")
-            } else {
+            } else if (emailStatus == "valid"){
                 // gui thong bao ve email
                 Firebase.auth.sendPasswordResetEmail(email)
-            }
+            } else
+                note.setText("Email is $emailStatus")
         }
 
     }
