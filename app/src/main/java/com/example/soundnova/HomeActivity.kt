@@ -16,7 +16,6 @@ class HomeActivity : ComponentActivity() {
 
         recentRecyclerView = findViewById(R.id.recyclerViewTabsSongs)
         favoriteRecyclerView = findViewById(R.id.recyclerViewFavoriteSongs)
-        FirebaseAuth.getInstance().signOut()
         SpotifyService.getAccessToken { token ->
             if (token != null) {
                 loadSongs()

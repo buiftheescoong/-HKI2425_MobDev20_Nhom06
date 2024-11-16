@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class Setting: ComponentActivity() {
     private lateinit var profileImg: Image
@@ -25,9 +26,14 @@ class Setting: ComponentActivity() {
 
         logOut.setOnClickListener{
             val intent = Intent(applicationContext, Login::class.java)
+            FirebaseAuth.getInstance().signOut()
             startActivity(intent)
             finish()
         }
-
+        changePass.setOnClickListener {
+            val intent = Intent(applicationContext, ChangePassword::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 }
