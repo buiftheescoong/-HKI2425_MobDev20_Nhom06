@@ -7,11 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-private lateinit var btnsetting:ImageView
-
 class HomeActivity : ComponentActivity() {
     private lateinit var recentRecyclerView: RecyclerView
     private lateinit var favoriteRecyclerView: RecyclerView
+    private lateinit var btnsetting:ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
