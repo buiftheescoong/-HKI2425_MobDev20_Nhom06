@@ -4,13 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.IgnoreExtraProperties
-import com.google.firebase.database.database
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
-import kotlin.time.Duration
+
 
 class MusicData : ComponentActivity() {
     private lateinit var title: String
@@ -20,7 +15,6 @@ class MusicData : ComponentActivity() {
     private lateinit var duration: String
     private lateinit var information : String
     private lateinit var genre: String
-    private lateinit var database: DatabaseReference
     private val db = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
