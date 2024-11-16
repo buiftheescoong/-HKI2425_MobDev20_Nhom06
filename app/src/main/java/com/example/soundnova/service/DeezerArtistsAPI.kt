@@ -30,9 +30,3 @@ object DeezerArtistApiHelper {
         }
     }
 }
-
-suspend fun main() {
-    val deezerArtistApi = DeezerArtistApiHelper
-    val response = deezerArtistApi.fetchArtists("27")
-    println(response.data + " " + response.categoryName)
-}

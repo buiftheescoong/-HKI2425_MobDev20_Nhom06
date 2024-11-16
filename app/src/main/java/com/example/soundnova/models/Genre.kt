@@ -1,5 +1,7 @@
 package com.example.soundnova.models
 
+
+
 import com.google.gson.annotations.SerializedName
 
 data class GenresResponse(

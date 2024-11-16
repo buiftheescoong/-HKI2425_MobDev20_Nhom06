@@ -19,9 +19,9 @@ data class Tracks(
     val data: List<TrackData>
 )
 
-class TrackData(
+data class TrackData(
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
 
     @SerializedName("title")
     val title: String,

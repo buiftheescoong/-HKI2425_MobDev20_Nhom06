@@ -1,7 +1,5 @@
-package com.example.soundnova.service
+package com.example.soundnova.models
 
-
-import com.example.soundnova.models.GenresResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -29,4 +27,9 @@ object DeezerCategoryApiHelper {
             throw RuntimeException("API call failed: ${response.errorBody()?.string()}")
         }
     }
+}
+
+suspend fun main() {
+    var deezerCategoryApiHelper = DeezerCategoryApiHelper
+    println(deezerCategoryApiHelper.fetchGenres())
 }

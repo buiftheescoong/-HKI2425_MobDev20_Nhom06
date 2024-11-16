@@ -23,6 +23,8 @@ class HomeActivity : ComponentActivity() {
         }
     }
 
+    
+
     private fun loadSongs() {
         SpotifyService.fetchRecommendations("pop") { songs ->
             runOnUiThread {
