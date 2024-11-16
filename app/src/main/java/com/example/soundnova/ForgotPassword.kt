@@ -7,12 +7,16 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import android.util.Log
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 class ForgotPassword : ComponentActivity() {
     private lateinit var editSignUpEmail: EditText
     private lateinit var buttonSendBTN: Button
     private lateinit var buttonBack : Button
     private lateinit var note : TextView
+    private lateinit var validator : Validator
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -24,6 +28,7 @@ class ForgotPassword : ComponentActivity() {
         buttonSendBTN = findViewById(R.id.buttonSendBTN)
         buttonBack = findViewById(R.id.buttonBack)
         note = findViewById(R.id.note)
+        validator = Validator()
 
 
         buttonBack.setOnClickListener {
@@ -35,14 +40,14 @@ class ForgotPassword : ComponentActivity() {
 
         buttonSendBTN.setOnClickListener {
             val email = editSignUpEmail.text.toString()
+            val emailStatus = validator.checkEmail(email)
             if (email.isEmpty()) {
                 note.setText("Email is empty")
-            } else {
+            } else if (emailStatus == "valid"){
                 // gui thong bao ve email
-                    val intent = Intent(applicationContext, ChangePassword::class.java)
-                    startActivity(intent)
-
-            }
+                Firebase.auth.sendPasswordResetEmail(email)
+            } else
+                note.setText("Email is $emailStatus")
         }
 
     }

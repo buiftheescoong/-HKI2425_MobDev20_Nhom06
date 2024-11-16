@@ -3,51 +3,64 @@ package com.example.soundnova
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.database
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
+import kotlin.time.Duration
 
 class MusicData : ComponentActivity() {
-
-    private lateinit var musicTitle : String
-    private lateinit var musicAlbum : String
-    private lateinit var musicArtist : String
-    private lateinit var musicAudioUrl : String
-    private lateinit var musicDuration : String
-    private lateinit var musicInformation : String
-    private lateinit var musicGenre : String
-
-    private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var firestore: FirebaseFirestore
-
-    fun getmusicName() : String {
-        return musicTitle
-    }
+    private lateinit var title: String
+    private lateinit var album : String
+    private lateinit var artist: String
+    private lateinit var audioUrl: String
+    private lateinit var duration: String
+    private lateinit var information : String
+    private lateinit var genre: String
+    private lateinit var database: DatabaseReference
+    private val db = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        firebaseAuth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance()
-
-        if(title.isNotEmpty()) {
-            firestore.collection("songs")
-                .whereEqualTo("$title", musicTitle)
-                .get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        // Lấy từng trường dữ liệu từ Firestore document
-                        musicTitle = document.getString("title") ?: "Unknown Title"
-                        musicAlbum = document.getString("album") ?: "Unknown Album"
-                        musicArtist = document.getString("artist") ?: "Unknown Artist"
-                        musicAudioUrl = document.getString("audioUrl") ?: "Unknown Audio URL"
-                        musicDuration = document.get("duration")?.toString() ?: "Unknown Duration"
-                        musicInformation = document.getString("information") ?: "No Information"
-                        musicGenre = document.getString("genre") ?: "Unknown Genre"
-                    }
+        db.collection("songs")
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val song = document.toObject(SongData::class.java)
+                    // Sử dụng thông tin của bài hát, ví dụ:
+                    Log.d("Song", "${song.title} - ${song.artist}")
                 }
-                .addOnFailureListener { exception ->
-                    Log.d("MusicData", "Error getting documents: ", exception)
-                }
-        }
+            }
+            .addOnFailureListener { exception ->
+                Log.w("Song", "Error getting documents.", exception)
+            }
+        val newSong = SongData("test2", "Ca sĩ mới", "album" ,"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", "180s","Pop","thongtinbaihat","2024" )
+        db.collection("songs")
+            .add(newSong)
+            .addOnSuccessListener { documentReference ->
+                Log.d("Song", "DocumentSnapshot added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { exception ->
+                Log.w("Song", "Error adding document", exception)
+            }
     }
+
 }
+
+
+data class SongData(
+    val title: String? = null,
+    val artist: String? = null,
+    val album: String? = null,
+    val audioUrl: String? = null,
+    val duration: String? = null,
+    val genre: String? = null,
+    val infomation: String? = null,
+    val releaseDate: String? = null,
+
+    )
+
+

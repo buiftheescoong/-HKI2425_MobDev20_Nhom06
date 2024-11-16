@@ -1,3 +1,4 @@
+
 package com.example.soundnova
 
 import android.content.ContentValues.TAG
@@ -40,7 +41,7 @@ class Register: ComponentActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         validator = Validator()
 
-        
+
         buttonSignUp.setOnClickListener {
             val email = editTextEmail.text.toString()
             val password = editTextPassword.text.toString()
