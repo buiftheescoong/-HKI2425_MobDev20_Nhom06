@@ -61,7 +61,7 @@ class ChangePassword : ComponentActivity() {
                                         }
                                     }
                             } else {
-                                note.setText("New passwor is not correct")
+                                note.setText("New password is not correct")
                             }
                         } else {
                             note.setText("Password is not correct")
