@@ -1,9 +1,13 @@
 package com.example.soundnova
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+
+private lateinit var btnsetting:ImageView
 
 class HomeActivity : ComponentActivity() {
     private lateinit var recentRecyclerView: RecyclerView
@@ -15,6 +19,11 @@ class HomeActivity : ComponentActivity() {
 
         recentRecyclerView = findViewById(R.id.recyclerViewTabsSongs)
         favoriteRecyclerView = findViewById(R.id.recyclerViewFavoriteSongs)
+        btnsetting = findViewById(R.id.buttonSettings)
+
+        btnsetting.setOnClickListener {
+            startActivity(Intent(applicationContext, Setting::class.java))
+        }
 
         loadSongs()
 //        SpotifyService.getAccessToken { token ->
