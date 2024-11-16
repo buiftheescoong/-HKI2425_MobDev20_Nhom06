@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Change Password"
-            android:background=""
+            android:background="@android:color/transparent"
             android:textColor="#FFFFFF"
             android:padding="12dp"
             android:elevation="4dp"
@@ -76,11 +76,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Logout"
-            android:background= ""
+            android:background="@android:color/transparent"
             android:textColor="#FFFFFF"
             android:padding="12dp"
             android:elevation="4dp" />
 
     </LinearLayout>
     </LinearLayout>
-</ScrollView>
+
+</LinearLayout>
