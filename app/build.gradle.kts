@@ -3,7 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     id("kotlin-parcelize")
-
+    id("kotlin-kapt")
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
 }
 
 android {
@@ -73,15 +74,11 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore.ktx)
 
-    implementation(libs.firebase.database.ktx)
     implementation ("com.github.bumptech.glide:glide:4.16.0")
-
+    implementation(libs.androidx.room.common)
     testImplementation(libs.junit)
-    implementation (libs.androidx.media)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
-    implementation ("com.github.bumptech.glide:glide:4.13.0") // Glide library
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.13.0") // Glide annotation processor
+    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
@@ -89,8 +86,17 @@ dependencies {
     implementation(kotlin("script-runtime"))
     implementation("com.google.android.material:material:1.9.0")
 
-//    API
+    // API
     implementation ("com.google.code.gson:gson:2.10.1")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+    implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
+    ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
+
+    //hilt
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 }

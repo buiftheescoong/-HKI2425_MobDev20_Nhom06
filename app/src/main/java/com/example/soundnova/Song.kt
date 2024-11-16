@@ -1,14 +1,16 @@
 package com.example.soundnova
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Parcelize
+@Entity(tableName = "music_table")
 data class Song(
-//    val id: Long,
-    val name: String,
-    val artist: String,
-    val imageUrl: String,
-//    val previewUrl: String,
-//    val genre: String?
-) : Parcelable
+    @PrimaryKey
+    val name: String = "",
+    val artists: List<String> = emptyList(),
+    val imageUrl: String = "",
+    val duration: Int = 0,
+    val musicUrl: String = "",
+    val genre: String = "",
+    val lyrics: String = ""
+)

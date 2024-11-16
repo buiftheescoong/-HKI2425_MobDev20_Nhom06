@@ -1,98 +1,218 @@
 package com.example.soundnova
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
+import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
+import com.example.soundnova.data.local.room.Convert
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MusicPlayerActivity : ComponentActivity() {
+
+    companion object {
+        var shuffleBoolean: Boolean = false
+        var repeatBoolean: Boolean = false
+        var heartBoolean: Boolean = false
+    }
+
+    private var currentSongIndex = 0
+    val convert = Convert()
+    private var seekBarUpdateJob: Job? = null
+
     private lateinit var mediaPlayer: MediaPlayer
-    private lateinit var  imageViewSong: ImageView
-    private lateinit var  textViewArtistName: TextView
-    private lateinit var  textViewSongName: TextView
-    private lateinit var buttonPlayPause: ImageView
-    private val db = Firebase.firestore
+    private lateinit var imageViewSong: ImageView
+    private lateinit var textViewArtistName: TextView
+    private lateinit var textViewSongName: TextView
+    private lateinit var buttonPlayPause: ImageButton
+    private lateinit var backBtn : ImageView
+    private lateinit var moreBtn : ImageView
+    private lateinit var heartBtn : ImageView
+    private lateinit var durationPlayed: TextView
+    private lateinit var durationTotal: TextView
+    private lateinit var seekBar: SeekBar
+    private lateinit var shuffleBtn: ImageView
+    private lateinit var prevBtn: ImageView
+    private lateinit var nextBtn: ImageView
+    private lateinit var repeatBtn: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        try {
-            setContentView(R.layout.activity_music_player)
-            Log.d("Debug", "Layout loaded successfully")
-        } catch (e: Exception) {
-            Log.e("Error", "Layout failed to load: ${e.message}")
-            return
-        }
-
-        val song = intent.getParcelableExtra<Song>("song")
-        val songName = song?.name
-        val artistName = song?.artist
-        val songImage = song?.imageUrl
-        var songUrl :String? = null
-        mediaPlayer = MediaPlayer()
-
-
-        db.collection("songs")
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val song = document.toObject(SongData::class.java)
-                    if (song.title == "test2") {
-                        songUrl = song.audioUrl
-                        break
-                    }
-                }
-                if (songUrl != null) {
-                    try {
-                        mediaPlayer.setDataSource(songUrl)
-                        mediaPlayer.prepareAsync()
-                    } catch (e: Exception) {
-                        Log.e("Error", "Failed to set data source: ${e.message}")
-                    }
-                } else {
-                    Log.e("Error", "Song URL not found")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w("Song", "Error getting documents.", exception)
-            }
-
-
-//        val songName = intent.getStringExtra("songName")
-//        val artistName = intent.getStringExtra("artistName")
-//        val songImage = intent.getStringExtra("songImage")
+        setContentView(R.layout.player_activity)
 
 //        val songName = intent.getStringExtra("songName")
 //        val artistName = intent.getStringExtra("artistName")
 //        val songImage = intent.getStringExtra("songImage")
 //        val songUrl = intent.getStringExtra("songUrl")
 
-        imageViewSong = findViewById(R.id.imageViewSong)
-        textViewSongName = findViewById(R.id.textViewSongName)
-        textViewArtistName = findViewById(R.id.textViewArtistName)
-        buttonPlayPause = findViewById(R.id.buttonPlayPause)
+        imageViewSong = findViewById(R.id.cover_art)
+        textViewSongName = findViewById(R.id.song_name)
+        textViewArtistName = findViewById(R.id.song_artist)
+        buttonPlayPause = findViewById(R.id.play_pause)
+        backBtn = findViewById(R.id.back_btn)
+        moreBtn = findViewById(R.id.more_btn)
+        heartBtn = findViewById(R.id.heart_btn)
+        durationPlayed = findViewById(R.id.durationPlayed)
+        durationTotal = findViewById(R.id.durationTotal)
+        seekBar = findViewById(R.id.seekBar)
+        shuffleBtn = findViewById(R.id.id_shuffle)
+        prevBtn = findViewById(R.id.id_prev)
+        nextBtn = findViewById(R.id.id_next)
+        repeatBtn = findViewById(R.id.id_repeat)
 
-        textViewSongName.text = songName
-        textViewArtistName.text = artistName
-        Glide.with(this).load(songImage).into(imageViewSong)
 
-//        mediaPlayer = MediaPlayer()
-        //mediaPlayer.setDataSource("https://drive.google.com/uc?export=download&id=1RK3xC6iWne5Oe5tS1m7Xhs0DfP20rjvg")
+        mediaPlayer = MediaPlayer()
 
+        playSong(currentSongIndex)
+
+        heartBtn.setOnClickListener {
+            heartBoolean = !heartBoolean
+            val heartIcon = if (heartBoolean) {
+                R.drawable.icon_heart_on
+            } else {
+                R.drawable.icon_heart
+            }
+            heartBtn.setImageResource(heartIcon)
+        }
 
         buttonPlayPause.setOnClickListener {
             if (mediaPlayer.isPlaying) {
                 mediaPlayer.pause()
-                buttonPlayPause.setImageResource(R.drawable.play)
+                buttonPlayPause.setImageResource(R.drawable.icon_play)
+                stopSeekBarUpdate()
             } else {
                 mediaPlayer.start()
-                buttonPlayPause.setImageResource(R.drawable.pause)
+                buttonPlayPause.setImageResource(R.drawable.icon_pause)
+                startSeekBarUpdate()
             }
         }
+
+        shuffleBtn.setOnClickListener {
+            shuffleBoolean = !shuffleBoolean
+            val shuffleIcon = if (shuffleBoolean) {
+                R.drawable.icon_shuffle_on
+            } else {
+                R.drawable.icon_shuffle_off
+            }
+            shuffleBtn.setImageResource(shuffleIcon)
+        }
+
+        repeatBtn.setOnClickListener {
+            repeatBoolean = !repeatBoolean
+            val repeatIcon = if (repeatBoolean) {
+                R.drawable.icon_repeat_on
+            } else {
+                R.drawable.icon_repeat
+            }
+            repeatBtn.setImageResource(repeatIcon)
+        }
+
+        mediaPlayer.setOnCompletionListener {
+            if (repeatBoolean) {
+                mediaPlayer.seekTo(0)
+                mediaPlayer.start()
+            } else {
+                playNextSong()
+                if (!mediaPlayer.isPlaying) {
+                    mediaPlayer.start()
+                    buttonPlayPause.setImageResource(R.drawable.icon_pause)
+                }
+            }
+        }
+
+        nextBtn.setOnClickListener {
+            playNextSong()
+            if (!mediaPlayer.isPlaying) {
+                mediaPlayer.start()
+                buttonPlayPause.setImageResource(R.drawable.icon_pause)
+            }
+        }
+
+        prevBtn.setOnClickListener {
+            playPreviousSong()
+            if (!mediaPlayer.isPlaying) {
+                mediaPlayer.start()
+                buttonPlayPause.setImageResource(R.drawable.icon_pause)
+            }
+        }
+
+        backBtn.setOnClickListener {
+            val intent = Intent(applicationContext, HomeActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+
+    private fun playNextSong() {
+        if (!shuffleBoolean) {
+            currentSongIndex = (0 until sampleSongList.size).random()
+        } else {
+            currentSongIndex = (currentSongIndex + 1) % sampleSongList.size
+        }
+        playSong(currentSongIndex)
+    }
+
+    private fun playPreviousSong() {
+        currentSongIndex = if (currentSongIndex == 0) {
+            sampleSongList.size - 1
+        } else {
+            currentSongIndex - 1
+        }
+        playSong(currentSongIndex)
+    }
+
+    private fun playSong(index: Int) {
+        val song = sampleSongList[index]
+
+        textViewSongName.text = song.name
+        val songArtistsOfString = convert.fromListOfString(song.artists)
+        textViewArtistName.text = songArtistsOfString
+        Glide.with(this).load(song.imageUrl).into(imageViewSong)
+
+        seekBar.max = song.duration
+        seekBar.progress = 0
+
+        durationPlayed.text = formatDuration(0)
+        durationTotal.text = formatDuration(song.duration)
+
+        mediaPlayer.reset()
+        mediaPlayer.setDataSource(song.musicUrl)
+        mediaPlayer.prepare()
+    }
+
+    private fun startSeekBarUpdate() {
+        seekBarUpdateJob = CoroutineScope(Dispatchers.Main).launch {
+            while (mediaPlayer.isPlaying) {
+                val currentPosition = mediaPlayer.currentPosition
+                seekBar.progress = currentPosition
+                durationPlayed.text = formatDuration(currentPosition)
+                delay(1000L)
+            }
+        }
+    }
+
+    private fun stopSeekBarUpdate() {
+        seekBarUpdateJob?.cancel()
+        seekBarUpdateJob = null
+    }
+
+    @SuppressLint("DefaultLocale")
+    private fun formatDuration(duration: Int): String {
+        val minutes = duration / 1000 / 60
+        val seconds = duration / 1000 % 60
+        return String.format("%2d:%02d", minutes, seconds)
     }
 
     override fun onDestroy() {
