@@ -9,9 +9,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.soundnova.data.local.room.Convert
 
-class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+class SongAdapterVertical(private val songs: List<Song>) : RecyclerView.Adapter<SongAdapterVertical.SongViewHolder>() {
 
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val songName: TextView = view.findViewById(R.id.textSongName)
@@ -20,16 +19,14 @@ class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdap
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_song_vertical, parent, false)
         return SongViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        val convert = Convert()
         val song = songs[position]
         holder.songName.text = song.name
-        val songArtistsOfString = convert.fromListOfString(song.artists)
-        holder.songArtists.text = songArtistsOfString
+        holder.songArtists.text = song.artists.toString()
         Glide.with(holder.itemView.context).load(song.imageUrl).into(holder.songImage)
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, MusicPlayerActivity::class.java).apply {
@@ -38,10 +35,6 @@ class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdap
 //                putExtra("songImage", song.imageUrl)
 //                putExtra("song", song)
 //                putExtra("songUrl", song.previewUrl)
-                putExtra("songName", song.name)
-                putExtra("artistName", songArtistsOfString)
-                putExtra("songImage", song.imageUrl)
-                putExtra("songUrl", song.musicUrl)
             }
             holder.itemView.context.startActivity(intent)
         }

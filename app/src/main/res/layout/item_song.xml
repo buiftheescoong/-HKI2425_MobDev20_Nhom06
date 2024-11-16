@@ -5,16 +5,25 @@ android:layout_height="wrap_content"
 android:orientation="vertical"
 android:padding="8dp">
 
-<ImageView
-    android:id="@+id/imageSong"
-    android:layout_width="120dp"
-    android:layout_height="120dp"
-    android:scaleType="centerCrop" />
+    <FrameLayout
+        android:layout_width="210dp"
+        android:layout_height="210dp"
+        android:background="@drawable/image_border"
+        android:clipToOutline="true">
+
+        <ImageView
+            android:id="@+id/imageSong"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+    </FrameLayout>
 
 <TextView
     android:id="@+id/textSongName"
-    android:layout_width="120dp"
+    android:layout_width="210dp"
     android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:layout_marginBottom="2dp"
     android:maxLines="1"
     android:ellipsize="end"
     android:textSize="16sp"
@@ -22,7 +31,7 @@ android:padding="8dp">
 
     <TextView
         android:id="@+id/textSongArtist"
-        android:layout_width="120dp"
+        android:layout_width="210dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="2"

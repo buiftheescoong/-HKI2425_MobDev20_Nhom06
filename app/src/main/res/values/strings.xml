@@ -32,7 +32,6 @@
     <string name="editTextConfirmNewPass">Confirm new password</string>
     <string name="buttonSendChange">Change</string>
     <string name="cancel">Cancel</string>
-    <string name="textKaraoke">Karaoke</string>
 
     <string name="song_name">This is song name</string>
     <string name="song_artist">This is song artist</string>

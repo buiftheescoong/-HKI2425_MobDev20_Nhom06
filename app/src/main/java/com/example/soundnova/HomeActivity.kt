@@ -16,26 +16,36 @@ class HomeActivity : ComponentActivity() {
         recentRecyclerView = findViewById(R.id.recyclerViewTabsSongs)
         favoriteRecyclerView = findViewById(R.id.recyclerViewFavoriteSongs)
 
-        SpotifyService.getAccessToken { token ->
-            if (token != null) {
-                loadSongs()
-            }
-        }
+        loadSongs()
+//        SpotifyService.getAccessToken { token ->
+//            if (token != null) {
+//                loadSongs()
+//            }
+//        }
     }
 
     private fun loadSongs() {
-        SpotifyService.fetchRecommendations("pop") { songs ->
-            runOnUiThread {
-                recentRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-                recentRecyclerView.adapter = SongAdapter(songs)
-            }
-        }
+//        SpotifyService.fetchRecommendations("pop") { songs ->
+//            runOnUiThread {
+//                recentRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+//                recentRecyclerView.adapter = SongAdapter(songs)
+//            }
+//        }
+//
+//        SpotifyService.fetchRecommendations("chill") { songs ->
+//            runOnUiThread {
+//                favoriteRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+//                favoriteRecyclerView.adapter = SongAdapter(songs)
+//            }
+//        }
 
-        SpotifyService.fetchRecommendations("chill") { songs ->
-            runOnUiThread {
-                favoriteRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-                favoriteRecyclerView.adapter = SongAdapter(songs)
-            }
+        runOnUiThread {
+            recentRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            recentRecyclerView.adapter = SongAdapter(sampleSongList)
+        }
+        runOnUiThread {
+            favoriteRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            favoriteRecyclerView.adapter = SongAdapter(sampleSongList)
         }
     }
 }
