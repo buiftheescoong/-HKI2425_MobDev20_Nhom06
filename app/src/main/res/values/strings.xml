@@ -38,4 +38,5 @@
     <string name="durationPlayed">1:27</string>
     <string name="durationTotal">3:48</string>
     <string name="enterYourEmail">Please enter your Email</string>
+    <string name="NoLyricsText">This song has no lyrics</string>
 </resources>

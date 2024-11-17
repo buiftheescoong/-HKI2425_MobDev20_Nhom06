@@ -6,7 +6,6 @@
 
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -31,7 +30,6 @@
             android:padding="16dp"
             android:gravity="center_horizontal">
 
-            <!-- Phần hồ sơ người dùng -->
             <ImageView
                 android:id="@+id/profile_image"
                 android:layout_width="80dp"
@@ -91,7 +89,6 @@
         layout="@layout/menu"
         android:layout_width="match_parent"
         android:layout_height="71dp"
-        android:layout_marginBottom="25dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true" />

@@ -4,14 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
+import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.activity.ComponentActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.soundnova.data.local.room.Convert
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +19,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MusicPlayerActivity : ComponentActivity() {
+class MusicPlayerActivity : AppCompatActivity() {
 
     companion object {
         var shuffleBoolean: Boolean = false
@@ -31,6 +30,7 @@ class MusicPlayerActivity : ComponentActivity() {
     private var currentSongIndex = 0
     val convert = Convert()
     private var seekBarUpdateJob: Job? = null
+    private var currentSongLyrics = ""
 
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var imageViewSong: ImageView
@@ -47,6 +47,8 @@ class MusicPlayerActivity : ComponentActivity() {
     private lateinit var prevBtn: ImageView
     private lateinit var nextBtn: ImageView
     private lateinit var repeatBtn: ImageView
+    private lateinit var previewLyrics: TextView
+    private lateinit var showFullLyricsBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,11 +73,31 @@ class MusicPlayerActivity : ComponentActivity() {
         prevBtn = findViewById(R.id.id_prev)
         nextBtn = findViewById(R.id.id_next)
         repeatBtn = findViewById(R.id.id_repeat)
-
+        previewLyrics = findViewById(R.id.preview_lyrics)
+        showFullLyricsBtn = findViewById(R.id.show_full_lyrics_button)
 
         mediaPlayer = MediaPlayer()
 
         playSong(currentSongIndex)
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    durationPlayed.text = formatDuration(progress)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                stopSeekBarUpdate()
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                seekBar?.let {
+                    mediaPlayer.seekTo(it.progress)
+                    startSeekBarUpdate()
+                }
+            }
+        })
 
         heartBtn.setOnClickListener {
             heartBoolean = !heartBoolean
@@ -90,12 +112,12 @@ class MusicPlayerActivity : ComponentActivity() {
         buttonPlayPause.setOnClickListener {
             if (mediaPlayer.isPlaying) {
                 mediaPlayer.pause()
-                buttonPlayPause.setImageResource(R.drawable.icon_play)
                 stopSeekBarUpdate()
+                buttonPlayPause.setImageResource(R.drawable.icon_play)
             } else {
                 mediaPlayer.start()
-                buttonPlayPause.setImageResource(R.drawable.icon_pause)
                 startSeekBarUpdate()
+                buttonPlayPause.setImageResource(R.drawable.icon_pause)
             }
         }
 
@@ -123,10 +145,12 @@ class MusicPlayerActivity : ComponentActivity() {
             if (repeatBoolean) {
                 mediaPlayer.seekTo(0)
                 mediaPlayer.start()
+                startSeekBarUpdate()
             } else {
                 playNextSong()
                 if (!mediaPlayer.isPlaying) {
                     mediaPlayer.start()
+                    startSeekBarUpdate()
                     buttonPlayPause.setImageResource(R.drawable.icon_pause)
                 }
             }
@@ -136,6 +160,7 @@ class MusicPlayerActivity : ComponentActivity() {
             playNextSong()
             if (!mediaPlayer.isPlaying) {
                 mediaPlayer.start()
+                startSeekBarUpdate()
                 buttonPlayPause.setImageResource(R.drawable.icon_pause)
             }
         }
@@ -144,15 +169,30 @@ class MusicPlayerActivity : ComponentActivity() {
             playPreviousSong()
             if (!mediaPlayer.isPlaying) {
                 mediaPlayer.start()
+                startSeekBarUpdate()
                 buttonPlayPause.setImageResource(R.drawable.icon_pause)
             }
         }
 
         backBtn.setOnClickListener {
+
+            mediaPlayer.stop()
+            mediaPlayer.release()
+
             val intent = Intent(applicationContext, HomeActivity::class.java)
             startActivity(intent)
             finish()
         }
+
+        showFullLyricsBtn.setOnClickListener {
+            showFullLyrics(currentSongLyrics)
+        }
+
+    }
+
+    private fun showFullLyrics(showLyrics: String) {
+         val lyrics = Lyrics.newInstance(showLyrics)
+         lyrics.show(supportFragmentManager, lyrics.tag)
     }
 
     private fun playNextSong() {
@@ -165,10 +205,14 @@ class MusicPlayerActivity : ComponentActivity() {
     }
 
     private fun playPreviousSong() {
-        currentSongIndex = if (currentSongIndex == 0) {
-            sampleSongList.size - 1
+        currentSongIndex = if (!shuffleBoolean) {
+            (0 until sampleSongList.size).random()
         } else {
-            currentSongIndex - 1
+            if (currentSongIndex == 0) {
+                sampleSongList.size - 1
+            } else {
+                currentSongIndex - 1
+            }
         }
         playSong(currentSongIndex)
     }
@@ -186,6 +230,15 @@ class MusicPlayerActivity : ComponentActivity() {
 
         durationPlayed.text = formatDuration(0)
         durationTotal.text = formatDuration(song.duration)
+
+        currentSongLyrics = song.lyrics
+        if (song.lyrics != "") {
+            previewLyrics.text = song.lyrics.split("\n").take(11).joinToString("\n")
+            showFullLyricsBtn.visibility = View.VISIBLE
+        } else {
+            previewLyrics.text = getString(R.string.NoLyricsText)
+            showFullLyricsBtn.visibility = View.GONE
+        }
 
         mediaPlayer.reset()
         mediaPlayer.setDataSource(song.musicUrl)

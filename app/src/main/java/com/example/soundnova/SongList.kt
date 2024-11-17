@@ -6,13 +6,6 @@ import java.util.*
 val sampleSongList = listOf(
     Song(
         name = "Viva la Vida",
-        artists = listOf("Shalom Margaret"),
-        imageUrl = "https://i.scdn.co/image/ab67616d00001e0209426d9ae9d8d981735ebc5e",
-        musicUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-1bf9e.appspot.com/o/y2mate.com%20-%20Full%20Lyrics%20%20Vietsub%20Viva%20la%20Vida%20%20Shalom%20Margaret%20cover.mp3?alt=media&token=bbd27031-2f2f-438f-8986-d93a7a640b74",
-        duration = 168000
-    ),
-    Song(
-        name = "Viva la Vida",
         artists = listOf("Coldplay"),
         imageUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-1bf9e.appspot.com/o/viva%20la%20vid.jpg?alt=media&token=2f8f6caf-8682-4ae6-9760-a44cc8f322e8",
         musicUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-1bf9e.appspot.com/o/y2mate.com%20-%20Coldplay%20%20Viva%20La%20Vida%20Official%20Video.mp3?alt=media&token=411ba064-e2b5-4677-a37f-141d09a0106f",
@@ -326,8 +319,7 @@ val sampleSongList = listOf(
         imageUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-1bf9e.appspot.com/o/mary%20on%20a%20cross.jpg?alt=media&token=0577e2ac-e15f-4b58-953c-b5434b635c8e",
         musicUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-1bf9e.appspot.com/o/y2mate.com%20-%20Ghost%20%20Mary%20On%20A%20Cross%20Official%20Audio.mp3?alt=media&token=f0e78882-5ff9-430b-924a-b21466fd6f86",
         duration = (4 * 60 + 4) * 1000,
-        lyrics = "Lời bài hát\n" +
-                "We were speeding together\n" +
+        lyrics = "We were speeding together\n" +
                 "Down the dark avenues\n" +
                 "But besides of the stardom\n" +
                 "All we got was blues\n" +
