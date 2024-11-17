@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.soundnova.data.local.room.Convert
 
 class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
@@ -25,11 +24,9 @@ class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdap
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        val convert = Convert()
         val song = songs[position]
         holder.songName.text = song.name
-        val songArtistsOfString = convert.fromListOfString(song.artists)
-        holder.songArtists.text = songArtistsOfString
+        holder.songArtists.text = song.artists.joinToString(", ")
         Glide.with(holder.itemView.context).load(song.imageUrl).into(holder.songImage)
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, MusicPlayerActivity::class.java).apply {
@@ -39,7 +36,7 @@ class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdap
 //                putExtra("song", song)
 //                putExtra("songUrl", song.previewUrl)
                 putExtra("songName", song.name)
-                putExtra("artistName", songArtistsOfString)
+                putExtra("artistName", song.artists.joinToString(", "))
                 putExtra("songImage", song.imageUrl)
                 putExtra("songUrl", song.musicUrl)
             }

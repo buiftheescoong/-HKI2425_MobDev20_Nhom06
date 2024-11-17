@@ -2,6 +2,8 @@ package com.example.soundnova
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.View
@@ -11,8 +13,8 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
-import com.example.soundnova.data.local.room.Convert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,12 +27,12 @@ class MusicPlayerActivity : AppCompatActivity() {
         var shuffleBoolean: Boolean = false
         var repeatBoolean: Boolean = false
         var heartBoolean: Boolean = false
+        var currentSongLyrics = ""
+        var currentPreLyricsColor: Int = 0
     }
 
     private var currentSongIndex = 0
-    val convert = Convert()
     private var seekBarUpdateJob: Job? = null
-    private var currentSongLyrics = ""
 
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var imageViewSong: ImageView
@@ -49,6 +51,7 @@ class MusicPlayerActivity : AppCompatActivity() {
     private lateinit var repeatBtn: ImageView
     private lateinit var previewLyrics: TextView
     private lateinit var showFullLyricsBtn: Button
+    private lateinit var layoutPreviewLyrics: ConstraintLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +78,7 @@ class MusicPlayerActivity : AppCompatActivity() {
         repeatBtn = findViewById(R.id.id_repeat)
         previewLyrics = findViewById(R.id.preview_lyrics)
         showFullLyricsBtn = findViewById(R.id.show_full_lyrics_button)
+        layoutPreviewLyrics = findViewById(R.id.preview_layout)
 
         mediaPlayer = MediaPlayer()
 
@@ -148,51 +152,29 @@ class MusicPlayerActivity : AppCompatActivity() {
                 startSeekBarUpdate()
             } else {
                 playNextSong()
-                if (!mediaPlayer.isPlaying) {
-                    mediaPlayer.start()
-                    startSeekBarUpdate()
-                    buttonPlayPause.setImageResource(R.drawable.icon_pause)
-                }
             }
         }
 
         nextBtn.setOnClickListener {
             playNextSong()
-            if (!mediaPlayer.isPlaying) {
-                mediaPlayer.start()
-                startSeekBarUpdate()
-                buttonPlayPause.setImageResource(R.drawable.icon_pause)
-            }
         }
 
         prevBtn.setOnClickListener {
             playPreviousSong()
-            if (!mediaPlayer.isPlaying) {
-                mediaPlayer.start()
-                startSeekBarUpdate()
-                buttonPlayPause.setImageResource(R.drawable.icon_pause)
-            }
         }
 
         backBtn.setOnClickListener {
-
-            mediaPlayer.stop()
-            mediaPlayer.release()
-
             val intent = Intent(applicationContext, HomeActivity::class.java)
             startActivity(intent)
             finish()
         }
 
         showFullLyricsBtn.setOnClickListener {
-            showFullLyrics(currentSongLyrics)
+            val intent = Intent(applicationContext, LyricsActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
-    }
-
-    private fun showFullLyrics(showLyrics: String) {
-         val lyrics = Lyrics.newInstance(showLyrics)
-         lyrics.show(supportFragmentManager, lyrics.tag)
     }
 
     private fun playNextSong() {
@@ -218,11 +200,12 @@ class MusicPlayerActivity : AppCompatActivity() {
     }
 
     private fun playSong(index: Int) {
+        stopSeekBarUpdate()
+
         val song = sampleSongList[index]
 
         textViewSongName.text = song.name
-        val songArtistsOfString = convert.fromListOfString(song.artists)
-        textViewArtistName.text = songArtistsOfString
+        textViewArtistName.text = song.artists.joinToString(", ")
         Glide.with(this).load(song.imageUrl).into(imageViewSong)
 
         seekBar.max = song.duration
@@ -230,6 +213,10 @@ class MusicPlayerActivity : AppCompatActivity() {
 
         durationPlayed.text = formatDuration(0)
         durationTotal.text = formatDuration(song.duration)
+
+        val curBackgroundPreLyrics = layoutPreviewLyrics.background as GradientDrawable
+        currentPreLyricsColor = getRandomColor()
+        curBackgroundPreLyrics.setColor(currentPreLyricsColor)
 
         currentSongLyrics = song.lyrics
         if (song.lyrics != "") {
@@ -243,6 +230,11 @@ class MusicPlayerActivity : AppCompatActivity() {
         mediaPlayer.reset()
         mediaPlayer.setDataSource(song.musicUrl)
         mediaPlayer.prepare()
+        if (!mediaPlayer.isPlaying) {
+            mediaPlayer.start()
+            startSeekBarUpdate()
+            buttonPlayPause.setImageResource(R.drawable.icon_pause)
+        }
     }
 
     private fun startSeekBarUpdate() {
@@ -268,8 +260,22 @@ class MusicPlayerActivity : AppCompatActivity() {
         return String.format("%2d:%02d", minutes, seconds)
     }
 
+    private fun getRandomColor(): Int {
+        val random = java.util.Random()
+
+        val red = random.nextInt(100) + 100
+        val green = random.nextInt(100) + 100
+        val blue = random.nextInt(100) + 100
+
+        return Color.rgb(red, green, blue)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+            mediaPlayer.stop()
+        }
         mediaPlayer.release()
+        stopSeekBarUpdate()
     }
 }

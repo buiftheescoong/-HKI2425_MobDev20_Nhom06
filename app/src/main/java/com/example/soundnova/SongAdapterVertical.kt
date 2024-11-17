@@ -26,7 +26,7 @@ class SongAdapterVertical(private val songs: List<Song>) : RecyclerView.Adapter<
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = songs[position]
         holder.songName.text = song.name
-        holder.songArtists.text = song.artists.toString()
+        holder.songArtists.text = song.artists.joinToString(", ")
         Glide.with(holder.itemView.context).load(song.imageUrl).into(holder.songImage)
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, MusicPlayerActivity::class.java).apply {
