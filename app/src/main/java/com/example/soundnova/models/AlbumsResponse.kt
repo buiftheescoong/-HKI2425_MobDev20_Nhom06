@@ -1,26 +1,32 @@
 package com.example.soundnova.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
-class AlbumsResponse(
+@Parcelize
+data class AlbumsResponse(
     @SerializedName("data") var data: List<Data>,
     @SerializedName("total") val total: Int,
     @SerializedName("next") val next: String
-){
-    fun removeDuplicates() {
-        data = data.distinctBy { it.album.id }
-    }
-}
+) : Parcelable
 
+@Parcelize
 data class Data(
     @SerializedName("album") val album: Album
+) : Parcelable
+
+data class Albums(
+    @SerializedName("data") val data: List<Album>
 )
 
+@Parcelize
 data class Album(
-    @SerializedName("id") val id: Int,
+    @SerializedName("id") val id: Long,
     @SerializedName("title") val title: String,
     @SerializedName("cover_big") val coverBig: String,
     @SerializedName("cover_medium") val coverMedium: String,
     @SerializedName("cover_small") val coverSmall: String,
+    @SerializedName("artist") val artist: Artist?,
     var albumDetailsResponse: AlbumDetailsResponse?
-)
+) : Parcelable

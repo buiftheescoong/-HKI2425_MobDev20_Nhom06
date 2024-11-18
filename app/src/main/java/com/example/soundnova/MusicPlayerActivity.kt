@@ -2,36 +2,36 @@ package com.example.soundnova
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
+import android.os.Handler
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.activity.ComponentActivity
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.example.soundnova.data.local.room.Convert
+import com.example.soundnova.models.Tracks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MusicPlayerActivity : AppCompatActivity() {
+class MusicPlayerActivity() : ComponentActivity() {
 
     companion object {
         var shuffleBoolean: Boolean = false
         var repeatBoolean: Boolean = false
         var heartBoolean: Boolean = false
-        var currentSongLyrics = ""
-        var currentPreLyricsColor: Int = 0
     }
 
     private var currentSongIndex = 0
+    private lateinit var tracks: Tracks
+    val convert = Convert()
     private var seekBarUpdateJob: Job? = null
 
     private lateinit var mediaPlayer: MediaPlayer
@@ -49,14 +49,10 @@ class MusicPlayerActivity : AppCompatActivity() {
     private lateinit var prevBtn: ImageView
     private lateinit var nextBtn: ImageView
     private lateinit var repeatBtn: ImageView
-    private lateinit var previewLyrics: TextView
-    private lateinit var showFullLyricsBtn: Button
-    private lateinit var layoutPreviewLyrics: ConstraintLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.player_activity)
-
 //        val songName = intent.getStringExtra("songName")
 //        val artistName = intent.getStringExtra("artistName")
 //        val songImage = intent.getStringExtra("songImage")
@@ -76,33 +72,16 @@ class MusicPlayerActivity : AppCompatActivity() {
         prevBtn = findViewById(R.id.id_prev)
         nextBtn = findViewById(R.id.id_next)
         repeatBtn = findViewById(R.id.id_repeat)
-        previewLyrics = findViewById(R.id.preview_lyrics)
-        showFullLyricsBtn = findViewById(R.id.show_full_lyrics_button)
-        layoutPreviewLyrics = findViewById(R.id.preview_layout)
+
 
         mediaPlayer = MediaPlayer()
-
-        playSong(currentSongIndex)
-
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    durationPlayed.text = formatDuration(progress)
-                }
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                stopSeekBarUpdate()
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                seekBar?.let {
-                    mediaPlayer.seekTo(it.progress)
-                    startSeekBarUpdate()
-                }
-            }
-        })
-
+        try {
+            tracks = intent.getParcelableExtra<Tracks>("tracks")!!
+            currentSongIndex = intent.getIntExtra("index", 0)
+            Log.d("MusicPlayer", "Received position: $currentSongIndex")
+        } catch (e: Exception) {
+            Log.e("MusicPlayer", "Error receiving data from intent: ${e.message}")
+        }
         heartBtn.setOnClickListener {
             heartBoolean = !heartBoolean
             val heartIcon = if (heartBoolean) {
@@ -116,12 +95,12 @@ class MusicPlayerActivity : AppCompatActivity() {
         buttonPlayPause.setOnClickListener {
             if (mediaPlayer.isPlaying) {
                 mediaPlayer.pause()
-                stopSeekBarUpdate()
                 buttonPlayPause.setImageResource(R.drawable.icon_play)
+                stopSeekBarUpdate()
             } else {
                 mediaPlayer.start()
-                startSeekBarUpdate()
                 buttonPlayPause.setImageResource(R.drawable.icon_pause)
+                startSeekBarUpdate()
             }
         }
 
@@ -149,92 +128,82 @@ class MusicPlayerActivity : AppCompatActivity() {
             if (repeatBoolean) {
                 mediaPlayer.seekTo(0)
                 mediaPlayer.start()
-                startSeekBarUpdate()
             } else {
                 playNextSong()
+                if (!mediaPlayer.isPlaying) {
+                    mediaPlayer.start()
+                    buttonPlayPause.setImageResource(R.drawable.icon_pause)
+                }
             }
         }
 
         nextBtn.setOnClickListener {
             playNextSong()
+            if (!mediaPlayer.isPlaying) {
+                mediaPlayer.start()
+                buttonPlayPause.setImageResource(R.drawable.icon_pause)
+            }
         }
 
         prevBtn.setOnClickListener {
             playPreviousSong()
+            if (!mediaPlayer.isPlaying) {
+                mediaPlayer.start()
+                buttonPlayPause.setImageResource(R.drawable.icon_pause)
+            }
         }
 
         backBtn.setOnClickListener {
-            val intent = Intent(applicationContext, HomeActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+            // Log trước khi chuyển sang HomeActivity
+            Log.d("MusicPlayerActivity", "Back button clicked, navigating to HomeActivity.")
 
-        showFullLyricsBtn.setOnClickListener {
-            val intent = Intent(applicationContext, LyricsActivity::class.java)
-            startActivity(intent)
-            finish()
+            try {
+                val intent = Intent(applicationContext, HomeActivity::class.java)
+                startActivity(intent)
+                finish()
+                Log.d("MusicPlayerActivity", "Navigation to HomeActivity successful.")
+            } catch (e: Exception) {
+                Log.e("MusicPlayerActivity", "Error while navigating to HomeActivity: ${e.message}")
+            }
         }
 
     }
 
     private fun playNextSong() {
         if (!shuffleBoolean) {
-            currentSongIndex = (0 until sampleSongList.size).random()
+            currentSongIndex = (0 until tracks.data.size).random()
         } else {
-            currentSongIndex = (currentSongIndex + 1) % sampleSongList.size
+            currentSongIndex = (currentSongIndex + 1) % tracks.data.size
         }
         playSong(currentSongIndex)
     }
 
     private fun playPreviousSong() {
-        currentSongIndex = if (!shuffleBoolean) {
-            (0 until sampleSongList.size).random()
+        currentSongIndex = if (currentSongIndex == 0) {
+            tracks.data.size - 1
         } else {
-            if (currentSongIndex == 0) {
-                sampleSongList.size - 1
-            } else {
-                currentSongIndex - 1
-            }
+            currentSongIndex - 1
         }
         playSong(currentSongIndex)
     }
 
     private fun playSong(index: Int) {
-        stopSeekBarUpdate()
+        val song = tracks.data.get(index)
 
-        val song = sampleSongList[index]
+        textViewSongName.text = song.title
+        val songArtistsOfString = song.artist.name
+        textViewArtistName.text = songArtistsOfString
+        Glide.with(this).load(song.artist.pictureBig).into(imageViewSong)
 
-        textViewSongName.text = song.name
-        textViewArtistName.text = song.artists.joinToString(", ")
-        Glide.with(this).load(song.imageUrl).into(imageViewSong)
-
-        seekBar.max = song.duration
+        seekBar.max = 30000
         seekBar.progress = 0
 
         durationPlayed.text = formatDuration(0)
-        durationTotal.text = formatDuration(song.duration)
-
-        val curBackgroundPreLyrics = layoutPreviewLyrics.background as GradientDrawable
-        currentPreLyricsColor = getRandomColor()
-        curBackgroundPreLyrics.setColor(currentPreLyricsColor)
-
-        currentSongLyrics = song.lyrics
-        if (song.lyrics != "") {
-            previewLyrics.text = song.lyrics.split("\n").take(11).joinToString("\n")
-            showFullLyricsBtn.visibility = View.VISIBLE
-        } else {
-            previewLyrics.text = getString(R.string.NoLyricsText)
-            showFullLyricsBtn.visibility = View.GONE
-        }
+        durationTotal.text = formatDuration(30000)
 
         mediaPlayer.reset()
-        mediaPlayer.setDataSource(song.musicUrl)
+        mediaPlayer.setDataSource(song.preview)
         mediaPlayer.prepare()
-        if (!mediaPlayer.isPlaying) {
-            mediaPlayer.start()
-            startSeekBarUpdate()
-            buttonPlayPause.setImageResource(R.drawable.icon_pause)
-        }
     }
 
     private fun startSeekBarUpdate() {
@@ -260,22 +229,8 @@ class MusicPlayerActivity : AppCompatActivity() {
         return String.format("%2d:%02d", minutes, seconds)
     }
 
-    private fun getRandomColor(): Int {
-        val random = java.util.Random()
-
-        val red = random.nextInt(100) + 100
-        val green = random.nextInt(100) + 100
-        val blue = random.nextInt(100) + 100
-
-        return Color.rgb(red, green, blue)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
-            mediaPlayer.stop()
-        }
         mediaPlayer.release()
-        stopSeekBarUpdate()
     }
 }
