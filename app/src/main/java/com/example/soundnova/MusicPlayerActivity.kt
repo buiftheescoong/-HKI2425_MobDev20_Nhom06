@@ -14,13 +14,14 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.soundnova.data.local.room.Convert
+import com.example.soundnova.models.Tracks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MusicPlayerActivity : ComponentActivity() {
+class MusicPlayerActivity() : ComponentActivity() {
 
     companion object {
         var shuffleBoolean: Boolean = false
@@ -29,6 +30,7 @@ class MusicPlayerActivity : ComponentActivity() {
     }
 
     private var currentSongIndex = 0
+    private lateinit var tracks: Tracks
     val convert = Convert()
     private var seekBarUpdateJob: Job? = null
 
@@ -51,7 +53,6 @@ class MusicPlayerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.player_activity)
-
 //        val songName = intent.getStringExtra("songName")
 //        val artistName = intent.getStringExtra("artistName")
 //        val songImage = intent.getStringExtra("songImage")
@@ -74,9 +75,13 @@ class MusicPlayerActivity : ComponentActivity() {
 
 
         mediaPlayer = MediaPlayer()
-
-        playSong(currentSongIndex)
-
+        try {
+            tracks = intent.getParcelableExtra<Tracks>("tracks")!!
+            currentSongIndex = intent.getIntExtra("index", 0)
+            Log.d("MusicPlayer", "Received position: $currentSongIndex")
+        } catch (e: Exception) {
+            Log.e("MusicPlayer", "Error receiving data from intent: ${e.message}")
+        }
         heartBtn.setOnClickListener {
             heartBoolean = !heartBoolean
             val heartIcon = if (heartBoolean) {
@@ -149,24 +154,33 @@ class MusicPlayerActivity : ComponentActivity() {
         }
 
         backBtn.setOnClickListener {
-            val intent = Intent(applicationContext, HomeActivity::class.java)
-            startActivity(intent)
-            finish()
+            // Log trước khi chuyển sang HomeActivity
+            Log.d("MusicPlayerActivity", "Back button clicked, navigating to HomeActivity.")
+
+            try {
+                val intent = Intent(applicationContext, HomeActivity::class.java)
+                startActivity(intent)
+                finish()
+                Log.d("MusicPlayerActivity", "Navigation to HomeActivity successful.")
+            } catch (e: Exception) {
+                Log.e("MusicPlayerActivity", "Error while navigating to HomeActivity: ${e.message}")
+            }
         }
+
     }
 
     private fun playNextSong() {
         if (!shuffleBoolean) {
-            currentSongIndex = (0 until sampleSongList.size).random()
+            currentSongIndex = (0 until tracks.data.size).random()
         } else {
-            currentSongIndex = (currentSongIndex + 1) % sampleSongList.size
+            currentSongIndex = (currentSongIndex + 1) % tracks.data.size
         }
         playSong(currentSongIndex)
     }
 
     private fun playPreviousSong() {
         currentSongIndex = if (currentSongIndex == 0) {
-            sampleSongList.size - 1
+            tracks.data.size - 1
         } else {
             currentSongIndex - 1
         }
@@ -174,21 +188,21 @@ class MusicPlayerActivity : ComponentActivity() {
     }
 
     private fun playSong(index: Int) {
-        val song = sampleSongList[index]
+        val song = tracks.data.get(index)
 
-        textViewSongName.text = song.name
-        val songArtistsOfString = convert.fromListOfString(song.artists)
+        textViewSongName.text = song.title
+        val songArtistsOfString = song.artist.name
         textViewArtistName.text = songArtistsOfString
-        Glide.with(this).load(song.imageUrl).into(imageViewSong)
+        Glide.with(this).load(song.artist.pictureBig).into(imageViewSong)
 
-        seekBar.max = song.duration
+        seekBar.max = 30000
         seekBar.progress = 0
 
         durationPlayed.text = formatDuration(0)
-        durationTotal.text = formatDuration(song.duration)
+        durationTotal.text = formatDuration(30000)
 
         mediaPlayer.reset()
-        mediaPlayer.setDataSource(song.musicUrl)
+        mediaPlayer.setDataSource(song.preview)
         mediaPlayer.prepare()
     }
 

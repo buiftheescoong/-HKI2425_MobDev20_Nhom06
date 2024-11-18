@@ -10,8 +10,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.soundnova.data.local.room.Convert
+import com.example.soundnova.models.Tracks
 
-class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+class SongAdapter(private val songs: Tracks) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val songName: TextView = view.findViewById(R.id.textSongName)
@@ -25,12 +26,13 @@ class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdap
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
+        Log.d("TAG", "1")
         val convert = Convert()
-        val song = songs[position]
-        holder.songName.text = song.name
-        val songArtistsOfString = convert.fromListOfString(song.artists)
+        val song = songs.data.get(position)
+        holder.songName.text = song.title
+        val songArtistsOfString = song.artist.name
         holder.songArtists.text = songArtistsOfString
-        Glide.with(holder.itemView.context).load(song.imageUrl).into(holder.songImage)
+        Glide.with(holder.itemView.context).load(song.artist.pictureBig).into(holder.songImage)
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, MusicPlayerActivity::class.java).apply {
 //                putExtra("songName", song.name)
@@ -38,14 +40,15 @@ class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdap
 //                putExtra("songImage", song.imageUrl)
 //                putExtra("song", song)
 //                putExtra("songUrl", song.previewUrl)
-                putExtra("songName", song.name)
-                putExtra("artistName", songArtistsOfString)
-                putExtra("songImage", song.imageUrl)
-                putExtra("songUrl", song.musicUrl)
+
+                putExtra("tracks", songs)
+//                putExtra("track", song)
+                putExtra("index", position)
             }
             holder.itemView.context.startActivity(intent)
+            Log.d("TAG", "2")
         }
     }
 
-    override fun getItemCount(): Int = songs.size
+    override fun getItemCount(): Int = songs.data.size
 }

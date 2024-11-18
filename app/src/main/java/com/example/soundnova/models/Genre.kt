@@ -11,7 +11,7 @@ data class GenresResponse(
 
 data class Genre(
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
 
     @SerializedName("name")
     val name: String,
@@ -32,7 +32,4 @@ data class Genre(
         @SerializedName("picture_xl")
         val pictureXl: String,
     */
-
-    @SerializedName("type")
-    val type: String
 )
