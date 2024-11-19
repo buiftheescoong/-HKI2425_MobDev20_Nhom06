@@ -35,27 +35,30 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:scaleType="centerCrop"
+                android:background="@drawable/edit_text_border"
                 android:layout_marginBottom="12dp" />
 
-            <TextView
+            <EditText
                 android:id="@+id/username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Phuoc Dep Trai"
+                android:text="User Name"
                 android:textSize="16sp"
                 android:textColor="#FFFFFF"
                 android:fontFamily="sans-serif-medium"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="32dp" />
 
-            <TextView
-                android:id="@+id/user_status"
-                android:layout_width="wrap_content"
+            <!-- Nút Change Profile -->
+            <Button
+                android:id="@+id/btn_change_profile"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="thich 1 minh nhung so co don"
-                android:textSize="14sp"
-                android:textColor="#AAAAAA"
-                android:fontFamily="sans-serif"
-                android:layout_marginBottom="24dp" />
+                android:text="Change Profile"
+                android:background="@drawable/edit_text_border"
+                android:textColor="#FFFFFF"
+                android:padding="12dp"
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp" />
 
             <!-- Nút Change Password -->
             <Button
@@ -63,7 +66,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Change Password"
-                android:background="@android:color/transparent"
+                android:background="@drawable/edit_text_border"
                 android:textColor="#FFFFFF"
                 android:padding="12dp"
                 android:elevation="4dp"
@@ -75,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Logout"
-                android:background="@android:color/transparent"
+                android:background="@drawable/edit_text_border"
                 android:textColor="#FFFFFF"
                 android:padding="12dp"
                 android:elevation="4dp" />
