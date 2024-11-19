@@ -13,6 +13,7 @@ import com.example.soundnova.models.Tracks
 
 class SongAdapter(private val songs: Tracks) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
+    private lateinit var history : History
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val songName: TextView = view.findViewById(R.id.textSongName)
         val songArtists: TextView = view.findViewById(R.id.textSongArtist)
@@ -31,6 +32,9 @@ class SongAdapter(private val songs: Tracks) : RecyclerView.Adapter<SongAdapter.
         val songArtistsOfString = song.artist.name
         holder.songArtists.text = songArtistsOfString
         Glide.with(holder.itemView.context).load(song.artist.pictureBig).into(holder.songImage)
+
+        history = History(holder.itemView.context)
+
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, MusicPlayerActivity::class.java).apply {
 //                putExtra("songName", song.name)
@@ -44,6 +48,7 @@ class SongAdapter(private val songs: Tracks) : RecyclerView.Adapter<SongAdapter.
                 putExtra("index", position)
             }
             holder.itemView.context.startActivity(intent)
+            history.addHistorySong(song.title, song.artist.name.split(","), song.artist.pictureBig, song.duration, song.preview)
             Log.d("TAG", "2")
         }
     }

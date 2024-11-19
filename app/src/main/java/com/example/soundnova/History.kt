@@ -60,7 +60,7 @@ class History(private val context: Context) {
         duration: Int,
         audioUrl: String,
 //        album: String,
-        genre: String
+//        genre: String
     ) {
         val currentUser = firebaseAuth.currentUser
         val userEmail = currentUser?.email
@@ -68,11 +68,9 @@ class History(private val context: Context) {
             idUser = userEmail,
             title = title,
             artist = artist,
-            duration = duration,
             image = image,
 //            album = album,
             audioUrl = audioUrl,
-            genre = genre
         )
         db.collection("history")
             .add(newSong)

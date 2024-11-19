@@ -1,8 +1,6 @@
 package com.example.soundnova.data.local.room
 
 import androidx.room.*
-import com.example.soundnova.Song
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MusicDAO {

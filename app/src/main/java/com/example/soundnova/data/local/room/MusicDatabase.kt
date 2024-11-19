@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import com.example.soundnova.Song
 
 @Database(entities = [TrackEntity::class, ArtistEntity::class, AlbumEntity::class], version = 1)
 abstract class MusicDatabase : RoomDatabase() {
