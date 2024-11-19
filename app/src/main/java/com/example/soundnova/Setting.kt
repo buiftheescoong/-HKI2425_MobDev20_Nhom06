@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -23,11 +24,11 @@ import java.io.FileOutputStream
 
 class Setting: ComponentActivity() {
     private lateinit var profileImg: ImageView
-    private lateinit var userName: EditText
-    private lateinit var changePass: Button
+    private lateinit var userName: TextView
+    private lateinit var changePass: LinearLayout
     private lateinit var logOut: Button
     private lateinit var home: ImageView
-    private lateinit var changPro: Button
+    private lateinit var changeProfile: LinearLayout
     var currentUri: Uri? = null
     private val sharedPreferences by lazy { getSharedPreferences("AppPreferences", MODE_PRIVATE) }
 
@@ -37,11 +38,11 @@ class Setting: ComponentActivity() {
         setContentView(R.layout.setting)
 
         userName = findViewById(R.id.username)
-        changePass = findViewById(R.id.btn_change_password)
-        logOut = findViewById(R.id.btn_logout)
+        changePass = findViewById(R.id.change_password_row)
+        logOut = findViewById(R.id.buttonLogOut)
         home = findViewById(R.id.buttonHome)
         profileImg = findViewById(R.id.profile_image)
-        changPro = findViewById(R.id.btn_change_profile)
+        changeProfile = findViewById(R.id.change_profile_row)
 
         val currentUser = FirebaseAuth.getInstance().currentUser
 
@@ -50,7 +51,7 @@ class Setting: ComponentActivity() {
             val name = currentUser.displayName
             val imageUri = currentUser.photoUrl
             if (!name.isNullOrEmpty()) {
-                userName.setText(name)
+                userName.text = name
             }
             if (imageUri != null) {
                 loadAvatar()
@@ -59,7 +60,7 @@ class Setting: ComponentActivity() {
             Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show()
         }
 
-        changPro.setOnClickListener {
+        changeProfile.setOnClickListener {
             userName.clearFocus()
             loadAvatar()
             if (currentUser != null) {
@@ -70,10 +71,10 @@ class Setting: ComponentActivity() {
                     }
                 }
 
-                currentUser!!.updateProfile(profileUpdates)
+                currentUser.updateProfile(profileUpdates)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            userName.setText(currentUser.displayName)
+                            userName.text = currentUser.displayName
                         }
                     }
             }
