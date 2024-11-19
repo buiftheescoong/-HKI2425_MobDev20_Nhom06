@@ -1,16 +1,12 @@
 package com.example.soundnova
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity(tableName = "music_table")
 data class Song(
-    @PrimaryKey
-    val name: String = "",
-    val artists: List<String> = emptyList(),
-    val imageUrl: String = "",
-    val duration: Int = 0,
-    val musicUrl: String = "",
-    val genre: String = "",
-    val lyrics: String = ""
+    val idUser: String? = null,
+    val title: String? = null,
+    val artist: List<String> = emptyList(),
+    val image: String? = null,
+    val duration: String? = null,
+    val album: String? = null,
+    val audioUrl: String? = null,
+    val genre: String? = null,
 )

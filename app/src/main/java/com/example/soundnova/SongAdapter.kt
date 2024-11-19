@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.soundnova.data.local.room.Convert
 import com.example.soundnova.models.Tracks
 
 class SongAdapter(private val songs: Tracks) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
@@ -27,8 +26,7 @@ class SongAdapter(private val songs: Tracks) : RecyclerView.Adapter<SongAdapter.
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         Log.d("TAG", "1")
-        val convert = Convert()
-        val song = songs.data.get(position)
+        val song = songs.data[position]
         holder.songName.text = song.title
         val songArtistsOfString = song.artist.name
         holder.songArtists.text = songArtistsOfString

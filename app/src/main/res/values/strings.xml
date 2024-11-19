@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SoundNova</string>
     <string name="textViewLogin">Welcome back!\nLet\'s start the journey</string>
-    <string name="editTextEmail">Phone number/Email</string>
+    <string name="editTextEmail">Email</string>
     <string name="editTextPassword">Password</string>
     <string name="buttonConfirmSignIn">Log in</string>
     <string name="textViewForgetPassword">Forget password?</string>
