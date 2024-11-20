@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.soundnova.data.local.room.Convert
@@ -21,7 +22,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MusicPlayerActivity() : ComponentActivity() {
+class MusicPlayerActivity() : AppCompatActivity() {
 
     companion object {
         var shuffleBoolean: Boolean = false

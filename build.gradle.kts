@@ -1,7 +1,11 @@
+
 buildscript {
     extra.apply {
         set("room_version", "2.5.2")
     }
+//    dependencies {
+//        classpath("androidx.navigation:navigation-safe-args-gradle-plugin")
+//    }
 }
 
 plugins {

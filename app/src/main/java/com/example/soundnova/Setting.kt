@@ -8,9 +8,10 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
-class Setting: ComponentActivity() {
+class Setting: AppCompatActivity() {
     private lateinit var profileImg: Image
     private lateinit var userName: TextView
     private lateinit var userStatus: TextView

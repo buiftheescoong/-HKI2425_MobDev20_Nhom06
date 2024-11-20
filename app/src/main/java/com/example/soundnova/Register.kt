@@ -10,10 +10,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
 
-class Register: ComponentActivity() {
+class Register: AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
 
     private lateinit var editTextName: EditText

@@ -7,10 +7,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 
-class ChangePassword : ComponentActivity() {
+class ChangePassword : AppCompatActivity() {
     private lateinit var editTextCurrentPass : EditText
     private lateinit var editTextNewPass : EditText
     private lateinit var editTextConfirmNewPass : EditText

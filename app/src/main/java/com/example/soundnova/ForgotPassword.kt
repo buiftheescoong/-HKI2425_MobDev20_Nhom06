@@ -7,11 +7,12 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 
-class ForgotPassword : ComponentActivity() {
+class ForgotPassword : AppCompatActivity() {
     private lateinit var editSignUpEmail: EditText
     private lateinit var buttonSendBTN: Button
     private lateinit var buttonBack : Button
