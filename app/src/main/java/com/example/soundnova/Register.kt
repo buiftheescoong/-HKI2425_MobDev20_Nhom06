@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.userProfileChangeRequest
 
 
 class Register: AppCompatActivity() {
@@ -46,6 +47,7 @@ class Register: AppCompatActivity() {
         buttonSignUp.setOnClickListener {
             val email = editTextEmail.text.toString()
             val password = editTextPassword.text.toString()
+            val name = editTextName.text.toString()
 
 
             val emailStatus = validator.checkEmail(email)
@@ -57,6 +59,16 @@ class Register: AppCompatActivity() {
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             val user = firebaseAuth.currentUser
+                            val profileUpdates = userProfileChangeRequest {
+                                displayName = name
+                            }
+                            user!!.updateProfile(profileUpdates)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        Log.d(TAG, "User profile updated.")
+                                    }
+                                }
+
                             val intent = Intent(applicationContext, Login::class.java)
                             startActivity(intent)
                             finish()
