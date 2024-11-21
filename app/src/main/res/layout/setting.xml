@@ -34,7 +34,7 @@
                     android:background="@drawable/image_border"
                     android:layout_marginEnd="16dp" />
 
-                <TextView
+                <EditText
                     android:id="@+id/username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
