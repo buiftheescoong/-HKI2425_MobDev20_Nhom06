@@ -91,6 +91,7 @@ class MusicPlayerActivity() : AppCompatActivity() {
         try {
             tracks = intent.getParcelableExtra<Tracks>("tracks")!!
             currentSongIndex = intent.getIntExtra("index", 0)
+            playSong(currentSongIndex)
             Log.d("MusicPlayer", "Received position: $currentSongIndex")
         } catch (e: Exception) {
             Log.e("MusicPlayer", "Error receiving data from intent: ${e.message}")
