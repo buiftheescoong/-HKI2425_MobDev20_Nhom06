@@ -3,6 +3,7 @@ package com.example.soundnova
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -12,7 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import kotlin.time.Duration
 
-class MusicData : ComponentActivity() {
+class MusicData : AppCompatActivity() {
     private lateinit var title: String
     private lateinit var album : String
     private lateinit var artist: String

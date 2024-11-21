@@ -1,7 +1,10 @@
 package com.example.soundnova.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class AlbumDetailsResponse(
     @SerializedName("tracks")
     val tracks: Tracks,
@@ -12,36 +15,31 @@ data class AlbumDetailsResponse(
     var albumName: String,
 
     var albumPicture: String
-)
+) : Parcelable
 
+@Parcelize
 data class Tracks(
     @SerializedName("data")
     val data: List<TrackData>
-)
+) : Parcelable
 
+@Parcelize
 data class TrackData(
     @SerializedName("id")
     val id: Long,
 
     @SerializedName("title")
     val title: String,
+//
+//    @SerializedName("duration")
+//    val duration: Int,
+    @SerializedName("artist")
+    val artist: Artist,
 
-    @SerializedName("duration")
-    val duration: Int,
+    @SerializedName("album")
+    val album: Album,
 
     @SerializedName("preview")
     val preview: String,
-
     var isLiked: Boolean = false,
-){
-    //var backgroundColor by  mutableStateOf(Color.DarkGray)
-    fun getDurationInMinutes(): String{
-        val minutes = duration / 60
-        val seconds = duration % 60
-        return "$minutes:$seconds"
-    }
-    fun getTitleDeletingAfterEncounterParentheses(): String{
-        val index = title.indexOf("(")
-        return if(index == -1) title else title.substring(0, index)
-    }
-}
+) : Parcelable

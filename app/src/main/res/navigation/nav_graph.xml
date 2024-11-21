@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.soundnova.screens.home_screen.HomeFragment"
+        android:label="home_activity"
+        tools:layout="@layout/home_activity">
+        <action
+            android:id="@+id/action_homeFragment_to_musicPlayerFragment"
+            app:destination="@id/musicPlayerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/musicPlayerFragment"
+        android:name="com.example.soundnova.screens.music_player.MusicPlayerFragment"
+        android:label="player_activity"
+        tools:layout="@layout/player_activity">
+        <argument
+            android:name="tracks"
+            app:argType="com.example.soundnova.models.Tracks" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
+    </fragment>
+
+</navigation>
