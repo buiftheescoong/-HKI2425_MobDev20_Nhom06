@@ -15,12 +15,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import java.io.File
 import java.io.FileOutputStream
+
 
 class Setting: ComponentActivity() {
     private lateinit var profileImg: ImageView

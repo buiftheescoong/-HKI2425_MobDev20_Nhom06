@@ -13,16 +13,20 @@ import com.example.soundnova.service.DeezerApiHelper
 import kotlinx.coroutines.launch
 
 class HomeActivity : ComponentActivity() {
+    private lateinit var recommendRecyclerView: RecyclerView
     private lateinit var recentRecyclerView: RecyclerView
-    private lateinit var favoriteRecyclerView: RecyclerView
-    private lateinit var btnsetting:ImageView
+    private lateinit var popularAlbumsView: RecyclerView
+    private lateinit var favoriteArtistsView: RecyclerView
+    private lateinit var btnsetting: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_activity)
 
-        recentRecyclerView = findViewById(R.id.recyclerViewTabsSongs)
-        favoriteRecyclerView = findViewById(R.id.recyclerViewFavoriteSongs)
+        recommendRecyclerView = findViewById(R.id.recyclerViewRecommendSongs)
+        recentRecyclerView = findViewById(R.id.recyclerViewRecentSongs)
+        popularAlbumsView = findViewById(R.id.recyclerViewPopularAlbums)
+        favoriteArtistsView = findViewById(R.id.recyclerViewFavoriteArtists)
         btnsetting = findViewById(R.id.buttonSettings)
 
         btnsetting.setOnClickListener {
@@ -45,12 +49,20 @@ class HomeActivity : ComponentActivity() {
         val popularTracks : Tracks = deezerApiHelper.fetchPopularTracks()
         Log.d("TAG", "0")
         runOnUiThread {
+            recommendRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            recommendRecyclerView.adapter = SongAdapter(popularTracks)
+        }
+        runOnUiThread {
             recentRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
             recentRecyclerView.adapter = SongAdapter(popularTracks)
         }
         runOnUiThread {
-            favoriteRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-            favoriteRecyclerView.adapter = SongAdapter(popularTracks)
+            popularAlbumsView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            popularAlbumsView.adapter = SongAdapter(popularTracks)
+        }
+        runOnUiThread {
+            favoriteArtistsView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            favoriteArtistsView.adapter = SongAdapter(popularTracks)
         }
     }
 }

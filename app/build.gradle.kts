@@ -1,12 +1,14 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     id("kotlin-parcelize")
     id("kotlin-kapt")
-    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
-}
+    id("com.google.devtools.ksp") version "1.9.22-1.0.17"
+//    id ("androidx.navigation.safeargs")
 
+}
 android {
     namespace = "com.example.soundnova"
     compileSdk = 35
@@ -45,7 +47,7 @@ android {
         viewBinding = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
     packaging {
         resources {
@@ -69,7 +71,7 @@ dependencies {
 
     implementation(libs.androidx.recyclerview)
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.google.code.gson:gson:2.10.1")
 
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore.ktx)
@@ -87,7 +89,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(kotlin("script-runtime"))
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:1.12.0")
 
     // API
     implementation ("com.google.code.gson:gson:2.10.1")
@@ -102,4 +104,10 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.4")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.4")
+
+    implementation ("androidx.appcompat:appcompat:1.6.1")
+
 }
