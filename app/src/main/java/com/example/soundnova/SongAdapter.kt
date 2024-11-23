@@ -1,17 +1,19 @@
 package com.example.soundnova
 
-import android.content.Intent
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.soundnova.models.Tracks
 
-class SongAdapter(private val songs: Tracks) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+class SongAdapter(private val songs: Tracks, private val fragmentManager: FragmentManager) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     private lateinit var history : History
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -36,18 +38,24 @@ class SongAdapter(private val songs: Tracks) : RecyclerView.Adapter<SongAdapter.
         history = History(holder.itemView.context)
 
         holder.itemView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, MusicPlayerActivity::class.java).apply {
-//                putExtra("songName", song.name)
-//                putExtra("artistName", song.artist)
-//                putExtra("songImage", song.imageUrl)
-//                putExtra("song", song)
-//                putExtra("songUrl", song.previewUrl)
-
-                putExtra("tracks", songs)
-//                putExtra("track", song)
-                putExtra("index", position)
+            val musicPlayerFragment = MusicPlayerFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable("tracks", songs)
+                    putInt("index", position)
+                }
             }
-            holder.itemView.context.startActivity(intent)
+
+            fragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    R.anim.slide_in_up,
+                    R.anim.slide_out_down,
+                    R.anim.slide_in_up,
+                    R.anim.slide_out_down
+                )
+                .replace(R.id.main_container, musicPlayerFragment)
+                .addToBackStack(null)
+                .commit()
+
             history.addHistorySong(song.title, song.artist.name.split(","), song.artist.pictureBig, song.duration, song.preview)
             Log.d("TAG", "2")
         }

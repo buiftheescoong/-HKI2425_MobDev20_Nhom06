@@ -44,20 +44,6 @@
         android:textColor="@color/white"
         android:textSize="16sp" />
 
-    <!-- Input cho Phone number -->
-    <EditText
-        android:id="@+id/editTextSignUpPhoneNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/edit_text_border"
-        android:hint="@string/editTextSignUpPhoneNumber"
-        android:textColorHint="@color/white"
-        android:inputType="phone"
-        android:padding="16dp"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
-
     <!-- Input cho Mật khẩu -->
     <EditText
         android:id="@+id/editTextSignUpPassword"

@@ -2,22 +2,23 @@ package com.example.soundnova
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.soundnova.models.Tracks
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +27,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MusicPlayerActivity() : AppCompatActivity() {
+class MusicPlayerFragment : Fragment() {
 
     companion object {
         var shuffleBoolean: Boolean = false
@@ -45,9 +46,9 @@ class MusicPlayerActivity() : AppCompatActivity() {
     private lateinit var textViewArtistName: TextView
     private lateinit var textViewSongName: TextView
     private lateinit var buttonPlayPause: ImageButton
-    private lateinit var backBtn : ImageView
-    private lateinit var moreBtn : ImageView
-    private lateinit var heartBtn : ImageView
+    private lateinit var backBtn: ImageView
+    private lateinit var moreBtn: ImageView
+    private lateinit var heartBtn: ImageView
     private lateinit var durationPlayed: TextView
     private lateinit var durationTotal: TextView
     private lateinit var seekBar: SeekBar
@@ -61,31 +62,34 @@ class MusicPlayerActivity() : AppCompatActivity() {
     private lateinit var rotationAnimator: ObjectAnimator
     private lateinit var tracks: Tracks
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.player_activity)
-//        val songName = intent.getStringExtra("songName")
-//        val artistName = intent.getStringExtra("artistName")
-//        val songImage = intent.getStringExtra("songImage")
-//        val songUrl = intent.getStringExtra("songUrl")
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.player_activity, container, false)
+    }
 
-        imageViewSong = findViewById(R.id.cover_art)
-        textViewSongName = findViewById(R.id.song_name)
-        textViewArtistName = findViewById(R.id.song_artist)
-        buttonPlayPause = findViewById(R.id.play_pause)
-        backBtn = findViewById(R.id.back_btn)
-        moreBtn = findViewById(R.id.more_btn)
-        heartBtn = findViewById(R.id.heart_btn)
-        durationPlayed = findViewById(R.id.durationPlayed)
-        durationTotal = findViewById(R.id.durationTotal)
-        seekBar = findViewById(R.id.seekBar)
-        shuffleBtn = findViewById(R.id.id_shuffle)
-        prevBtn = findViewById(R.id.id_prev)
-        nextBtn = findViewById(R.id.id_next)
-        repeatBtn = findViewById(R.id.id_repeat)
-        previewLyrics = findViewById(R.id.preview_lyrics)
-        showFullLyricsBtn = findViewById(R.id.show_full_lyrics_button)
-        layoutPreviewLyrics = findViewById(R.id.preview_layout)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        imageViewSong = view.findViewById(R.id.cover_art)
+        textViewSongName = view.findViewById(R.id.song_name)
+        textViewArtistName = view.findViewById(R.id.song_artist)
+        buttonPlayPause = view.findViewById(R.id.play_pause)
+        backBtn = view.findViewById(R.id.back_btn)
+        moreBtn = view.findViewById(R.id.more_btn)
+        heartBtn = view.findViewById(R.id.heart_btn)
+        durationPlayed = view.findViewById(R.id.durationPlayed)
+        durationTotal = view.findViewById(R.id.durationTotal)
+        seekBar = view.findViewById(R.id.seekBar)
+        shuffleBtn = view.findViewById(R.id.id_shuffle)
+        prevBtn = view.findViewById(R.id.id_prev)
+        nextBtn = view.findViewById(R.id.id_next)
+        repeatBtn = view.findViewById(R.id.id_repeat)
+        previewLyrics = view.findViewById(R.id.preview_lyrics)
+        showFullLyricsBtn = view.findViewById(R.id.show_full_lyrics_button)
+        layoutPreviewLyrics = view.findViewById(R.id.preview_layout)
 
         mediaPlayer = MediaPlayer()
 
@@ -96,8 +100,8 @@ class MusicPlayerActivity() : AppCompatActivity() {
         }
 
         try {
-            tracks = intent.getParcelableExtra<Tracks>("tracks")!!
-            currentSongIndex = intent.getIntExtra("index", 0)
+            tracks = requireArguments().getParcelable("tracks")!!
+            currentSongIndex = requireArguments().getInt("index", 0)
             playSong(currentSongIndex)
             Log.d("MusicPlayer", "Received position: $currentSongIndex")
         } catch (e: Exception) {
@@ -187,22 +191,20 @@ class MusicPlayerActivity() : AppCompatActivity() {
         }
 
         backBtn.setOnClickListener {
-            val intent = Intent(applicationContext, HomeActivity::class.java)
-            startActivity(intent)
-            finish()
+            parentFragmentManager.popBackStack()
         }
 
         showFullLyricsBtn.setOnClickListener {
             val fullLyricsFragment = LyricsFragment()
 
-            supportFragmentManager.beginTransaction()
+            parentFragmentManager.beginTransaction()
                 .setCustomAnimations(
                     R.anim.slide_in_up,
                     R.anim.slide_out_down,
                     R.anim.slide_in_up,
                     R.anim.slide_out_down
                 )
-                .replace(android.R.id.content, fullLyricsFragment)
+                .replace(R.id.main_container, fullLyricsFragment)
                 .addToBackStack(null)
                 .commit()
         }
@@ -308,8 +310,8 @@ class MusicPlayerActivity() : AppCompatActivity() {
         return Color.rgb(red, green, blue)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
             mediaPlayer.stop()
         }

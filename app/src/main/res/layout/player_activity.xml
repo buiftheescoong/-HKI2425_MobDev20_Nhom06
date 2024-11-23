@@ -26,7 +26,7 @@
                     android:id="@+id/back_btn"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/left_arrow"
+                    android:src="@drawable/icon_down"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
@@ -84,18 +84,32 @@
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:singleLine="true"
-                    android:ellipsize="end"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    android:isScrollContainer="false"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginEnd="52dp" />
+                    android:layout_marginEnd="100dp" />
 
                 <ImageView
                     android:id="@+id/heart_btn"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="4dp"
                     android:src="@drawable/icon_heart"
+                    app:layout_constraintEnd_toStartOf="@id/karaoke_btn"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <ImageView
+                    android:id="@+id/karaoke_btn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="4dp"
+                    android:src="@drawable/icon_karaoke"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -103,16 +117,19 @@
                     android:id="@+id/song_artist"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="40dp"
-                    android:ellipsize="end"
-                    android:singleLine="true"
                     android:text="@string/song_artist"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="italic"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    android:isScrollContainer="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/song_name" />
+                    app:layout_constraintTop_toBottomOf="@id/song_name"
+                    android:layout_marginEnd="100dp"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

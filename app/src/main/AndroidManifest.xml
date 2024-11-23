@@ -15,14 +15,16 @@
         android:theme="@style/Theme.SoundNova"
         tools:targetApi="31">
 
-<!--        <activity android:name=".StartActivity"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
+        <activity android:name=".StartActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".Login"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:exported="true">
 
 <!--                        <intent-filter>-->
@@ -30,22 +32,24 @@
 <!--                            <category android:name="android.intent.category.LAUNCHER" />-->
 <!--                        </intent-filter>-->
         </activity>
-        <activity android:name=".HomeActivity"
-            android:exported="true">
-            <nav-graph android:value="@navigation/nav_graph"/>
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+<!--        <activity android:name=".HomeActivity"-->
+<!--            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"-->
+<!--            android:exported="true">-->
+<!--            <nav-graph android:value="@navigation/nav_graph"/>-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
         <activity android:name=".Register"
-            android:exported="true">
-        </activity>
-        <activity
-            android:name=".MusicPlayerActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:exported="true">
         </activity>
+<!--        <activity-->
+<!--            android:name=".MusicPlayerActivity"-->
+<!--            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"-->
+<!--            android:exported="true">-->
+<!--        </activity>-->
         <activity android:name=".ForgotPassword"
             android:exported="true">
 <!--            <intent-filter>-->
@@ -56,26 +60,17 @@
         </activity>
         <activity android:name=".Setting"
             android:exported="true">
-                                    <intent-filter>
-                                        <action android:name="android.intent.action.MAIN" />
-                                        <category android:name="android.intent.category.LAUNCHER" />
-                                    </intent-filter>
+<!--                                    <intent-filter>-->
+<!--                                        <action android:name="android.intent.action.MAIN" />-->
+<!--                                        <category android:name="android.intent.category.LAUNCHER" />-->
+<!--                                    </intent-filter>-->
         </activity>
 
         <activity android:name=".ChangePassword"
             android:exported="true">
 
         </activity>
-        <activity android:name=".MusicData"
-            android:exported="true">
 
-        </activity>
-
-        <activity android:name=".LyricsActivity"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
-
-        </activity>
     </application>
 
 </manifest>

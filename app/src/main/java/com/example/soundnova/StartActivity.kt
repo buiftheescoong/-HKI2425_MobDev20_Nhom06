@@ -17,9 +17,13 @@ class StartActivity : AppCompatActivity() {
             Log.d("Tag", "0")
             finish()
         } else {
-            startActivity(Intent(this, HomeActivity::class.java))
-            Log.d("Tag", "0")
-            finish()
+//            startActivity(Intent(this, HomeActivity::class.java))
+//            Log.d("Tag", "0")
+//            finish()
+
+            supportFragmentManager.beginTransaction()
+                .replace(android.R.id.content, HomeFragment())
+                .commit()
         }
     }
 }

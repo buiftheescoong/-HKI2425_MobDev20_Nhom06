@@ -30,9 +30,9 @@ data class TrackData(
 
     @SerializedName("title")
     val title: String,
-//
-//    @SerializedName("duration")
-//    val duration: Int,
+
+    @SerializedName("duration")
+    val duration: Int,
     @SerializedName("artist")
     val artist: Artist,
 

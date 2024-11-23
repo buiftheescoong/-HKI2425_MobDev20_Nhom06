@@ -66,10 +66,14 @@ class Login : AppCompatActivity() {
                 firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
                     if (it.isSuccessful) {
                         count = 1
-                        val intent = Intent(applicationContext, HomeActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                        finish()
+//                        val intent = Intent(applicationContext, HomeActivity::class.java)
+//                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+//                        startActivity(intent)
+//                        finish()
+
+                        supportFragmentManager.beginTransaction()
+                            .replace(android.R.id.content, HomeFragment())
+                            .commit()
                     } else {
                         note.setText("Email or Password is not correct")
                         Toast.makeText(this,  "Email or Password is not correct", Toast.LENGTH_SHORT).show()
@@ -91,20 +95,25 @@ class Login : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        val currentUser = firebaseAuth.currentUser
-        if (firebaseAuth.currentUser != null) {
-            currentUser?.reload()?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val intent = Intent(applicationContext, HomeActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Log.w("", "Failed to reload user", task.exception)
-                }
-            }
-        }
-    }
+//    override fun onStart() {
+//        super.onStart()
+//        val currentUser = firebaseAuth.currentUser
+//        if (firebaseAuth.currentUser != null) {
+//            currentUser?.reload()?.addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+////                    val intent = Intent(applicationContext, HomeActivity::class.java)
+////                    startActivity(intent)
+////                    finish()
+//
+//                    supportFragmentManager.beginTransaction()
+//                        .replace(android.R.id.content, HomeFragment())
+//                        .commit()
+//
+//                } else {
+//                    Log.w("", "Failed to reload user", task.exception)
+//                }
+//            }
+//        }
+//    }
 
 }
