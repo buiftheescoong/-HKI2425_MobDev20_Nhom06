@@ -21,150 +21,124 @@
                 android:id="@+id/textWelcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
                 android:text="@string/textWelcome"
-                android:textSize="26sp"
+                android:textColor="#9D1DCA"
+                android:textSize="30sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="40dp"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <!-- Feel Like Today Text -->
             <TextView
                 android:id="@+id/textFeelLikeToday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="@string/textFeelLikeToday"
+                android:textColor="@color/light_gray"
                 android:textSize="16sp"
-                android:textColor="@color/light_gray"
-                app:layout_constraintTop_toBottomOf="@id/textWelcome"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="4dp"/>
+                app:layout_constraintTop_toBottomOf="@id/textWelcome" />
 
-            <!-- Search Bar -->
-            <EditText
-                android:id="@+id/editTextSearch"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:autofillHints=""
-                android:background="@drawable/search_bar_background"
-                android:drawableStart="@drawable/icon_search"
-                android:drawablePadding="8dp"
-                android:hint="@string/editTextSearch"
-                android:textColorHint="@color/light_gray"
-                android:textColor="@color/light_gray"
-                android:textSize="14sp"
-                android:inputType="text"
-                app:layout_constraintTop_toBottomOf="@id/textFeelLikeToday"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="16dp"/>
-
-            <!-- Horizontal Tabs -->
-            <HorizontalScrollView
-                android:id="@+id/horizontalScrollTabs"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textRecommendation"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scrollbars="none"
-                app:layout_constraintTop_toBottomOf="@id/editTextSearch"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="20dp"
+                android:text="Recommendation"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="32dp">
+                app:layout_constraintTop_toBottomOf="@id/textFeelLikeToday" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <!-- Tabs -->
-                    <TextView
-                        android:id="@+id/tabRecent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tabRecent"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:padding="8dp"
-                        android:layout_marginEnd="20dp" />
-
-                    <TextView
-                        android:id="@+id/tabTop50"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tabTop50"
-                        android:textColor="@color/light_gray"
-                        android:textSize="16sp"
-                        android:padding="8dp"
-                        android:layout_marginEnd="20dp" />
-
-                    <TextView
-                        android:id="@+id/tabChill"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tabChill"
-                        android:textColor="@color/light_gray"
-                        android:textSize="16sp"
-                        android:padding="8dp"
-                        android:layout_marginEnd="20dp" />
-
-                    <TextView
-                        android:id="@+id/tabRnB"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tabRnB"
-                        android:textColor="@color/light_gray"
-                        android:textSize="16sp"
-                        android:padding="8dp"
-                        android:layout_marginEnd="20dp" />
-
-                    <TextView
-                        android:id="@+id/tabFestival"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tabFestival"
-                        android:textColor="@color/light_gray"
-                        android:textSize="16sp"
-                        android:padding="8dp" />
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <!-- Recommended Songs -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewTabsSongs"
+                android:id="@+id/recyclerViewRecommendSongs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="horizontal"
                 android:overScrollMode="never"
-                app:layout_constraintTop_toBottomOf="@id/horizontalScrollTabs"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:listitem="@layout/item_song"/>
+                app:layout_constraintTop_toBottomOf="@id/textRecommendation"
+                tools:listitem="@layout/item_song" />
 
-            <!-- Favorite Section Header -->
+
             <TextView
-                android:id="@+id/textFavorite"
+                android:id="@+id/textRecent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:layout_marginStart="2dp"
-                android:text="@string/textFavorite"
+                android:layout_marginTop="20dp"
+                android:text="@string/tabRecent"
                 android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/recyclerViewTabsSongs" />
+                app:layout_constraintTop_toBottomOf="@id/recyclerViewRecommendSongs" />
 
-            <!-- Favorite Songs -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewFavoriteSongs"
+                android:id="@+id/recyclerViewRecentSongs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:orientation="horizontal"
                 android:overScrollMode="never"
-                app:layout_constraintTop_toBottomOf="@id/textFavorite"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textRecent" />
+
+            <TextView
+                android:id="@+id/textPopularAlbums"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="20dp"
+                android:text="Popular albums"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/recyclerViewRecentSongs" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewPopularAlbums"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:overScrollMode="never"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textPopularAlbums" />
+
+            <TextView
+                android:id="@+id/textFavoriteArtists"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/textFavorite"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/recyclerViewPopularAlbums" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewFavoriteArtists"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:overScrollMode="never"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textFavoriteArtists" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -173,7 +147,6 @@
         layout="@layout/menu"
         android:layout_width="match_parent"
         android:layout_height="71dp"
-        android:layout_marginBottom="25dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true" />
