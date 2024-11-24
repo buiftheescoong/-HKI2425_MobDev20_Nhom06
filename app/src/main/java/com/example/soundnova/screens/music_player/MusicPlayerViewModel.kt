@@ -14,7 +14,7 @@ class MusicPlayerViewModel : ViewModel() {
     private val _currentTrack = MutableLiveData<TrackData>()
     val currentTrack: LiveData<TrackData> get() = _currentTrack
 
-    private val mediaPlayer = MediaPlayer()
+    internal val mediaPlayer = MediaPlayer()
 
     fun setTrack(tracks: Tracks, index: Int) {
         this.tracks = tracks

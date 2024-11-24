@@ -1,19 +1,10 @@
 package com.example.soundnova
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.NavHostFragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.soundnova.databinding.ActivityMainBinding
-import com.example.soundnova.models.Tracks
-import com.example.soundnova.service.DeezerApiHelper
-import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
 //    private lateinit var recentRecyclerView: RecyclerView
@@ -24,9 +15,7 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-        Log.d("Tag", "1")
-
-//
+    //
 //        recentRecyclerView = findViewById(R.id.recyclerViewTabsSongs)
 //        favoriteRecyclerView = findViewById(R.id.recyclerViewFavoriteSongs)
 //        btnsetting = findViewById(R.id.buttonSettings)
