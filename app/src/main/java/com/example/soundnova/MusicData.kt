@@ -3,7 +3,6 @@ package com.example.soundnova
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -13,55 +12,27 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import kotlin.time.Duration
 
-class MusicData : AppCompatActivity() {
-    private lateinit var title: String
-    private lateinit var album : String
-    private lateinit var artist: String
-    private lateinit var audioUrl: String
-    private lateinit var duration: String
-    private lateinit var information : String
-    private lateinit var genre: String
-    private lateinit var database: DatabaseReference
-    private val db = Firebase.firestore
+class MusicData : ComponentActivity() {
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        db.collection("songs")
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val song = document.toObject(SongData::class.java)
-                    // Sử dụng thông tin của bài hát, ví dụ:
-                    Log.d("Song", "${song.title} - ${song.artist}")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w("Song", "Error getting documents.", exception)
-            }
-        val newSong = SongData("test2", "Ca sĩ mới", "album" ,"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", "180s","Pop","thongtinbaihat","2024" )
-        db.collection("songs")
-            .add(newSong)
-            .addOnSuccessListener { documentReference ->
-                Log.d("Song", "DocumentSnapshot added with ID: ${documentReference.id}")
-            }
-            .addOnFailureListener { exception ->
-                Log.w("Song", "Error adding document", exception)
-            }
+        setContentView(R.layout.home_activity)
     }
 
 }
 
 
 data class SongData(
+    val idUser : String? = null,
     val title: String? = null,
-    val artist: String? = null,
+    val artist: List<String>? = null,
+    val image: String? = null,
+    val duration: Int? = null,
     val album: String? = null,
     val audioUrl: String? = null,
-    val duration: String? = null,
     val genre: String? = null,
-    val infomation: String? = null,
-    val releaseDate: String? = null,
-
     )
 
 
