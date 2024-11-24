@@ -17,9 +17,10 @@ import android.view.animation.LinearInterpolator
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.media.MediaPlayer
 import android.widget.SeekBar
-import com.example.soundnova.MusicPlayerActivity.Companion.heartBoolean
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,21 +30,24 @@ import okhttp3.internal.concurrent.formatDuration
 
 
 class MusicPlayerFragment : Fragment() {
-    private lateinit var binding: PlayerActivityBinding
-//    private val viewModel: MusicPlayerViewModel by viewModels()
-    private lateinit var rotationAnimator: ObjectAnimator
+
     companion object {
         var shuffleBoolean: Boolean = false
         var repeatBoolean: Boolean = false
         var heartBoolean: Boolean = false
+        var currentSongLyrics = ""
+        var currentPreLyricsColor: Int = 0
     }
 
     private var currentSongIndex = 0
     private var seekBarUpdateJob: Job? = null
     private var isRotating = false
+
+    private lateinit var binding: PlayerActivityBinding
+    //    private val viewModel: MusicPlayerViewModel by viewModels()
+    private lateinit var rotationAnimator: ObjectAnimator
     private lateinit var tracks: Tracks
     private lateinit var mediaPlayer: MediaPlayer
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -116,8 +120,16 @@ class MusicPlayerFragment : Fragment() {
 //    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        mediaPlayer = MediaPlayer()
+
         val binding = PlayerActivityBinding.bind(view)
+
+        mediaPlayer = MediaPlayer()
+
+        rotationAnimator = ObjectAnimator.ofFloat(binding.coverArt, "rotation", 0f, 360f).apply {
+            duration = 30000L
+            repeatCount = ObjectAnimator.INFINITE
+            interpolator = LinearInterpolator()
+        }
 
         try {
             tracks = arguments?.getParcelable<Tracks>("tracks")!!
@@ -126,14 +138,6 @@ class MusicPlayerFragment : Fragment() {
         } catch (e: Exception) {
             Log.e("MusicPlayerFragment", "Error retrieving tracks", e)
         }
-
-
-        rotationAnimator = ObjectAnimator.ofFloat(binding.coverArt, "rotation", 0f, 360f).apply {
-            duration = 30000L
-            repeatCount = ObjectAnimator.INFINITE
-            interpolator = LinearInterpolator()
-        }
-
 
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -216,10 +220,10 @@ class MusicPlayerFragment : Fragment() {
         binding.idPrev.setOnClickListener {
             playPreviousSong()
         }
-//
-//        binding.backBtn.setOnClickListener {
-//            parentFragmentManager.popBackStack()
-//        }
+
+        binding.backBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_musicPlayerFragment_to_homeFragment)
+        }
     }
 
     private fun playNextSong() {
@@ -259,6 +263,11 @@ class MusicPlayerFragment : Fragment() {
 
         binding.durationPlayed.text = formatDuration(0)
         binding.durationTotal.text = formatDuration(30000)
+
+        val curBackgroundPreLyrics = binding.previewLayout.background as GradientDrawable
+        currentPreLyricsColor = getRandomColor()
+        curBackgroundPreLyrics.setColor(currentPreLyricsColor)
+
         mediaPlayer.reset()
         mediaPlayer.setDataSource(song.preview)
         mediaPlayer.prepare()

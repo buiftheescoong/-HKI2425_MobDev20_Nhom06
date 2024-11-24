@@ -12,9 +12,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.soundnova.OnItemClickListener
+import com.example.soundnova.screens.adapters.OnItemClickListener
 import com.example.soundnova.R
-import com.example.soundnova.SongAdapter
+import com.example.soundnova.screens.adapters.SongAdapter
 import com.example.soundnova.databinding.HomeActivityBinding
 import com.example.soundnova.models.Tracks
 import com.example.soundnova.service.DeezerApiHelper
@@ -47,7 +47,7 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             val tracks = DeezerApiHelper.fetchPopularTracks()
             Log.d("HomeFragment", "Fetched popular tracks: $tracks")
-            binding.recyclerViewTabsSongs.layoutManager =
+            binding.recyclerViewRecommendSongs.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = SongAdapter(tracks, object : OnItemClickListener {
                 override fun onItemClick(position: Int, tracks: Tracks) {
@@ -60,7 +60,7 @@ class HomeFragment : Fragment() {
                     )
                 }
             })
-            binding.recyclerViewTabsSongs.adapter = adapter
+            binding.recyclerViewRecommendSongs.adapter = adapter
         }
         // Collect tracks from the ViewModel
 //        viewLifecycleOwner.lifecycleScope.launch {

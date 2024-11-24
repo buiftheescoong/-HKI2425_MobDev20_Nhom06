@@ -60,7 +60,7 @@ class History(private val context: Context) {
         duration: Int,
         audioUrl: String,
 //        album: String,
-        genre: String
+//        genre: String
     ) {
         val currentUser = firebaseAuth.currentUser
         val userEmail = currentUser?.email
@@ -68,24 +68,19 @@ class History(private val context: Context) {
             idUser = userEmail,
             title = title,
             artist = artist,
-            duration = duration,
             image = image,
 //            album = album,
             audioUrl = audioUrl,
-            genre = genre
         )
         db.collection("history")
             .add(newSong)
             .addOnSuccessListener { documentReference ->
                 Log.d("Song", "DocumentSnapshot added with ID: ${documentReference.id}")
-                    // Gọi hàm sắp xếp lại ID sau khi thêm bài hát
-                    reorderDocumentIds()
-                }
-                .addOnFailureListener { exception ->
-                    Log.w("Song", "Error adding document", exception)
-                }
+                // Gọi hàm sắp xếp lại ID sau khi thêm bài hát
+                reorderDocumentIds()
+            }
+            .addOnFailureListener { exception ->
+                Log.w("Song", "Error adding document", exception)
+            }
     }
 }
-
-
-
