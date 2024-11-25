@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.soundnova.models.Albums
+import com.example.soundnova.models.Artists
 import com.example.soundnova.models.TrackData
 import com.example.soundnova.models.Tracks
 import com.example.soundnova.service.DeezerApiHelper
@@ -41,8 +42,10 @@ import kotlinx.coroutines.runBlocking
 class HomeViewModel : ViewModel() {
     private val _tracks = MutableStateFlow<Tracks?>(null)
     private val _albums = MutableStateFlow<Albums?>(null)
+    private val _artists = MutableStateFlow<Artists?>(null)
     val tracks: StateFlow<Tracks?> = _tracks
     val albums: StateFlow<Albums?> = _albums
+    val artists: StateFlow<Artists?> = _artists
 
     fun fetchPopularTracks() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -60,6 +63,17 @@ class HomeViewModel : ViewModel() {
             try {
                 val popularAlbums = DeezerApiHelper.fetchPopularAlbums()
                 _albums.value = popularAlbums
+            } catch (e: Exception) {
+                e.printStackTrace() // Handle error
+            }
+        }
+    }
+
+    fun fetchPopularArtists() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val popularArtists = DeezerApiHelper.fetchPopularArtists()
+                _artists.value = popularArtists
             } catch (e: Exception) {
                 e.printStackTrace() // Handle error
             }

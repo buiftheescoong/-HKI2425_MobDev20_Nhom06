@@ -15,9 +15,12 @@ import com.example.soundnova.R
 import com.example.soundnova.screens.adapters.SongAdapter
 import com.example.soundnova.databinding.HomeActivityBinding
 import com.example.soundnova.models.Albums
+import com.example.soundnova.models.Artists
 import com.example.soundnova.models.Tracks
 import com.example.soundnova.screens.adapters.AlbumAdapter
+import com.example.soundnova.screens.adapters.ArtistAdapter
 import com.example.soundnova.screens.adapters.OnItemClickAlbumListener
+import com.example.soundnova.screens.adapters.OnItemClickArtistListener
 import com.example.soundnova.service.DeezerApiHelper
 import kotlinx.coroutines.launch
 
@@ -27,6 +30,7 @@ class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var adapterSong: SongAdapter
     private lateinit var adapterAlbum: AlbumAdapter
+    private lateinit var adapterArtist: ArtistAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -75,6 +79,22 @@ class HomeFragment : Fragment() {
                 }
             })
             binding.recyclerViewPopularAlbums.adapter = adapterAlbum
+
+            val artists = DeezerApiHelper.fetchPopularArtists()
+            binding.recyclerViewFavoriteArtists.layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            adapterArtist = ArtistAdapter(artists, object : OnItemClickArtistListener {
+                override fun onItemClick(position: Int, artists : Artists) {
+                    findNavController().navigate(
+                        R.id.action_homeFragment_to_artistPlayerFragment,
+                        Bundle().apply {
+                            putParcelable("artists", artists)
+                            putInt("position", position)
+                        }
+                    )
+                }
+            })
+            binding.recyclerViewFavoriteArtists.adapter = adapterArtist
         }
         // Collect tracks from the ViewModel
 //        viewLifecycleOwner.lifecycleScope.launch {
@@ -107,5 +127,6 @@ class HomeFragment : Fragment() {
         // Trigger fetching the popular tracks
         viewModel.fetchPopularTracks()
         viewModel.fetchPopularAlbums()
+        viewModel.fetchPopularArtists()
     }}
 

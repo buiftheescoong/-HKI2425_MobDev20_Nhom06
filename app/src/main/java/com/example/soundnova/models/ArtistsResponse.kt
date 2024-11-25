@@ -4,12 +4,11 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
-data class ArtistsResponse(
+@Parcelize
+data class Artists(
     @SerializedName("data")
     val data: List<Artist>,
-
-    val categoryName: String
-)
+) : Parcelable
 
 @Parcelize
 data class Artist(

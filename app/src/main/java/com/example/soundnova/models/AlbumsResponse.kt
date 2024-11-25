@@ -29,5 +29,6 @@ data class Album(
     @SerializedName("cover_medium") val coverMedium: String,
     @SerializedName("cover_small") val coverSmall: String,
     @SerializedName("artist") val artist: Artist?,
+    //@SerializedName("tracks") val tracks: Tracks,
     var albumDetailsResponse: AlbumDetailsResponse?
 ) : Parcelable

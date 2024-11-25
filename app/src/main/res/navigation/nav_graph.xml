@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_homeFragment_to_albumPlayerFragment"
             app:destination="@id/albumPlayerFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_artistPlayerFragment"
+            app:destination="@id/artistPlayerFragment" />
     </fragment>
 
     <fragment
@@ -53,6 +56,27 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_albumPlayerFragment_to_musicPlayerFragment"
+            app:destination="@id/musicPlayerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/artistPlayerFragment"
+        android:name="com.example.soundnova.screens.music_player.ArtistPlayerFragment"
+        android:label="artist_activity"
+        tools:layout="@layout/artist_list">
+        <argument
+            android:name="tracks"
+            app:argType="com.example.soundnova.models.Tracks" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_artistPlayerFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_artistPlayerFragment_to_musicPlayerFragment"
             app:destination="@id/musicPlayerFragment" />
     </fragment>
 
