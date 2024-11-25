@@ -1,0 +1,78 @@
+package com.example.soundnova.screens.music_player
+
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.example.soundnova.R
+import com.example.soundnova.databinding.AlbumListBinding
+import com.example.soundnova.models.Albums
+import com.example.soundnova.models.Tracks
+import com.example.soundnova.screens.adapters.OnItemClickTrackListener
+import com.example.soundnova.screens.adapters.SongAdapter
+import com.example.soundnova.service.DeezerApiHelper
+import kotlinx.coroutines.launch
+
+class AlbumPlayerFragment: Fragment() {
+
+    private lateinit var binding: AlbumListBinding
+    private lateinit var tracks: Tracks
+    private lateinit var albums: Albums
+    private var currentAlbumIndex = 0
+    private lateinit var adapterSong: SongAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        binding = AlbumListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val binding = AlbumListBinding.bind(view)
+
+        try {
+            albums = arguments?.getParcelable<Albums>("albums")!!
+            currentAlbumIndex = arguments?.getInt("position") ?: 0
+            playAlbum(currentAlbumIndex)
+        } catch (e: Exception) {
+            Log.e("MusicPlayerFragment", "Error retrieving tracks", e)
+        }
+    }
+
+    private fun playAlbum(Index: Int) {
+        val album = albums.data[Index]
+        Glide.with(this).load(album.artist?.pictureBig).circleCrop().into(binding.imageAlbumCover)
+        binding.textAlbumName.text = album.title
+        binding.textArtistName.text = album.artist?.name ?: ""
+
+        lifecycleScope.launch {
+            //val tracks = album.albumDetailsResponse?.tracks
+            val tracks = DeezerApiHelper.fetchPopularTracks()
+            binding.recyclerViewSongs.layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            if (tracks != null) {
+                adapterSong = SongAdapter(tracks, object : OnItemClickTrackListener {
+                    override fun onItemClick(position: Int, tracks: Tracks) {
+                        findNavController().navigate(
+                            R.id.action_albumPlayerFragment_to_musicPlayerFragment,
+                            Bundle().apply {
+                                putParcelable("tracks", tracks)
+                                putInt("position", position)
+                            }
+                        )
+                    }
+                }, 1)
+            }
+            binding.recyclerViewSongs.adapter = adapterSong
+        }
+    }
+}

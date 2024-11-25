@@ -16,9 +16,10 @@ data class Data(
     @SerializedName("album") val album: Album
 ) : Parcelable
 
+@Parcelize
 data class Albums(
     @SerializedName("data") val data: List<Album>
-)
+) : Parcelable
 
 @Parcelize
 data class Album(

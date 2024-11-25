@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/background2">
+
+        <!-- Album Cover and Info -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <!-- Album Cover -->
+            <ImageView
+                android:id="@+id/imageAlbumCover"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:scaleType="centerCrop" />
+
+            <!-- Album Name -->
+            <TextView
+                android:id="@+id/textAlbumName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Album Name"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/white" />
+
+            <!-- Artist Name -->
+            <TextView
+                android:id="@+id/textArtistName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Artist Name"
+                android:textSize="16sp"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <!-- Songs List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewSongs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:overScrollMode="never" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
