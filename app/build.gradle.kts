@@ -87,7 +87,6 @@ dependencies {
     testImplementation(libs.junit)
     implementation (libs.androidx.media)
     // Thư viện kiểm thử
-    testImplementation(libs.junit)
     testImplementation("junit:junit:4.13.2") // JUnit cho test đơn vị
     testImplementation("org.mockito:mockito-core:4.2.0") // Mockito cho mock test
 
