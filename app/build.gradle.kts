@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,7 +19,9 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        // Sử dụng `androidx.test.runner.AndroidJUnitRunner` thay vì `android.support.test.runner.AndroidJUnitRunner`
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -35,20 +36,25 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
         compose = true
         viewBinding = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.10"
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -57,7 +63,7 @@ android {
 }
 
 dependencies {
-
+    // Các thư viện AndroidX và Firebase
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -68,7 +74,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.constraintlayout)
-
     implementation(libs.androidx.recyclerview)
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("com.google.code.gson:gson:2.10.1")
@@ -81,14 +86,31 @@ dependencies {
     implementation(libs.androidx.room.common)
     testImplementation(libs.junit)
     implementation (libs.androidx.media)
+    // Thư viện kiểm thử
+    testImplementation(libs.junit)
+    testImplementation("junit:junit:4.13.2") // JUnit cho test đơn vị
+    testImplementation("org.mockito:mockito-core:4.2.0") // Mockito cho mock test
+
+    // Thư viện kiểm thử Android Instrumentation
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
     implementation ("com.github.bumptech.glide:glide:4.13.0") // Glide library
     annotationProcessor ("com.github.bumptech.glide:compiler:4.13.0") // Glide annotation processor
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Thư viện dành cho chế độ debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // AndroidX Test Core
+    androidTestImplementation("androidx.test:core:1.5.0")
+    // AndroidX Test Rules
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    // AndroidX Test Runner
+    androidTestImplementation("androidx.test:runner:1.5.2")
+
+    // Chạy tập lệnh Kotlin
     implementation(kotlin("script-runtime"))
     implementation("com.google.android.material:material:1.12.0")
 
