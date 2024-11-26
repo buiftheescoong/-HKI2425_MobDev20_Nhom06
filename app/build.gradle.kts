@@ -85,6 +85,7 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.espresso.intents)
+    implementation(libs.androidx.ui.test.android)
     testImplementation(libs.junit)
     implementation (libs.androidx.media)
     // Thư viện kiểm thử
