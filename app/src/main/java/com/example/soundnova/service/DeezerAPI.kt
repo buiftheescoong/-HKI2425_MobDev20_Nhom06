@@ -1,7 +1,7 @@
 package com.example.soundnova.service
 
 import com.example.soundnova.models.Albums
-import com.example.soundnova.models.ArtistsResponse
+import com.example.soundnova.models.Artists
 import com.example.soundnova.models.Tracks
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -17,7 +17,7 @@ interface DeezerApi {
     suspend fun getPopularAlbums() : Response<Albums>
 
     @GET("chart/0/artists")
-    suspend fun getPopularArtists() : Response<ArtistsResponse>
+    suspend fun getPopularArtists() : Response<Artists>
 }
 object DeezerApiHelper {
     private val retrofit = Retrofit.Builder()
@@ -48,7 +48,7 @@ object DeezerApiHelper {
     }
 
     @Throws(RuntimeException::class)
-    suspend fun fetchPopularArtists(): ArtistsResponse {
+    suspend fun fetchPopularArtists(): Artists {
         val response = api.getPopularArtists()
         if (response.isSuccessful) {
             return response.body() ?: throw RuntimeException("No data")
