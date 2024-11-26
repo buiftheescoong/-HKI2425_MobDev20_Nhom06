@@ -50,13 +50,17 @@ class AlbumPlayerFragment: Fragment() {
 
     private fun playAlbum(Index: Int) {
         val album = albums.data[Index]
-        Glide.with(this).load(album.artist?.pictureBig).circleCrop().into(binding.imageAlbumCover)
+        Glide.with(this).load(album.coverBig).circleCrop().into(binding.imageAlbumCover)
         binding.textAlbumName.text = album.title
-        binding.textArtistName.text = album.artist?.name ?: ""
+        binding.textArtistName.text = "BLACKPINK"
 
         lifecycleScope.launch {
             //val tracks = album.tracks
-            val tracks = DeezerApiHelper.fetchPopularTracks()
+            val artist = DeezerApiHelper.getArtist()
+            val tracks = DeezerApiHelper.getTracksOfAlbum(album.id)
+            for (track in tracks.data) {
+                track.artist = artist
+            }
             binding.recyclerViewSongs.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             if (tracks != null) {
