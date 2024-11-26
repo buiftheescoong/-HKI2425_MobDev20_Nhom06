@@ -3,7 +3,10 @@ package com.example.soundnova
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.soundnova.databinding.ActivityMainBinding
 
 class HomeActivity : AppCompatActivity() {
@@ -15,6 +18,22 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.musicPlayerFragment -> {
+                    binding.bottomNavigationView.visibility = View.GONE
+                }
+                else -> {
+                    binding.bottomNavigationView.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        binding.bottomNavigationView.setupWithNavController(navController)
     //
 //        recentRecyclerView = findViewById(R.id.recyclerViewTabsSongs)
 //        favoriteRecyclerView = findViewById(R.id.recyclerViewFavoriteSongs)

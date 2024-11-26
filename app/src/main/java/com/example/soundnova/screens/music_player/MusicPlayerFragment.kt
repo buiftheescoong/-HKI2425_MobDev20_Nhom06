@@ -20,7 +20,9 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.media.MediaPlayer
 import android.widget.SeekBar
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.soundnova.service.LyricsApiHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -224,6 +226,9 @@ class MusicPlayerFragment : Fragment() {
         binding.backBtn.setOnClickListener {
             findNavController().navigate(R.id.action_musicPlayerFragment_to_homeFragment)
         }
+        binding.showFullLyricsButton.setOnClickListener {
+            findNavController().navigate(R.id.action_musicPlayerFragment_to_lyricsFragment)
+        }
     }
 
     private fun playNextSong() {
@@ -252,7 +257,13 @@ class MusicPlayerFragment : Fragment() {
         stopSeekBarUpdate()
 
         val song = tracks.data[index]
-
+        lifecycleScope.launch {
+            try {
+                currentSongLyrics = LyricsApiHelper.fetchLyrics(song.artist.name, song.title)
+            } catch (e: Exception) {
+                Log.e("LyricsFragment", "Error fetching lyrics", e)
+            }
+        }
         binding.songName.text = song.title
         binding.songName.isSelected = true
         binding.songArtist.text = song.artist.name

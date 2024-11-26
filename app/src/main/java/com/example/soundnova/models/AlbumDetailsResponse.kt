@@ -35,10 +35,10 @@ data class TrackData(
     val duration: Int,
 
     @SerializedName("artist")
-    val artist: Artist,
+    var artist: Artist,
 
     @SerializedName("album")
-    val album: Album,
+    var album: Album,
 
     @SerializedName("preview")
     val preview: String,

@@ -53,7 +53,7 @@
 <!--            </intent-filter>-->
 
         </activity>
-        <activity android:name=".Setting"
+        <activity android:name=".SettingsFragment"
             android:exported="true">
                                     <intent-filter>
                                         <action android:name="android.intent.action.MAIN" />

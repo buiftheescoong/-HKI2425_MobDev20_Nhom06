@@ -10,10 +10,10 @@ import com.bumptech.glide.Glide
 import com.example.soundnova.R
 import com.example.soundnova.models.Tracks
 
-interface OnItemClickListener {
+interface OnItemClickTrackListener {
     fun onItemClick(position: Int, tracks: Tracks)
 }
-class SongAdapter(private val songs: Tracks, private val listener: OnItemClickListener) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+class SongAdapter(private val songs: Tracks, private val listener: OnItemClickTrackListener, private val viewType: Int) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         init {
@@ -27,7 +27,13 @@ class SongAdapter(private val songs: Tracks, private val listener: OnItemClickLi
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
+        // Chọn layout dựa trên viewType
+        val layoutRes = if (this.viewType == 1) {
+            R.layout.item_song_vertical // Layout dạng dọc
+        } else {
+            R.layout.item_song // Layout dạng ngang
+        }
+        val view = LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
         return SongViewHolder(view)
     }
 
