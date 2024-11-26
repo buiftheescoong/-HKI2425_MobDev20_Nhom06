@@ -17,6 +17,7 @@ import com.example.soundnova.models.Tracks
 import com.example.soundnova.screens.adapters.OnItemClickTrackListener
 import com.example.soundnova.screens.adapters.SongAdapter
 import com.example.soundnova.service.DeezerApiHelper
+import com.example.soundnova.service.DeezerSearchApiHelper
 import kotlinx.coroutines.launch
 
 class ArtistPlayerFragment : Fragment() {
@@ -52,7 +53,10 @@ class ArtistPlayerFragment : Fragment() {
         binding.textArtist.text = artist.name
 
         lifecycleScope.launch {
-            val tracks = DeezerApiHelper.fetchPopularTracks()
+            val tracks = DeezerApiHelper.getTracksOfArtist(artist.id)
+            for (track in tracks.data) {
+                track.artist = artist
+            }
             binding.recyclerViewSongs.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             if (tracks != null) {

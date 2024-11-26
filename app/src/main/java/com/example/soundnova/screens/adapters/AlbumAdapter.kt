@@ -37,8 +37,8 @@ class AlbumAdapter(private val listAlbum: Albums, private val listener: OnItemCl
     override fun onBindViewHolder(holder: AlbumViewHolder, position: Int) {
         val album = listAlbum.data[position]
         holder.albumName.text = album.title
-        holder.albumArtists.text = album.artist?.name ?: ""
-        Glide.with(holder.itemView.context).load(album.artist?.pictureBig).into(holder.albumImage)
+        holder.albumArtists.text = "BLACKPINK"
+        Glide.with(holder.itemView.context).load(album.coverBig).into(holder.albumImage)
     }
 
     override fun getItemCount(): Int = listAlbum.data.size
