@@ -86,6 +86,7 @@ dependencies {
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.espresso.intents)
     implementation(libs.androidx.ui.test.android)
+    implementation(libs.androidx.espresso.contrib)
     testImplementation(libs.junit)
     implementation (libs.androidx.media)
     // Thư viện kiểm thử
