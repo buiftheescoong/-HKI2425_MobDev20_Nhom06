@@ -76,18 +76,18 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.recyclerview)
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("com.google.code.gson:gson:2.10.1")
+//    implementation("com.google.code.gson:gson:2.10.1")
 
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore.ktx)
 
     implementation(libs.firebase.database.ktx)
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
+//    implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.espresso.intents)
     implementation(libs.androidx.ui.test.android)
-    implementation(libs.androidx.espresso.contrib)
-    implementation(libs.androidx.fragment.testing)
+//    implementation(libs.androidx.espresso.contrib) 11
+//    implementation(libs.androidx.fragment.testing) 11
     testImplementation(libs.junit)
     implementation (libs.androidx.media)
     // Thư viện kiểm thử
@@ -136,7 +136,7 @@ dependencies {
 
     implementation ("androidx.appcompat:appcompat:1.6.1")
 
-    //API llyric
+    //API lyric
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.3")

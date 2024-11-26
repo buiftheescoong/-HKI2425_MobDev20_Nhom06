@@ -50,14 +50,8 @@
             android:name="position"
             app:argType="integer" />
         <action
-            android:id="@+id/action_musicPlayerFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_musicPlayerFragment_to_lyricsFragment"
-            app:destination="@id/lyricsFragment"
-            />
+            app:destination="@id/lyricsFragment" />
     </fragment>
 
     <fragment
@@ -65,10 +59,6 @@
         android:name="com.example.soundnova.screens.music_player.LyricsFragment"
         android:label="lyrics_fragment"
         tools:layout="@layout/lyrics_fragment">
-        <action
-            android:id="@+id/action_lyricsPlayerFragment_to_musicPlayerFragment"
-            app:destination="@id/musicPlayerFragment"
-            />
     </fragment>
 
     <fragment
@@ -82,11 +72,6 @@
         <argument
             android:name="position"
             app:argType="integer" />
-        <action
-            android:id="@+id/action_albumPlayerFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_albumPlayerFragment_to_musicPlayerFragment"
             app:destination="@id/musicPlayerFragment" />
@@ -104,15 +89,8 @@
             android:name="position"
             app:argType="integer" />
         <action
-            android:id="@+id/action_artistPlayerFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_artistPlayerFragment_to_musicPlayerFragment"
             app:destination="@id/musicPlayerFragment" />
     </fragment>
-
-
 
 </navigation>

@@ -36,6 +36,7 @@ class ArtistPlayerFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val binding = ArtistListBinding.bind(view)
 
         try {

@@ -37,6 +37,7 @@ class AlbumPlayerFragment: Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val binding = AlbumListBinding.bind(view)
 
         try {
@@ -50,9 +51,11 @@ class AlbumPlayerFragment: Fragment() {
 
     private fun playAlbum(Index: Int) {
         val album = albums.data[Index]
-        Glide.with(this).load(album.coverBig).circleCrop().into(binding.imageAlbumCover)
+        Glide.with(this).load(album.coverBig).into(binding.imageAlbumCover)
         binding.textAlbumName.text = album.title
+        binding.textAlbumName.isSelected = true
         binding.textArtistName.text = "BLACKPINK"
+        binding.textArtistName.isSelected = true
 
         lifecycleScope.launch {
             //val tracks = album.tracks

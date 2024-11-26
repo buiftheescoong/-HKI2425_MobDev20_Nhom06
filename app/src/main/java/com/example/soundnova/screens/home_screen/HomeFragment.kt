@@ -56,6 +56,7 @@ class HomeFragment : Fragment() {
                     findNavController().navigate(
                         R.id.action_homeFragment_to_musicPlayerFragment,
                         Bundle().apply {
+
                             putParcelable("tracks", tracks)
                             putInt("position", position)
                         }
@@ -128,5 +129,6 @@ class HomeFragment : Fragment() {
         viewModel.fetchPopularTracks()
         viewModel.fetchPopularAlbums()
         viewModel.fetchPopularArtists()
-    }}
+    }
+}
 

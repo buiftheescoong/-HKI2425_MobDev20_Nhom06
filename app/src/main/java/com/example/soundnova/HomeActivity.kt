@@ -1,70 +1,81 @@
 package com.example.soundnova
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.findNavController
 import com.example.soundnova.databinding.ActivityMainBinding
 
 class HomeActivity : AppCompatActivity() {
-//    private lateinit var recentRecyclerView: RecyclerView
-//    private lateinit var favoriteRecyclerView: RecyclerView
-//    private lateinit var btnsetting:ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.musicPlayerFragment -> {
+                R.id.musicPlayerFragment, R.id.lyricsFragment -> {
                     binding.bottomNavigationView.visibility = View.GONE
                 }
+
                 else -> {
                     binding.bottomNavigationView.visibility = View.VISIBLE
                 }
             }
         }
 
-        binding.bottomNavigationView.setupWithNavController(navController)
-    //
-//        recentRecyclerView = findViewById(R.id.recyclerViewTabsSongs)
-//        favoriteRecyclerView = findViewById(R.id.recyclerViewFavoriteSongs)
-//        btnsetting = findViewById(R.id.buttonSettings)
+        binding.bottomNavigationView.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.homeFragment -> {
+                    navController.navigate(R.id.homeFragment)
+                    true
+                }
 
-//        btnsetting.setOnClickListener {
-//            startActivity(Intent(applicationContext, Setting::class.java))
-//        }
+                R.id.libraryFragment -> {
+                    navController.navigate(R.id.libraryFragment)
+                    true
+                }
 
-//        lifecycleScope.launch {
-//            loadSongs()
-//        }
+                R.id.searchFragment -> {
+                    navController.navigate(R.id.searchFragment)
+                    true
+                }
 
-//        SpotifyService.getAccessToken { token ->
-//            if (token != null) {
-//                loadSongs()
-//            }
-//        }
+                R.id.settingsFragment -> {
+                    navController.navigate(R.id.settingsFragment)
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.homeFragment -> binding.bottomNavigationView.menu.findItem(R.id.homeFragment).isChecked = true
+                R.id.libraryFragment -> binding.bottomNavigationView.menu.findItem(R.id.libraryFragment).isChecked = true
+                R.id.searchFragment -> binding.bottomNavigationView.menu.findItem(R.id.searchFragment).isChecked = true
+                R.id.settingsFragment -> binding.bottomNavigationView.menu.findItem(R.id.settingsFragment).isChecked = true
+            }
+        }
     }
 
-//    private suspend fun loadSongs() {
-//        val deezerApiHelper = DeezerApiHelper
-//        val popularTracks : Tracks = deezerApiHelper.fetchPopularTracks()
-//        Log.d("TAG", "0")
-//        runOnUiThread {
-//            recentRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-//            recentRecyclerView.adapter = SongAdapter(popularTracks)
-//        }
-//        runOnUiThread {
-//            favoriteRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-//            favoriteRecyclerView.adapter = SongAdapter(popularTracks)
-//        }
-//    }
+    override fun onBackPressed() {
+        val navController = findNavController(R.id.nav_host_fragment)
+
+        val currentEntry = navController.currentBackStackEntry
+
+        if (currentEntry?.destination?.id == R.id.homeFragment && navController.previousBackStackEntry == null) {
+            super.onBackPressed()
+        } else {
+            navController.popBackStack()
+        }
+    }
 }

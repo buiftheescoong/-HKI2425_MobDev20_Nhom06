@@ -122,7 +122,7 @@ class MusicPlayerFragment : Fragment() {
 //    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        super.onViewCreated(view, savedInstanceState)
         val binding = PlayerActivityBinding.bind(view)
 
         mediaPlayer = MediaPlayer()
@@ -224,8 +224,9 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.backBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_musicPlayerFragment_to_homeFragment)
+            findNavController().popBackStack()
         }
+
         binding.showFullLyricsButton.setOnClickListener {
             findNavController().navigate(R.id.action_musicPlayerFragment_to_lyricsFragment)
         }

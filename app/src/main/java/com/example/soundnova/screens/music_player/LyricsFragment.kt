@@ -28,10 +28,14 @@ class LyricsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.lyricsContent.setText(currentSongLyrics)
+
+        super.onViewCreated(view, savedInstanceState)
+        val binding = LyricsFragmentBinding.bind(view)
+
+        binding.lyricsContent.text = currentSongLyrics
 
         binding.backBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_lyricsPlayerFragment_to_musicPlayerFragment)
+            findNavController().popBackStack(R.id.musicPlayerFragment, false)
         }
     }
 }
