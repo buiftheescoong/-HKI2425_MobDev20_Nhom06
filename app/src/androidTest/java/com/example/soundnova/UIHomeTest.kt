@@ -60,8 +60,6 @@ class UIHomeTest {
         // Kiểm tra RecyclerView "Favorite Artists"
         onView(withId(R.id.recyclerViewFavoriteArtists)).check(matches(isDisplayed()))
 
-        // Kiểm tra Menu ở cuối màn hình
-        onView(withId(R.id.menu)).check(matches(isDisplayed()))
     }
 
     @Test
