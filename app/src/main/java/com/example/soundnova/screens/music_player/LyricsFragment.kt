@@ -29,5 +29,9 @@ class LyricsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.lyricsContent.setText(currentSongLyrics)
+
+        binding.backBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_lyricsPlayerFragment_to_musicPlayerFragment)
+        }
     }
 }

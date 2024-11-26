@@ -38,7 +38,7 @@ data class TrackData(
     var artist: Artist,
 
     @SerializedName("album")
-    val album: Album,
+    var album: Album,
 
     @SerializedName("preview")
     val preview: String,

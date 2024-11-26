@@ -60,6 +60,7 @@ class AlbumPlayerFragment: Fragment() {
             val tracks = DeezerApiHelper.getTracksOfAlbum(album.id)
             for (track in tracks.data) {
                 track.artist = artist
+                track.album = album
             }
             binding.recyclerViewSongs.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
