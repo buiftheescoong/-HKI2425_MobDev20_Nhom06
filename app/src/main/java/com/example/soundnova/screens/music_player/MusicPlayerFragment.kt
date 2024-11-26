@@ -21,6 +21,8 @@ import android.graphics.drawable.GradientDrawable
 import android.media.MediaPlayer
 import android.widget.SeekBar
 import androidx.navigation.fragment.findNavController
+import com.example.soundnova.FavoriteLibrary
+import com.example.soundnova.History
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -30,6 +32,9 @@ import okhttp3.internal.concurrent.formatDuration
 
 
 class MusicPlayerFragment : Fragment() {
+
+    private lateinit var history: History
+    private lateinit var fav: FavoriteLibrary
 
     companion object {
         var shuffleBoolean: Boolean = false
@@ -158,15 +163,38 @@ class MusicPlayerFragment : Fragment() {
             }
         })
 
+//        binding.heartBtn.setOnClickListener {
+//            heartBoolean = !heartBoolean
+//            val heartIcon = if (heartBoolean) {
+//                R.drawable.icon_heart_on
+//            } else {
+//                R.drawable.icon_heart
+//            }
+//            binding.heartBtn.setImageResource(heartIcon)
+//        }
+
         binding.heartBtn.setOnClickListener {
             heartBoolean = !heartBoolean
-            val heartIcon = if (heartBoolean) {
-                R.drawable.icon_heart_on
+            fav = FavoriteLibrary(requireContext())
+
+
+            if (heartBoolean) {
+
+                val currentSong = tracks.data[currentSongIndex]
+                fav.addFavSong(
+                    currentSong.title,
+                    currentSong.artist.name.split(","),
+                    currentSong.artist.pictureBig,
+                    currentSong.duration,
+                    currentSong.preview
+                )
+                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
             } else {
-                R.drawable.icon_heart
+                fav.removeFavSong(tracks.data[currentSongIndex].title)
+                binding.heartBtn.setImageResource(R.drawable.icon_heart)
             }
-            binding.heartBtn.setImageResource(heartIcon)
         }
+
 
         binding.playPause.setOnClickListener {
             if (mediaPlayer.isPlaying) {
@@ -233,6 +261,15 @@ class MusicPlayerFragment : Fragment() {
             (currentSongIndex + 1) % tracks.data.size
         }
         playSong(currentSongIndex)
+
+        fav = FavoriteLibrary(requireContext())
+        fav.checkFavSong(tracks.data[currentSongIndex].title) { isFavorite ->
+            if (isFavorite) {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+            } else {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart)
+            }
+        }
     }
 
     private fun playPreviousSong() {
@@ -245,7 +282,16 @@ class MusicPlayerFragment : Fragment() {
                 currentSongIndex - 1
             }
         }
+
         playSong(currentSongIndex)
+        fav = FavoriteLibrary(requireContext())
+        fav.checkFavSong(tracks.data[currentSongIndex].title) { isFavorite ->
+            if (isFavorite) {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+            } else {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart)
+            }
+        }
     }
 
     private fun playSong(index: Int) {
@@ -257,6 +303,19 @@ class MusicPlayerFragment : Fragment() {
         binding.songName.isSelected = true
         binding.songArtist.text = song.artist.name
         Glide.with(this).load(song.artist.pictureBig).circleCrop().into(binding.coverArt)
+
+        history = History(requireContext())
+        history.addHistorySong(song.title, song.artist.name.split(","), song.artist.pictureBig, song.duration, song.preview)
+
+        fav = FavoriteLibrary(requireContext())
+
+        fav.checkFavSong(song.title) { isFavorite ->
+            if (isFavorite) {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+            } else {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart)
+            }
+        }
 
         binding.seekBar.max = 30000
         binding.seekBar.progress = 0
