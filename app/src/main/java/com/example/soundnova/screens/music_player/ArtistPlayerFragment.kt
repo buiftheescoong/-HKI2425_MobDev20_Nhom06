@@ -71,4 +71,7 @@ class ArtistPlayerFragment : Fragment() {
             binding.recyclerViewSongs.adapter = adapterSong
         }
     }
+    override fun onDestroyView() {
+        super.onDestroyView()
+    }
 }

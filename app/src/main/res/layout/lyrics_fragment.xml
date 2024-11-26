@@ -65,7 +65,7 @@
     <ScrollView
         android:id="@+id/lyricsScrollView"
         android:layout_width="0dp"
-        android:layout_height="508dp"
+        android:layout_height="440dp"
         android:padding="16dp"
         app:layout_constraintBottom_toTopOf="@id/relative_layout_for_bottom"
         app:layout_constraintEnd_toEndOf="parent"

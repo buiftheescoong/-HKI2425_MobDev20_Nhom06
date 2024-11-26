@@ -45,8 +45,8 @@ object LyricsApiHelper {
 
 suspend fun main() {
     try {
-        val artist = "Coldplay"
-        val title = "Adventure of a Lifetime"
+        val artist = "Black Pink"
+        val title = "Kill This Love"
 
         val lyrics = LyricsApiHelper.fetchLyrics(artist, title)
         println("Lyrics for '$title' by '$artist':\n$lyrics")

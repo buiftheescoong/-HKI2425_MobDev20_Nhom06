@@ -62,7 +62,7 @@
 
     <fragment
         android:id="@+id/lyricsFragment"
-        android:name="com.example.soundnova.LyricsFragment"
+        android:name="com.example.soundnova.screens.music_player.LyricsFragment"
         android:label="lyrics_fragment"
         tools:layout="@layout/lyrics_fragment">
         <action
