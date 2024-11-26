@@ -1,5 +1,6 @@
 package com.example.soundnova
 
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -7,13 +8,19 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.example.soundnova.screens.home_screen.HomeFragment
+import com.example.soundnova.screens.music_player.MusicPlayerFragment
 import org.hamcrest.Matchers.not
 import org.junit.Rule
 import org.junit.Test
 
 class UIHomeTest {
+
+//    @get:Rule
+//    val activityRule = ActivityScenarioRule(HomeActivity::class.java)
+
     @get:Rule
-    val activityRule = ActivityScenarioRule(MainActivity::class.java)
+    val fragmentScenarioRule = FragmentScenario.launchInContainer(HomeFragment::class.java)
 
     @Test
     fun testHomeUIElementsDisplayed() {

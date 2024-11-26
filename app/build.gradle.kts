@@ -87,6 +87,7 @@ dependencies {
     implementation(libs.androidx.espresso.intents)
     implementation(libs.androidx.ui.test.android)
     implementation(libs.androidx.espresso.contrib)
+    implementation(libs.androidx.fragment.testing)
     testImplementation(libs.junit)
     implementation (libs.androidx.media)
     // Thư viện kiểm thử

@@ -1,5 +1,6 @@
 package com.example.soundnova
 
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -7,6 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import com.example.soundnova.screens.music_player.MusicPlayerFragment
 import com.example.soundnova.utils.setProgress
 import com.example.soundnova.utils.withDrawable
 import org.hamcrest.CoreMatchers.not
@@ -19,7 +21,7 @@ import org.junit.runner.RunWith
 class PlayMusicTest {
 
     @get:Rule
-    val activityRule = ActivityScenarioRule(MainActivity::class.java)
+    val fragmentScenarioRule = FragmentScenario.launchInContainer(MusicPlayerFragment::class.java)
 
     @Test
     fun testInitialSetup() {

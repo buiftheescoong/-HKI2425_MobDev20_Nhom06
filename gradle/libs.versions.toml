@@ -23,6 +23,7 @@ firebaseDatabaseKtx = "21.0.0"
 espressoIntents = "3.6.1"
 uiTestAndroid = "1.7.5"
 espressoContrib = "3.6.1"
+fragmentTesting = "1.8.5"
 
 
 
@@ -57,6 +58,7 @@ androidx-room-common = { group = "androidx.room", name = "room-common", version.
 androidx-espresso-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "espressoIntents" }
 androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android", version.ref = "uiTestAndroid" }
 androidx-espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "espressoContrib" }
+androidx-fragment-testing = { group = "androidx.fragment", name = "fragment-testing", version.ref = "fragmentTesting" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
