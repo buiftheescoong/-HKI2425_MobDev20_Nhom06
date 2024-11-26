@@ -224,6 +224,10 @@ class MusicPlayerFragment : Fragment() {
         binding.backBtn.setOnClickListener {
             findNavController().navigate(R.id.action_musicPlayerFragment_to_homeFragment)
         }
+
+        binding.showFullLyricsButton.setOnClickListener {
+       //     findNavController().navigate()
+        }
     }
 
     private fun playNextSong() {

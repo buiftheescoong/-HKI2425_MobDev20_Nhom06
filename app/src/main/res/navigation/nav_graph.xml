@@ -54,6 +54,21 @@
             app:destination="@id/homeFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_musicPlayerFragment_to_lyricsFragment"
+            app:destination="@id/lyricsFragment"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/lyricsFragment"
+        android:name="com.example.soundnova.LyricsFragment"
+        android:label="lyrics_fragment"
+        tools:layout="@layout/lyrics_fragment">
+        <action
+            android:id="@+id/action_lyricsPlayerFragment_to_musicPlayerFragment"
+            app:destination="@id/musicPlayerFragment"
+            />
     </fragment>
 
     <fragment
