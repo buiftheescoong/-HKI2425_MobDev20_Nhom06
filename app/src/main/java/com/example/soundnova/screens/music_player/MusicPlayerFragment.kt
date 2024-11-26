@@ -185,7 +185,6 @@ class MusicPlayerFragment : Fragment() {
                     currentSong.title,
                     currentSong.artist.name.split(","),
                     currentSong.artist.pictureBig,
-                    currentSong.duration,
                     currentSong.preview
                 )
                 binding.heartBtn.setImageResource(R.drawable.icon_heart_on)

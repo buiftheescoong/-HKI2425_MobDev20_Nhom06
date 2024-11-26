@@ -36,21 +36,7 @@ class SongAdapter(private val songs: Tracks, private val listener: OnItemClickLi
         holder.songName.text = song.title
         holder.songArtists.text = song.artist.name
         Glide.with(holder.itemView.context).load(song.artist.pictureBig).into(holder.songImage)
-//        holder.itemView.setOnClickListener {
-//            val intent = Intent(holder.itemView.context, MusicPlayerActivity::class.java).apply {
-////                putExtra("songName", song.name)
-////                putExtra("artistName", song.artist)
-////                putExtra("songImage", song.imageUrl)
-////                putExtra("song", song)
-////                putExtra("songUrl", song.previewUrl)
-//
-//                putExtra("tracks", songs)
-////                putExtra("track", song)
-//                putExtra("index", position)
-//            }
-//            holder.itemView.context.startActivity(intent)
-//            Log.d("TAG", "2")
-//        }
+
     }
 
     override fun getItemCount(): Int = songs.data.size

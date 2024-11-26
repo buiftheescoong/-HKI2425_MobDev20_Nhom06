@@ -57,7 +57,6 @@ class FavoriteLibrary(private val context: Context) {
         title: String,
         artist: List<String>,
         image: String,
-        duration: Int,
         audioUrl: String,
 //        album: String,
 //        genre: String
