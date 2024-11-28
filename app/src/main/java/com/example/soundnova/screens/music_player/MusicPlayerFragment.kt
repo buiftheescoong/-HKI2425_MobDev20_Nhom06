@@ -22,6 +22,7 @@ import android.media.MediaPlayer
 import android.widget.SeekBar
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.soundnova.FavoriteLibrary
 import com.example.soundnova.History
 import com.example.soundnova.service.LyricsApiHelper
 import kotlinx.coroutines.CoroutineScope
