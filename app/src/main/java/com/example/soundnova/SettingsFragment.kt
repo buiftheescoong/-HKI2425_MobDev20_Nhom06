@@ -39,7 +39,7 @@ class SettingsFragment: Fragment() {
             val name = currentUser.displayName
             val imageUri = currentUser.photoUrl
             if (!name.isNullOrEmpty()) {
-                binding.userName.text = name
+                binding.userName.setText(name)
             }
             if (imageUri != null) {
                 loadAvatar()
@@ -62,7 +62,7 @@ class SettingsFragment: Fragment() {
                 currentUser.updateProfile(profileUpdates)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            binding.userName.text = currentUser.displayName
+                            binding.userName.setText(currentUser.displayName)
                         }
                     }
             }
