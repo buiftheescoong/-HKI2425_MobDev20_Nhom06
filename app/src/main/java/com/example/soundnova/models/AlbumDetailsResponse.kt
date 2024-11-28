@@ -69,7 +69,7 @@ data class AlbumDetailsResponse(
 @Parcelize
 data class Tracks(
     @SerializedName("data")
-    var data: MutableList<TrackData>
+    var data: MutableList<TrackData> = mutableListOf()
 ) : Parcelable
 
 @Parcelize

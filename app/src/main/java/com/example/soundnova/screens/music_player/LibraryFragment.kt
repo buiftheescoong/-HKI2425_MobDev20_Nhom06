@@ -24,8 +24,11 @@ import com.example.soundnova.service.DeezerApiHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class LibraryFragment : Fragment() {
 
@@ -43,92 +46,153 @@ class LibraryFragment : Fragment() {
         return binding.root
     }
 
-    private fun fetchFavoriteSongs() : Tracks {
+//    private suspend fun fetchFavoriteSongs() : Tracks {
+//        val currentUser = firebaseAuth.currentUser
+//        val userEmail = currentUser?.email
+//
+//        if (userEmail == null) {
+//            Log.e("LibraryFragment", "User is not logged in.")
+//        }
+//
+//
+//        db.collection("favorite_library")
+//            .get()
+//            .addOnSuccessListener { documents ->
+//                favoriteSongs.data = mutableListOf() // Reset danh sách trước khi thêm dữ liệu mới
+//                for (document in documents) {
+//                    val idUser = document.getString("idUser")
+//                    if (idUser == userEmail) {
+//                        val song = document.toObject(Song2::class.java)
+//                        val track = songToTrack(song)
+//                        favoriteSongs.data.add(track)
+//
+//                        Log.d(
+//                            "LibraryFragment",
+//                            "Fetched song: ${track.title}, Artist: ${track.artist?.name}"
+//                        )
+//
+//                    }
+//                }
+//                Log.d(
+//                    "LibraryFragment",
+//                    "Fetched song: ${favoriteSongs.data.size}"
+//                )
+//
+//                adapter.notifyDataSetChanged()
+//
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e("LibraryFragment", "Error fetching favorite songs: ", exception)
+//            }
+//        return favoriteSongs
+//    }
+
+    private suspend fun fetchFavoriteSongs(): Tracks = withContext(Dispatchers.IO) {
         val currentUser = firebaseAuth.currentUser
         val userEmail = currentUser?.email
 
         if (userEmail == null) {
             Log.e("LibraryFragment", "User is not logged in.")
+            return@withContext Tracks() // Trả về danh sách rỗng nếu người dùng chưa đăng nhập
         }
 
-        db.collection("favorite_library")
-            .get()
-            .addOnSuccessListener { documents ->
-                favoriteSongs.data = mutableListOf() // Reset danh sách trước khi thêm dữ liệu mới
-                for (document in documents) {
-                    val idUser = document.getString("idUser")
-                    if (idUser == userEmail) {
-                        val song = document.toObject(Song2::class.java)
-                        val track = songToTrack(song)
-                        favoriteSongs.data.add(track)
+        try {
+            // Lấy dữ liệu từ Firestore
+            val documents = db.collection("favorite_library")
+                .get()
+                .await()  // Đợi Firebase trả về kết quả
 
-                        Log.d(
-                            "LibraryFragment",
-                            "Fetched song: ${track.title}, Artist: ${track.artist?.name}"
-                        )
+            val favoriteSongs = Tracks() // Tạo một đối tượng Tracks mới
+            favoriteSongs.data = mutableListOf() // Reset danh sách bài hát yêu thích
 
-                    }
+            // Lặp qua các tài liệu và thêm bài hát yêu thích vào danh sách
+            for (document in documents) {
+                val idUser = document.getString("idUser")
+                if (idUser == userEmail) {
+                    val song = document.toObject(Song2::class.java)
+                    val track = songToTrack(song)
+                    favoriteSongs.data.add(track)
+
+                    Log.d(
+                        "LibraryFragment",
+                        "Fetched song: ${track.title}, Artist: ${track.artist?.name}"
+                    )
                 }
-                Log.d(
-                    "LibraryFragment",
-                    "Fetched song: ${favoriteSongs.data.size}"
-                )
-
-                adapter.notifyDataSetChanged()
-
             }
-            .addOnFailureListener { exception ->
-                Log.e("LibraryFragment", "Error fetching favorite songs: ", exception)
-            }
-        return favoriteSongs
+
+            Log.d("LibraryFragment", "Fetched song count: ${favoriteSongs.data.size}")
+
+            return@withContext favoriteSongs // Trả về kết quả
+
+        } catch (exception: Exception) {
+            Log.e("LibraryFragment", "Error fetching favorite songs: ", exception)
+            throw exception // Ném lỗi nếu có
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val binding = LibraryBinding.bind(view)
 
-        // Lấy danh sách bài hát yêu thích từ Firestore
         lifecycleScope.launch {
-            val track = fetchFavoriteSongs() // Gọi hàm để lấy dữ liệu
-            Log.d("LibraryFragment1", "Fetched song: ${track.data.size}")
+            val tracks = fetchFavoriteSongs()
+            Log.d("LibraryFragment1", "Fetched favorite tracks: ${tracks.data.size}")
+
             binding.libraryRecyclerView.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = SongAdapter(track, object : OnItemClickTrackListener {
+
+            adapter = SongAdapter(tracks, object : OnItemClickTrackListener {
                 override fun onItemClick(position: Int, tracks: Tracks) {
                     findNavController().navigate(
                         R.id.action_lib_to_music,
                         Bundle().apply {
-
                             putParcelable("tracks", tracks)
                             putInt("position", position)
                         }
                     )
-                    Log.d("LibraryFragment","da an")
                 }
             }, 1)
 
-
             binding.libraryRecyclerView.adapter = adapter
-
         }
     }
 
 
+//    fun songToTrack(song: Song2): TrackData {
+//            return TrackData(
+//                id = null,
+//                title = song.title,
+//                duration = null,
+//                artist = Artist(
+//                    id = 123456789,
+//                    name = song.artist!!.getOrNull(0),
+//                    pictureBig = song.image
+//                ),
+//                album = null,
+//                preview = song.audioUrl,
+//                isLiked = true
+//            )
+//        }
+
+
     fun songToTrack(song: Song2): TrackData {
-            return TrackData(
-                id = null, // Lấy id nếu có
-                title = song.title,
-                duration = null,
-                artist = Artist(
-                    id = null,
-                    name = song.artist?.getOrNull(0) ?: "Unknown",
-                    pictureBig = song.image
-                ),
-                album = null,
-                preview = song.audioUrl
-                    ?: "No preview available",
-                isLiked = false
-            )
-        }
+        return TrackData(
+            id = 1,
+            title = song.title,
+            duration = 20000,
+            artist = Artist(
+                id = 123456789,
+                name = song.artist!!.getOrNull(0),
+                pictureBig = song.image
+            ),
+            album = Album(1,"1","1","1","1",Artist(
+                id = 123456789,
+                name = song.artist!!.getOrNull(0),
+                pictureBig = song.image
+            ),null),
+            preview = song.audioUrl,
+            isLiked = true
+        )
+    }
+
 
 }
