@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,7 +20,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // Sử dụng `androidx.test.runner.AndroidJUnitRunner` thay vì `android.support.test.runner.AndroidJUnitRunner`
+        // Sử dụng androidx.test.runner.AndroidJUnitRunner thay vì android.support.test.runner.AndroidJUnitRunner
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables {
@@ -63,6 +64,11 @@ android {
 }
 
 dependencies {
+    configurations {
+        all {
+            exclude(group = "com.google.protobuf", module = "protobuf-lite")
+        }
+    }
     // Các thư viện AndroidX và Firebase
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -86,10 +92,9 @@ dependencies {
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.espresso.intents)
     implementation(libs.androidx.ui.test.android)
+
     implementation(libs.androidx.fragment.testing)
     implementation(libs.androidx.espresso.contrib)
-//    implementation(libs.androidx.espresso.contrib) 11
-//    implementation(libs.androidx.fragment.testing) 11
     testImplementation(libs.junit)
     implementation (libs.androidx.media)
     // Thư viện kiểm thử
