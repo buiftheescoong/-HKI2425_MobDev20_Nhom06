@@ -28,7 +28,7 @@
 
     <fragment
         android:id="@+id/libraryFragment"
-        android:name="com.example.soundnova.LibraryFragment"
+        android:name="com.example.soundnova.screens.music_player.LibraryFragment"
         android:label="library_fragment"
         tools:layout="@layout/library" />
 

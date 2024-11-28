@@ -1,4 +1,4 @@
-package com.example.soundnova
+package com.example.soundnova.screens.music_player
 
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.soundnova.Song2
 import com.example.soundnova.databinding.LibraryBinding
 import com.example.soundnova.screens.adapters.OnItemClickSong2Listener
 import com.example.soundnova.screens.adapters.SongAdapter2
@@ -59,18 +60,18 @@ class LibraryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val binding = LibraryBinding.bind(view)
+        // Lấy danh sách bài hát yêu thích từ Firestore
+        fetchFavoriteSongs()
+        binding.libraryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         adapter = SongAdapter2(favoriteSongs, object : OnItemClickSong2Listener {
             override fun onItemClick(position: Int, song: Song2) {
                 // Xử lý khi người dùng click vào một bài hát
                 Log.d("LibraryFragment", "Clicked song: ${song.title}")
             }
-        }, viewType = 1) // hoặc viewType = 0 tùy theo layout bạn muốn sử dụng
-        binding.libraryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        }, 1) // hoặc viewType = 0 tùy theo layout bạn muốn sử dụng
         binding.libraryRecyclerView.adapter = adapter
-
-        // Lấy danh sách bài hát yêu thích từ Firestore
-        fetchFavoriteSongs()
     }
 
 
