@@ -49,13 +49,13 @@ class ArtistPlayerFragment : Fragment() {
     }
 
     private fun playArtist(index: Int) {
-        val artist = artists.data[index]
+        val artist = artists.data!![index]
         Glide.with(this).load(artist.pictureBig).into(binding.imageArtistCover)
         binding.textArtist.text = artist.name
         binding.textArtist.isSelected = true
 
         lifecycleScope.launch {
-            val tracks = DeezerApiHelper.getTracksOfArtist(artist.id)
+            val tracks = DeezerApiHelper.getTracksOfArtist(artist.id!!)
             for (track in tracks.data) {
                 track.artist = artist
             }

@@ -108,14 +108,14 @@ class MusicPlayerFragment : Fragment() {
 
                 val currentSong = tracks.data[currentSongIndex]
                 fav.addFavSong(
-                    currentSong.title,
-                    currentSong.artist.name.split(","),
-                    currentSong.artist.pictureBig,
-                    currentSong.preview
+                    currentSong.title!!,
+                    currentSong.artist!!.name!!.split(","),
+                    currentSong.artist!!.pictureBig!!,
+                    currentSong.preview!!
                 )
                 binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
             } else {
-                fav.removeFavSong(tracks.data[currentSongIndex].title)
+                fav.removeFavSong(tracks.data[currentSongIndex]!!.title!!)
                 binding.heartBtn.setImageResource(R.drawable.icon_heart)
             }
         }
@@ -195,7 +195,7 @@ class MusicPlayerFragment : Fragment() {
             } else {
                 val serverUrl = "https://a891-222-252-104-249.ngrok-free.app/process-audio" // URL server
                 CoroutineScope(Dispatchers.Main).launch {
-                    val karaokePath = sendSongUrlToServer(song.id, song.preview, serverUrl, requireContext())
+                    val karaokePath = sendSongUrlToServer(song.id!!, song.preview!!, serverUrl, requireContext())
                     if (karaokePath != null) {
                         song.karaokeTrack = karaokePath
                         playKaraokeFromPath(karaokePath)
@@ -215,7 +215,7 @@ class MusicPlayerFragment : Fragment() {
         }
         playSong(currentSongIndex)
         fav = FavoriteLibrary(requireContext())
-        fav.checkFavSong(tracks.data[currentSongIndex].title) { isFavorite ->
+        fav.checkFavSong(tracks.data!![currentSongIndex].title!!) { isFavorite ->
             if (isFavorite) {
                 binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
             } else {
@@ -236,7 +236,7 @@ class MusicPlayerFragment : Fragment() {
         }
         playSong(currentSongIndex)
         fav = FavoriteLibrary(requireContext())
-        fav.checkFavSong(tracks.data[currentSongIndex].title) { isFavorite ->
+        fav.checkFavSong(tracks.data!![currentSongIndex].title!!) { isFavorite ->
             if (isFavorite) {
                 binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
             } else {
@@ -251,18 +251,18 @@ class MusicPlayerFragment : Fragment() {
         val song = tracks.data[index]
         lifecycleScope.launch {
             try {
-                currentSongLyrics = LyricsApiHelper.fetchLyrics(song.artist.name, song.title)
+                currentSongLyrics = LyricsApiHelper.fetchLyrics(song.artist!!.name!!, song.title!!)
             } catch (e: Exception) {
                 Log.e("LyricsFragment", "Error fetching lyrics", e)
             }
         }
         binding.songName.text = song.title
         binding.songName.isSelected = true
-        binding.songArtist.text = song.artist.name
-        Glide.with(this).load(song.artist.pictureBig).circleCrop().into(binding.coverArt)
+        binding.songArtist.text = song.artist!!.name
+        Glide.with(this).load(song.artist!!.pictureBig).circleCrop().into(binding.coverArt)
 
         fav = FavoriteLibrary(requireContext())
-        fav.checkFavSong(tracks.data[currentSongIndex].title) { isFavorite ->
+        fav.checkFavSong(tracks.data!![currentSongIndex].title!!) { isFavorite ->
             if (isFavorite) {
                 binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
             } else {

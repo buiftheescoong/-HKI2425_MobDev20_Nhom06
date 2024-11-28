@@ -30,7 +30,17 @@
         android:id="@+id/libraryFragment"
         android:name="com.example.soundnova.screens.music_player.LibraryFragment"
         android:label="library_fragment"
-        tools:layout="@layout/library" />
+        tools:layout="@layout/library" >
+        <argument
+            android:name="tracks"
+            app:argType="com.example.soundnova.models.Tracks" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_lib_to_music"
+            app:destination="@id/musicPlayerFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/settingsFragment"

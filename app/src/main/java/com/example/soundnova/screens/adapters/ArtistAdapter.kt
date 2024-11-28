@@ -31,10 +31,10 @@ class ArtistAdapter(private val listArtist: Artists, private val listener: OnIte
     }
 
     override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
-        val artist = listArtist.data[position]
+        val artist = listArtist.data!![position]
         holder.artistName.text = artist.name
         Glide.with(holder.itemView.context).load(artist.pictureBig).into(holder.artistImage)
     }
 
-    override fun getItemCount(): Int = listArtist.data.size
+    override fun getItemCount(): Int = listArtist.data!!.size
 }
