@@ -42,5 +42,7 @@ data class TrackData(
 
     @SerializedName("preview")
     val preview: String,
+
+    var karaokeTrack: String? = null,
     var isLiked: Boolean = false,
 ) : Parcelable

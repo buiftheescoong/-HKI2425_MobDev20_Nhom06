@@ -1,36 +1,36 @@
 package com.example.soundnova.screens.music_player
 
-import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
-import com.example.soundnova.R
-import com.example.soundnova.databinding.HomeActivityBinding
-import com.example.soundnova.databinding.PlayerActivityBinding
-import com.example.soundnova.models.Tracks
-import android.view.animation.LinearInterpolator
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.media.MediaPlayer
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.soundnova.FavoriteLibrary
 import com.example.soundnova.History
+import com.example.soundnova.R
+import com.example.soundnova.databinding.PlayerActivityBinding
+import com.example.soundnova.file.sendSongUrlToServer
+import com.example.soundnova.models.Tracks
 import com.example.soundnova.service.LyricsApiHelper
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.internal.concurrent.formatDuration
+import java.io.File
 
 
 class MusicPlayerFragment : Fragment() {
@@ -62,70 +62,6 @@ class MusicPlayerFragment : Fragment() {
         binding = PlayerActivityBinding.inflate(inflater, container, false)
         return binding.root
     }
-
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        Log.d("MusicPlayerFragment", "MusicPlayerFragment created")
-//
-//        val binding = PlayerActivityBinding.bind(view)
-//        val tracks = arguments?.getParcelable<Tracks>("tracks")
-//        val position = arguments?.getInt("position") ?: 0
-//        tracks?.let {
-//            viewModel.setTrack(it, position)
-//        }
-//        rotationAnimator = ObjectAnimator.ofFloat(binding.coverArt, "rotation", 0f, 360f).apply {
-//            duration = 30000L
-//            repeatCount = ObjectAnimator.INFINITE
-//            interpolator = LinearInterpolator()
-//        }
-//
-//        viewModel.currentTrack.observe(viewLifecycleOwner) { track ->
-//            binding.songName.text = track.title
-//            binding.songArtist.text = track.artist.name
-//            Glide.with(this).load(track.artist.pictureBig).into(binding.coverArt)
-//        }
-//
-//        binding.playPause.setOnClickListener {
-//            viewModel.togglePlayPause()
-//        }
-//
-//        binding.idNext.setOnClickListener {
-//            viewModel.playNext()
-//        }
-//
-//        binding.idPrev.setOnClickListener {
-//            viewModel.playPrevious()
-//        }
-//
-//        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-//            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-//                if (fromUser) {
-//                    binding.durationPlayed.text = formatDuration(progress)
-//                }
-//            }
-//
-//            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-//                stopSeekBarUpdate()
-//            }
-//
-//            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-//                seekBar?.let {
-//                    viewModel.mediaPlayer.seekTo(it.progress)
-//                    startSeekBarUpdate()
-//                }
-//            }
-//        })
-//
-//        binding.heartBtn.setOnClickListener {
-//            heartBoolean = !heartBoolean
-//            val heartIcon = if (heartBoolean) {
-//                R.drawable.icon_heart_on
-//            } else {
-//                R.drawable.icon_heart
-//            }
-//            binding.heartBtn.setImageResource(heartIcon)
-//        }
-//    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = PlayerActivityBinding.bind(view)
@@ -244,6 +180,31 @@ class MusicPlayerFragment : Fragment() {
         binding.showFullLyricsButton.setOnClickListener {
             findNavController().navigate(R.id.action_musicPlayerFragment_to_lyricsFragment)
         }
+
+        binding.karaokeBtn.setOnClickListener {
+            val song = tracks.data.get(currentSongIndex)
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.reset()
+            }
+            val karaokeFile = File(requireContext().getExternalFilesDir(null), "karaoke_${song.id}.wav")
+            if (karaokeFile.exists()) {
+                song.karaokeTrack = karaokeFile.absolutePath
+                playKaraokeFromPath(song.karaokeTrack!!)
+                Log.e("MusicPlayerFragment", "Playing karaoke from file: ${song.karaokeTrack}")
+            } else {
+                val serverUrl = "https://a891-222-252-104-249.ngrok-free.app/process-audio" // URL server
+                CoroutineScope(Dispatchers.Main).launch {
+                    val karaokePath = sendSongUrlToServer(song.id, song.preview, serverUrl, requireContext())
+                    if (karaokePath != null) {
+                        song.karaokeTrack = karaokePath
+                        playKaraokeFromPath(karaokePath)
+                        Log.e("MusicPlayerFragment", "Download file: ${song.karaokeTrack}")
+                    } else {
+                        Toast.makeText(requireContext(), "Không thể tải nhạc karaoke", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        }}
     }
 
     private fun playNextSong() {
@@ -344,6 +305,8 @@ class MusicPlayerFragment : Fragment() {
         }
     }
 
+
+
     private fun stopRotationAnimator() {
         rotationAnimator.pause()
     }
@@ -381,6 +344,17 @@ class MusicPlayerFragment : Fragment() {
         return Color.rgb(red, green, blue)
     }
 
+    private fun playKaraokeFromPath(path: String) {
+        try {
+            mediaPlayer.reset()
+            mediaPlayer.setDataSource(path)
+            mediaPlayer.prepare()
+            mediaPlayer.start()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
@@ -390,4 +364,8 @@ class MusicPlayerFragment : Fragment() {
         stopSeekBarUpdate()
         stopRotationAnimator()
     }
+
+
+
+
 }
