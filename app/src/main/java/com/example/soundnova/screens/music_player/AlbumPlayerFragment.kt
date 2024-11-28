@@ -50,7 +50,7 @@ class AlbumPlayerFragment: Fragment() {
     }
 
     private fun playAlbum(Index: Int) {
-        val album = albums.data[Index]
+        val album = albums.data!![Index]
         Glide.with(this).load(album.coverBig).into(binding.imageAlbumCover)
         binding.textAlbumName.text = album.title
         binding.textAlbumName.isSelected = true
@@ -60,7 +60,7 @@ class AlbumPlayerFragment: Fragment() {
         lifecycleScope.launch {
             //val tracks = album.tracks
             val artist = DeezerApiHelper.getArtist()
-            val tracks = DeezerApiHelper.getTracksOfAlbum(album.id)
+            val tracks = DeezerApiHelper.getTracksOfAlbum(album.id!!)
             for (track in tracks.data) {
                 track.artist = artist
                 track.album = album

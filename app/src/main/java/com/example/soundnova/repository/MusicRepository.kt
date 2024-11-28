@@ -11,14 +11,14 @@ class MusicRepository(private val musicDatabase: MusicDatabase) {
 
     suspend fun saveTrackData(track: TrackData) {
         val trackEntity = TrackEntity(
-            id = track.id,
-            title = track.title,
-            artistId = track.artist.id,
-            artistName = track.artist.name,
-            albumId = track.album.id,
-            albumTitle = track.album.title,
-            image = track.artist.pictureBig,
-            preview = track.preview,
+            id = track.id!!,
+            title = track.title!!,
+            artistId = track.artist!!.id!!,
+            artistName = track.artist!!.name!!,
+            albumId = track.album!!.id!!,
+            albumTitle = track.album!!.title!!,
+            image = track.artist!!.pictureBig!!,
+            preview = track.preview!!,
         )
         trackDao.insertTracks(listOf(trackEntity))
     }
