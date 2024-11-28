@@ -193,7 +193,7 @@ class MusicPlayerFragment : Fragment() {
                 playKaraokeFromPath(song.karaokeTrack!!)
                 Log.e("MusicPlayerFragment", "Playing karaoke from file: ${song.karaokeTrack}")
             } else {
-                val serverUrl = "https://a891-222-252-104-249.ngrok-free.app/process-audio" // URL server
+                val serverUrl = "https://d43e-123-30-177-118.ngrok-free.app/process-audio" // URL server
                 CoroutineScope(Dispatchers.Main).launch {
                     val karaokePath = sendSongUrlToServer(song.id, song.preview, serverUrl, requireContext())
                     if (karaokePath != null) {

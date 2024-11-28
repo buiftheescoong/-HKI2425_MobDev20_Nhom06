@@ -86,6 +86,8 @@ dependencies {
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.espresso.intents)
     implementation(libs.androidx.ui.test.android)
+    implementation(libs.androidx.fragment.testing)
+    implementation(libs.androidx.espresso.contrib)
 //    implementation(libs.androidx.espresso.contrib) 11
 //    implementation(libs.androidx.fragment.testing) 11
     testImplementation(libs.junit)
