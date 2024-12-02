@@ -214,14 +214,14 @@ class MusicPlayerFragment : Fragment() {
             (currentSongIndex + 1) % tracks.data.size
         }
         playSong(currentSongIndex)
-        fav = FavoriteLibrary(requireContext())
-        fav.checkFavSong(tracks.data!![currentSongIndex].title!!) { isFavorite ->
-            if (isFavorite) {
-                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
-            } else {
-                binding.heartBtn.setImageResource(R.drawable.icon_heart)
-            }
-        }
+//        fav = FavoriteLibrary(requireContext())
+//        fav.checkFavSong(tracks.data!![currentSongIndex].title!!) { isFavorite ->
+//            if (isFavorite) {
+//                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+//            } else {
+//                binding.heartBtn.setImageResource(R.drawable.icon_heart)
+//            }
+//        }
     }
 
     private fun playPreviousSong() {
@@ -235,14 +235,14 @@ class MusicPlayerFragment : Fragment() {
             }
         }
         playSong(currentSongIndex)
-        fav = FavoriteLibrary(requireContext())
-        fav.checkFavSong(tracks.data!![currentSongIndex].title!!) { isFavorite ->
-            if (isFavorite) {
-                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
-            } else {
-                binding.heartBtn.setImageResource(R.drawable.icon_heart)
-            }
-        }
+//        fav = FavoriteLibrary(requireContext())
+//        fav.checkFavSong(tracks.data!![currentSongIndex].title!!) { isFavorite ->
+//            if (isFavorite) {
+//                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+//            } else {
+//                binding.heartBtn.setImageResource(R.drawable.icon_heart)
+//            }
+//        }
     }
 
     private fun playSong(index: Int) {
@@ -271,8 +271,8 @@ class MusicPlayerFragment : Fragment() {
         }
 
 
-//        history = History(requireContext())
-//        history.addHistorySong(song.title, song.artist.name.split(","), song.artist.pictureBig, song.duration, song.preview)
+        history = History(requireContext())
+        history.addHistorySong(song.title!!, song.artist!!.name!!.split(","), song.artist!!.pictureBig!!, song.preview!!)
 
         binding.seekBar.max = 30000
         binding.seekBar.progress = 0

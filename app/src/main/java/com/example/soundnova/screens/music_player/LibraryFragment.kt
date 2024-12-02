@@ -46,47 +46,6 @@ class LibraryFragment : Fragment() {
         return binding.root
     }
 
-//    private suspend fun fetchFavoriteSongs() : Tracks {
-//        val currentUser = firebaseAuth.currentUser
-//        val userEmail = currentUser?.email
-//
-//        if (userEmail == null) {
-//            Log.e("LibraryFragment", "User is not logged in.")
-//        }
-//
-//
-//        db.collection("favorite_library")
-//            .get()
-//            .addOnSuccessListener { documents ->
-//                favoriteSongs.data = mutableListOf() // Reset danh sách trước khi thêm dữ liệu mới
-//                for (document in documents) {
-//                    val idUser = document.getString("idUser")
-//                    if (idUser == userEmail) {
-//                        val song = document.toObject(Song2::class.java)
-//                        val track = songToTrack(song)
-//                        favoriteSongs.data.add(track)
-//
-//                        Log.d(
-//                            "LibraryFragment",
-//                            "Fetched song: ${track.title}, Artist: ${track.artist?.name}"
-//                        )
-//
-//                    }
-//                }
-//                Log.d(
-//                    "LibraryFragment",
-//                    "Fetched song: ${favoriteSongs.data.size}"
-//                )
-//
-//                adapter.notifyDataSetChanged()
-//
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.e("LibraryFragment", "Error fetching favorite songs: ", exception)
-//            }
-//        return favoriteSongs
-//    }
-
     private suspend fun fetchFavoriteSongs(): Tracks = withContext(Dispatchers.IO) {
         val currentUser = firebaseAuth.currentUser
         val userEmail = currentUser?.email
