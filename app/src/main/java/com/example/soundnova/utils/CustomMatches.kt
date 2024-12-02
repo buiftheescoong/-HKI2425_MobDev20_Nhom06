@@ -1,5 +1,6 @@
 package com.example.soundnova.utils
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.BitmapDrawable
 import android.view.View
 import android.widget.ImageView
@@ -13,6 +14,7 @@ fun withDrawable(resourceId: Int): Matcher<View> {
             description.appendText("with drawable resource id: $resourceId")
         }
 
+        @SuppressLint("UseCompatLoadingForDrawables")
         override fun matchesSafely(imageView: ImageView): Boolean {
             val expectedDrawable = imageView.context.getDrawable(resourceId) as? BitmapDrawable
             val actualDrawable = imageView.drawable as? BitmapDrawable

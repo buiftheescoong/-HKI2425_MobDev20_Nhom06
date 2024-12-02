@@ -103,4 +103,10 @@
             app:destination="@id/musicPlayerFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/changePassword"
+        android:name="com.example.soundnova.ChangePassword"
+        android:label="change_password"
+        tools:layout="@layout/change_password" />
+
 </navigation>

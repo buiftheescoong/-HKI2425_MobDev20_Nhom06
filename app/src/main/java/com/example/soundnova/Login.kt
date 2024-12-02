@@ -57,10 +57,10 @@ class Login : AppCompatActivity() {
 //            else note.setText("Password is empty")
 
             if (email.isEmpty()) {
-                note.setText("Email is empty")
+                note.text = "Email is empty"
             }
             else if (password.isEmpty()) {
-                note.setText("Password is empty")
+                note.text = "Password is empty"
             }
             else {
                 firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
@@ -71,7 +71,7 @@ class Login : AppCompatActivity() {
                         startActivity(intent)
                         finish()
                     } else {
-                        note.setText("Email or Password is not correct")
+                        note.text = "Email or Password is not correct"
                         Toast.makeText(this,  "Email or Password is not correct", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -79,15 +79,17 @@ class Login : AppCompatActivity() {
         }
 
         textViewSignUp.setOnClickListener {
-            val intent = Intent(applicationContext, Register::class.java)
-            startActivity(intent)
-            finish()
+            supportFragmentManager.beginTransaction()
+                .replace(android.R.id.content, Register())
+                .addToBackStack(null)
+                .commit()
         }
 
         textViewForgotPassword.setOnClickListener {
-            val intent = Intent(applicationContext, ForgotPassword::class.java)
-            startActivity(intent)
-            finish()
+            supportFragmentManager.beginTransaction()
+                .replace(android.R.id.content, ForgotPassword())
+                .addToBackStack(null)
+                .commit()
         }
     }
 
