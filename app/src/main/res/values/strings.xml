@@ -15,7 +15,7 @@
     <string name="textViewSignIn">You already have an account. Click</string>
     <string name="textWelcome">Welcome back!</string>
     <string name="textFeelLikeToday">What do you feel like today?</string>
-    <string name="editTextSearch">Search song, playlist, artist…</string>
+    <string name="editTextSearch">What do you want to listen to?</string>
     <string name="tabRecent">Recent</string>
     <string name="tabTop50">Top 50</string>
     <string name="tabChill">Chill</string>
