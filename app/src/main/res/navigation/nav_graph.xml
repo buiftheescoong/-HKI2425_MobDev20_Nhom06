@@ -24,7 +24,18 @@
         android:id="@+id/searchFragment"
         android:name="com.example.soundnova.SearchFragment"
         android:label="search_fragment"
-        tools:layout="@layout/search"/>
+        tools:layout="@layout/search" >
+        <argument
+            android:name="tracks"
+            app:argType="com.example.soundnova.models.Tracks" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_search_to_music"
+            app:destination="@id/musicPlayerFragment"/>
+    </fragment>
+
 
     <fragment
         android:id="@+id/libraryFragment"

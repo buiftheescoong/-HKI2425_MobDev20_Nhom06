@@ -16,10 +16,8 @@ import com.example.soundnova.models.Album
 import com.example.soundnova.models.Artist
 import com.example.soundnova.models.TrackData
 import com.example.soundnova.models.Tracks
-import com.example.soundnova.screens.adapters.OnItemClickSong2Listener
 import com.example.soundnova.screens.adapters.OnItemClickTrackListener
 import com.example.soundnova.screens.adapters.SongAdapter
-import com.example.soundnova.screens.adapters.SongAdapter2
 import com.example.soundnova.service.DeezerApiHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -32,7 +30,6 @@ import kotlinx.coroutines.withContext
 
 class LibraryFragment : Fragment() {
 
-    private var favoriteSongs: Tracks = Tracks(mutableListOf()) // Khởi tạo danh sách trống
     private lateinit var binding: LibraryBinding
     private lateinit var adapter: SongAdapter // Sử dụng adapter mới
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -115,22 +112,6 @@ class LibraryFragment : Fragment() {
         }
     }
 
-
-//    fun songToTrack(song: Song2): TrackData {
-//            return TrackData(
-//                id = null,
-//                title = song.title,
-//                duration = null,
-//                artist = Artist(
-//                    id = 123456789,
-//                    name = song.artist!!.getOrNull(0),
-//                    pictureBig = song.image
-//                ),
-//                album = null,
-//                preview = song.audioUrl,
-//                isLiked = true
-//            )
-//        }
 
 
     fun songToTrack(song: Song2): TrackData {

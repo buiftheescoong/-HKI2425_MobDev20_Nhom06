@@ -75,7 +75,12 @@ class History(private val context: Context) {
         // Lấy số lượng tài liệu hiện có để sinh ID số nguyên mới
         historyCollection.get()
             .addOnSuccessListener { documents ->
-                val newId = (documents.size() + 1) // Sinh ID số dựa trên số lượng tài liệu hiện tại
+                // Tìm ID lớn nhất hiện tại hoặc bắt đầu từ 0 nếu chưa có tài liệu nào
+                val maxId = documents.documents
+                    .mapNotNull { it.id.toLongOrNull() }
+                    .maxOrNull() ?: 0L
+
+                val newId = maxId + 1 // Sinh ID mới tăng dần
 
                 // Tạo đối tượng SongData với ID mới
                 val newSong = SongData(
@@ -84,16 +89,16 @@ class History(private val context: Context) {
                     artist = artist,
                     image = image,
                     audioUrl = audioUrl,
-                    id = newId // Gán ID số
+                    id = newId.toInt() // Chuyển ID về kiểu Int (nếu cần)
                 )
 
-                // Thêm tài liệu vào Firestore
-                historyCollection.document(newId.toString()) // Dùng ID số làm ID tài liệu
+                // Thêm tài liệu với ID mới
+                historyCollection.document(newId.toString()) // ID vẫn được lưu là số
                     .set(newSong)
                     .addOnSuccessListener {
                         Log.d("Song", "DocumentSnapshot added with ID: $newId")
 
-                        // Gọi hàm sắp xếp lại ID sau khi thêm bài hát
+                        // Gọi hàm sắp xếp lại ID (nếu cần)
                         reorderDocumentIds()
                     }
                     .addOnFailureListener { exception ->
@@ -117,7 +122,7 @@ class History(private val context: Context) {
         try {
             // Lấy dữ liệu từ Firestore
             val documents = db.collection("history")
-                .orderBy("id", com.google.firebase.firestore.Query.Direction.DESCENDING) // Sắp xếp giảm dần
+                .orderBy("id", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
                 .await()  // Đợi Firebase trả về kết quả
 
