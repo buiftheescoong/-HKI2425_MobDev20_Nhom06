@@ -64,13 +64,17 @@
             app:destination="@id/lyricsFragment" />
         <action
             android:id="@+id/action_mucsic_to_record"
-            app:destination="@id/recordingFragment"></action>
+            app:destination="@id/karaokeFragment"/>
     </fragment>
 
+<!--    <fragment-->
+<!--        android:id="@+id/recordingFragment"-->
+<!--        android:name="com.example.soundnova.screens.music_player.RecordingFragment"-->
+<!--        tools:layout="@layout/record"/>-->
     <fragment
-        android:id="@+id/recordingFragment"
-        android:name="com.example.soundnova.screens.music_player.RecordingFragment"
-        tools:layout="@layout/record"/>
+        android:id="@+id/karaokeFragment"
+        android:name="com.example.soundnova.screens.music_player.KaraokeFragment"
+        tools:layout="@layout/karaoke"/>
 
     <fragment
         android:id="@+id/lyricsFragment"

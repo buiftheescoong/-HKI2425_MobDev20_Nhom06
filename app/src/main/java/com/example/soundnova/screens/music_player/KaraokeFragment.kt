@@ -13,13 +13,14 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.soundnova.databinding.KaraokeBinding
 import com.example.soundnova.databinding.RecordBinding
 import java.io.File
 import java.io.IOException
 
-class RecordingFragment : Fragment() {
+class KaraokeFragment : Fragment() {
 
-    private var _binding: RecordBinding? = null
+    private var _binding: KaraokeBinding? = null
     private val binding get() = _binding!!
 
     private var mediaRecorder: MediaRecorder? = null
@@ -29,7 +30,7 @@ class RecordingFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = RecordBinding.inflate(inflater, container, false)
+        _binding =KaraokeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -56,11 +57,11 @@ class RecordingFragment : Fragment() {
         outputFile = "${requireContext().getExternalFilesDir(Environment.DIRECTORY_MUSIC)}/recording.3gp"
 
         // Set up button listeners
-        binding.recordButton.setOnClickListener {
+        binding.btnMuteMic.setOnClickListener {
             startRecording()
         }
 
-        binding.stopButton.setOnClickListener {
+        binding.btnStop.setOnClickListener {
             stopRecording()
         }
     }
@@ -75,12 +76,10 @@ class RecordingFragment : Fragment() {
                 prepare()
                 start()
             }
-            binding.statusText.text = "Status: Recording..."
-            binding.recordButton.isEnabled = false
-            binding.stopButton.isEnabled = true
+            binding.btnMuteMic.isEnabled = false
+            binding.btnStop.isEnabled = true
         } catch (e: IOException) {
             e.printStackTrace()
-            binding.statusText.text = "Status: Error"
         }
     }
 
@@ -94,9 +93,8 @@ class RecordingFragment : Fragment() {
         // Lưu file vào thư mục công khai
         saveRecordingToPublicStorage()
 
-        binding.statusText.text = "Status: Recording Saved"
-        binding.recordButton.isEnabled = true
-        binding.stopButton.isEnabled = false
+        binding.btnMuteMic.isEnabled = true
+        binding.btnStop.isEnabled = false
     }
 
     private fun saveRecordingToPublicStorage() {
