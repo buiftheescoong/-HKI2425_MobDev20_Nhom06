@@ -82,6 +82,7 @@ class SignInTest : BaseTest() {
 
     @Test
     fun testEmptyEmail() {
+        fun testEmptyEmail() {
 
             idlingResource.increment()
 
@@ -91,7 +92,7 @@ class SignInTest : BaseTest() {
 
             onView(withId(R.id.note)).check(matches(withText("Email is empty")))
             idlingResource.decrement()
-
+        }
     } //pass
     @Test
     fun testInvalidUsernameValidPassword() {
@@ -110,65 +111,75 @@ class SignInTest : BaseTest() {
 
     @Test
     fun testInvalidUsernameInvalidPassword() {
-        countingIdlingResource.increment()
-        onView(withId(R.id.editTextSignInUsername))
-            .perform(typeText("invalid@example.com"))
-        onView(withId(R.id.editTextSignInPassword))
-            .perform(typeText("wrongPassword"))
-        onView(withId(R.id.buttonConfirmLogin)).perform(click())
-        Thread.sleep(1000) // Wait for the note to update
-        onView(withId(R.id.note)).check(matches(withText("Email or Password is not correct")))
-        countingIdlingResource.decrement()
+        fun testInvalidUsernameInvalidPassword() {
+            countingIdlingResource.increment()
+            onView(withId(R.id.editTextSignInUsername))
+                .perform(typeText("invalid@example.com"))
+            onView(withId(R.id.editTextSignInPassword))
+                .perform(typeText("wrongPassword"))
+            onView(withId(R.id.buttonConfirmLogin)).perform(click())
+            Thread.sleep(1000) // Wait for the note to update
+            onView(withId(R.id.note)).check(matches(withText("Email or Password is not correct")))
+            countingIdlingResource.decrement()
+        }
     }
 
     @Test
     fun testInvalidUsernameEmptyPassword() {
-        countingIdlingResource.increment()
-        onView(withId(R.id.editTextSignInUsername))
-            .perform(typeText("invalid@example.com"))
-        onView(withId(R.id.editTextSignInPassword))
-            .perform(typeText(""))
-        onView(withId(R.id.buttonConfirmLogin)).perform(click())
-        Thread.sleep(1000) // Wait for the note to update
-        onView(withId(R.id.note)).check(matches(withText("Password is empty")))
-        countingIdlingResource.decrement()
+        fun testInvalidUsernameEmptyPassword() {
+            countingIdlingResource.increment()
+            onView(withId(R.id.editTextSignInUsername))
+                .perform(typeText("invalid@example.com"))
+            onView(withId(R.id.editTextSignInPassword))
+                .perform(typeText(""))
+            onView(withId(R.id.buttonConfirmLogin)).perform(click())
+            Thread.sleep(1000) // Wait for the note to update
+            onView(withId(R.id.note)).check(matches(withText("Password is empty")))
+            countingIdlingResource.decrement()
+        }
     }
 
     @Test
     fun testEmptyUsernameValidPassword() {
-        countingIdlingResource.increment()
-        onView(withId(R.id.editTextSignInUsername))
-            .perform(typeText(""))
-        onView(withId(R.id.editTextSignInPassword))
-            .perform(typeText("correctPassword"))
-        onView(withId(R.id.buttonConfirmLogin)).perform(click())
-        Thread.sleep(1000) // Wait for the note to update
-        onView(withId(R.id.note)).check(matches(withText("Email is empty")))
-        countingIdlingResource.decrement()
+        fun testEmptyUsernameValidPassword() {
+            countingIdlingResource.increment()
+            onView(withId(R.id.editTextSignInUsername))
+                .perform(typeText(""))
+            onView(withId(R.id.editTextSignInPassword))
+                .perform(typeText("correctPassword"))
+            onView(withId(R.id.buttonConfirmLogin)).perform(click())
+            Thread.sleep(1000) // Wait for the note to update
+            onView(withId(R.id.note)).check(matches(withText("Email is empty")))
+            countingIdlingResource.decrement()
+        }
     }
 
     @Test
     fun testEmptyUsernameInvalidPassword() {
-        countingIdlingResource.increment()
-        onView(withId(R.id.editTextSignInUsername))
-            .perform(typeText(""))
-        onView(withId(R.id.editTextSignInPassword))
-            .perform(typeText("wrongPassword"))
-        onView(withId(R.id.buttonConfirmLogin)).perform(click())
-        Thread.sleep(1000) // Wait for the note to update
-        onView(withId(R.id.note)).check(matches(withText("Email is empty")))
-        countingIdlingResource.decrement()
+        fun testEmptyUsernameInvalidPassword() {
+            countingIdlingResource.increment()
+            onView(withId(R.id.editTextSignInUsername))
+                .perform(typeText(""))
+            onView(withId(R.id.editTextSignInPassword))
+                .perform(typeText("wrongPassword"))
+            onView(withId(R.id.buttonConfirmLogin)).perform(click())
+            Thread.sleep(1000) // Wait for the note to update
+            onView(withId(R.id.note)).check(matches(withText("Email is empty")))
+            countingIdlingResource.decrement()
+        }
     }
 
     @Test
     fun testEmptyUsernameEmptyPassword() {
-        idlingResource.increment()
-        onView(withId(R.id.editTextSignInUsername))
-            .perform(typeText(""))
-        onView(withId(R.id.editTextSignInPassword))
-            .perform(typeText(""))
-        onView(withId(R.id.buttonConfirmLogin)).perform(click())
-        onView(withId(R.id.note)).check(matches(withText("Email is empty")))
-        idlingResource.decrement()
+        fun testEmptyUsernameEmptyPassword() {
+            idlingResource.increment()
+            onView(withId(R.id.editTextSignInUsername))
+                .perform(typeText(""))
+            onView(withId(R.id.editTextSignInPassword))
+                .perform(typeText(""))
+            onView(withId(R.id.buttonConfirmLogin)).perform(click())
+            onView(withId(R.id.note)).check(matches(withText("Email is empty")))
+            idlingResource.decrement()
+        }
     }
 }
