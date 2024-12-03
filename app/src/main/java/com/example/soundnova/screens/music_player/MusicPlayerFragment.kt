@@ -182,29 +182,33 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.karaokeBtn.setOnClickListener {
-            val song = tracks.data.get(currentSongIndex)
-            if (mediaPlayer.isPlaying) {
-                mediaPlayer.stop()
-                mediaPlayer.reset()
-            }
-            val karaokeFile = File(requireContext().getExternalFilesDir(null), "karaoke_${song.id}.wav")
-            if (karaokeFile.exists()) {
-                song.karaokeTrack = karaokeFile.absolutePath
-                playKaraokeFromPath(song.karaokeTrack!!)
-                Log.e("MusicPlayerFragment", "Playing karaoke from file: ${song.karaokeTrack}")
-            } else {
-                val serverUrl = "https://d43e-123-30-177-118.ngrok-free.app/process-audio" // URL server
-                CoroutineScope(Dispatchers.Main).launch {
-                    val karaokePath = sendSongUrlToServer(song.id!!, song.preview!!, serverUrl, requireContext())
-                    if (karaokePath != null) {
-                        song.karaokeTrack = karaokePath
-                        playKaraokeFromPath(karaokePath)
-                        Log.e("MusicPlayerFragment", "Download file: ${song.karaokeTrack}")
-                    } else {
-                        Toast.makeText(requireContext(), "Không thể tải nhạc karaoke", Toast.LENGTH_SHORT).show()
-                    }
-                }
-        }}
+            findNavController().navigate(R.id.action_mucsic_to_record)
+        }
+
+//        binding.karaokeBtn.setOnClickListener {
+//            val song = tracks.data.get(currentSongIndex)
+//            if (mediaPlayer.isPlaying) {
+//                mediaPlayer.stop()
+//                mediaPlayer.reset()
+//            }
+//            val karaokeFile = File(requireContext().getExternalFilesDir(null), "karaoke_${song.id}.wav")
+//            if (karaokeFile.exists()) {
+//                song.karaokeTrack = karaokeFile.absolutePath
+//                playKaraokeFromPath(song.karaokeTrack!!)
+//                Log.e("MusicPlayerFragment", "Playing karaoke from file: ${song.karaokeTrack}")
+//            } else {
+//                val serverUrl = "https://d43e-123-30-177-118.ngrok-free.app/process-audio" // URL server
+//                CoroutineScope(Dispatchers.Main).launch {
+//                    val karaokePath = sendSongUrlToServer(song.id!!, song.preview!!, serverUrl, requireContext())
+//                    if (karaokePath != null) {
+//                        song.karaokeTrack = karaokePath
+//                        playKaraokeFromPath(karaokePath)
+//                        Log.e("MusicPlayerFragment", "Download file: ${song.karaokeTrack}")
+//                    } else {
+//                        Toast.makeText(requireContext(), "Không thể tải nhạc karaoke", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//        }}
     }
 
     private fun playNextSong() {

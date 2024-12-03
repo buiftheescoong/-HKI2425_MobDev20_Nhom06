@@ -62,7 +62,15 @@
         <action
             android:id="@+id/action_musicPlayerFragment_to_lyricsFragment"
             app:destination="@id/lyricsFragment" />
+        <action
+            android:id="@+id/action_mucsic_to_record"
+            app:destination="@id/recordingFragment"></action>
     </fragment>
+
+    <fragment
+        android:id="@+id/recordingFragment"
+        android:name="com.example.soundnova.screens.music_player.RecordingFragment"
+        tools:layout="@layout/record"/>
 
     <fragment
         android:id="@+id/lyricsFragment"
