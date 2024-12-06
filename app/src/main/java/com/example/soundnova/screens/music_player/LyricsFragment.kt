@@ -32,7 +32,7 @@ class LyricsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val binding = LyricsFragmentBinding.bind(view)
 
-        binding.lyricsContent.text = currentSongLyrics
+//        binding.lyricsContent.text = currentSongLyrics
 
         binding.backBtn.setOnClickListener {
             findNavController().popBackStack(R.id.musicPlayerFragment, false)
