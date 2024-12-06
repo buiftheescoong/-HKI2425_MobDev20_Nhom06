@@ -48,15 +48,13 @@ class MusicPlayerFragment : Fragment() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.isPlaying.collect { isPlaying ->
-                    val playPauseIcon: Int
-                        if (isPlaying) {
-                            startRotationAnimator()
-                            playPauseIcon = R.drawable.icon_pause
-                        } else {
-                            stopRotationAnimator()
-                            playPauseIcon = R.drawable.icon_play
-                        }
-                    binding.playPause.setImageResource(playPauseIcon)
+                    if (isPlaying) {
+                        startRotationAnimator()
+                        binding.playPause.setImageResource(R.drawable.icon_pause)
+                    } else {
+                        stopRotationAnimator()
+                        binding.playPause.setImageResource(R.drawable.icon_play)
+                    }
                 }
             }
         }
@@ -98,9 +96,9 @@ class MusicPlayerFragment : Fragment() {
                         val song = viewModel.tracks.value.data[index]
                         binding.songName.text = song.title
                         binding.songName.isSelected = true
-                        binding.songArtist.text = song.artist.name
+                        binding.songArtist.text = song.artist!!.name
                         binding.songArtist.isSelected = true
-                        Glide.with(this@MusicPlayerFragment).load(song.artist.pictureBig).circleCrop()
+                        Glide.with(this@MusicPlayerFragment).load(song.artist!!.pictureBig).circleCrop()
                             .into(binding.coverArt)
 
                         binding.seekBar.max = 30000
@@ -362,6 +360,7 @@ class MusicPlayerFragment : Fragment() {
 
     private fun stopRotationAnimator() {
         rotationAnimator.pause()
+        isRotating = false
     }
 
     @SuppressLint("DefaultLocale")
