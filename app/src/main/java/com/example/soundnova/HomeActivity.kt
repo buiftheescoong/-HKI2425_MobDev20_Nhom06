@@ -19,6 +19,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.example.soundnova.databinding.ActivityMainBinding
+import com.example.soundnova.models.TrackData
 import com.example.soundnova.models.Tracks
 import com.example.soundnova.screens.music_player.MusicPlayerFragment
 import com.example.soundnova.screens.music_player.MusicPlayerViewModel
@@ -31,11 +32,13 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MusicPlayerViewModel by viewModels()
     private lateinit var gestureDetector: GestureDetector
+    private lateinit var fav: FavoriteLibrary
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+        fav = FavoriteLibrary(this)
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -130,8 +133,17 @@ class HomeActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.seekBarProgress.collect { progress ->
-                    binding.songSeekBar.progress = progress
+                viewModel.currentSongIndex.collect { index ->
+                    if (index != -1) {
+                        val song = viewModel.tracks.value.data[index]
+                        fav.checkFavSong(song.title!!) { isFavorite ->
+                            runOnUiThread {
+                                val heartIcon =
+                                    if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
+                                binding.heartBtn.setImageResource(heartIcon)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -170,9 +182,31 @@ class HomeActivity : AppCompatActivity() {
         }
 
         binding.heartBtn.setOnClickListener {
-            val newHeartState = !viewModel.heartBoolean.value
-            viewModel.updateHeartState(newHeartState)
+            val currentSongIndex = viewModel.currentSongIndex.value
+            if (currentSongIndex != -1) {
+                val song = viewModel.tracks.value.data[currentSongIndex]
+
+                fav.checkFavSong(song.title!!) { isFavorite ->
+                    if (isFavorite) {
+                        fav.removeFavSong(song.title!!)
+                        runOnUiThread {
+                            binding.heartBtn.setImageResource(R.drawable.icon_heart)
+                        }
+                    } else {
+                        fav.addFavSong(
+                            title = song.title!!,
+                            artist = listOf(song.artist!!.name!!),
+                            image = song.artist!!.pictureBig!!,
+                            audioUrl = song.preview!!
+                        )
+                        runOnUiThread {
+                            binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+                        }
+                    }
+                }
+            }
         }
+
 
         binding.playPause.setOnClickListener {
             if (viewModel.mediaPlayer.isPlaying) {

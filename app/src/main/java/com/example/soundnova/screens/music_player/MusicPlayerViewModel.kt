@@ -24,7 +24,7 @@ class MusicPlayerViewModel : ViewModel() {
     private val _repeatBoolean = MutableStateFlow(false)
     val repeatBoolean: StateFlow<Boolean> = _repeatBoolean
 
-    private val _tracks = MutableStateFlow(Tracks(emptyList()))
+    private val _tracks = MutableStateFlow(Tracks())
     val tracks: StateFlow<Tracks> = _tracks
 
     private val _currentSongIndex = MutableStateFlow(-1)

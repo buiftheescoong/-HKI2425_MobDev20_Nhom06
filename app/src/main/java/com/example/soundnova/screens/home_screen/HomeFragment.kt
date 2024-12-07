@@ -10,6 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.soundnova.History
+import com.example.soundnova.HomeActivity
 import com.example.soundnova.R
 import com.example.soundnova.databinding.HomeActivityBinding
 import com.example.soundnova.models.Albums
@@ -166,7 +168,7 @@ class HomeFragment : Fragment() {
                     adapterRecent = SongAdapter(historyTracks, object : OnItemClickTrackListener {
                         override fun onItemClick(position: Int, tracks: Tracks) {
                             findNavController().navigate(
-                                R.id.action_homeFragment_to_musicPlayerFragment,
+//                                R.id.,
                                 Bundle().apply {
                                     putParcelable("tracks", tracks)
                                     putInt("position", position)

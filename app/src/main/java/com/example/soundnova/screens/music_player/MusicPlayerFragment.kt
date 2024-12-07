@@ -1,10 +1,5 @@
 package com.example.soundnova.screens.music_player
 
-import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,22 +20,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
 import com.example.soundnova.FavoriteLibrary
 import com.example.soundnova.History
-import com.example.soundnova.R
-import com.example.soundnova.databinding.PlayerActivityBinding
-import com.example.soundnova.file.sendSongUrlToServer
-import com.example.soundnova.models.Tracks
 import com.example.soundnova.service.LyricsApiHelper
-
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.File
-
 
 class MusicPlayerFragment : Fragment() {
 
@@ -57,6 +40,8 @@ class MusicPlayerFragment : Fragment() {
         binding = PlayerActivityBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+
     @SuppressLint("UnsafeRepeatOnLifecycleDetector")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,13 +63,25 @@ class MusicPlayerFragment : Fragment() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.heartBoolean.collect { heartBoolean ->
-                    val heartIcon =
-                        if (heartBoolean) R.drawable.icon_heart_on else R.drawable.icon_heart
-                    binding.heartBtn.setImageResource(heartIcon)
+                viewModel.currentSongIndex.collect { index ->
+                    if (index != -1) {
+                        val song = viewModel.tracks.value.data[index]
+
+                        fav = FavoriteLibrary(requireContext())
+                        fav.checkFavSong(song.title!!) { isFavorite ->
+                            val heartIcon = if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
+                            binding.heartBtn.setImageResource(heartIcon)
+                        }
+
+                        binding.songName.text = song.title
+                        binding.songArtist.text = song.artist!!.name
+                        Glide.with(this@MusicPlayerFragment).load(song.artist!!.pictureBig).circleCrop()
+                            .into(binding.coverArt)
+                    }
                 }
             }
         }
+
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -123,22 +120,6 @@ class MusicPlayerFragment : Fragment() {
 
                         binding.durationPlayed.text = formatDuration(viewModel.seekBarProgress.value)
                         binding.durationTotal.text = formatDuration(30000)
-
-//                        lifecycleScope.launch {
-//                            try {
-//                                val lyrics = LyricsApiHelper.fetchLyrics(song.artist.name, song.title)
-//                                viewModel.updateCurrentSongLyrics(lyrics)
-//                            } catch (e: Exception) {
-//                                Log.e("LyricsFragment", "Error fetching lyrics", e)
-//                            }
-//                        }
-//                        if (viewModel.currentSongLyrics.value != "") {
-//                            binding.previewLyrics.text = viewModel.currentSongLyrics.value.split("\n").take(11).joinToString("\n")
-//                            binding.showFullLyricsButton.visibility = View.VISIBLE
-//                        } else {
-//                            binding.previewLyrics.text = getString(R.string.NoLyricsText)
-//                            binding.showFullLyricsButton.visibility = View.GONE
-//                        }
                     }
                 }
             }
@@ -343,7 +324,6 @@ class MusicPlayerFragment : Fragment() {
                 binding.heartBtn.setImageResource(R.drawable.icon_heart)
             }
         }
-
 
 //        history = History(requireContext())
 //        history.addHistorySong(song.title, song.artist.name.split(","), song.artist.pictureBig, song.duration, song.preview)

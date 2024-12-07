@@ -58,8 +58,6 @@ class FavoriteLibrary(private val context: Context) {
         artist: List<String>,
         image: String,
         audioUrl: String,
-//        album: String,
-//        genre: String
     ) {
         val currentUser = firebaseAuth.currentUser
         val userEmail = currentUser?.email
@@ -68,14 +66,12 @@ class FavoriteLibrary(private val context: Context) {
             title = title,
             artist = artist,
             image = image,
-//            album = album,
             audioUrl = audioUrl,
         )
         db.collection("favorite_library")
             .add(newSong)
             .addOnSuccessListener { documentReference ->
                 Log.d("Song", "DocumentSnapshot added with ID: ${documentReference.id}")
-                // Gọi hàm sắp xếp lại ID sau khi thêm bài hát
                 reorderDocumentIds()
             }
             .addOnFailureListener { exception ->
@@ -92,7 +88,6 @@ class FavoriteLibrary(private val context: Context) {
             idUser = userEmail,
             title = title,
         )
-        ///remove song if title = newSong.title
         db.collection("favorite_library")
             .get()
             .addOnSuccessListener { documents ->
@@ -102,7 +97,6 @@ class FavoriteLibrary(private val context: Context) {
                     val documentUserEmail =
                         document.getString("idUser") // Lấy giá trị "idUser" từ tài liệu
 
-                    // Kiểm tra điều kiện nếu tài liệu khớp
                     if (documentTitle == newSong.title && documentUserEmail == newSong.idUser) {
                         val documentId = document.id
                         db.collection("favorite_library").document(documentId).delete()
@@ -139,17 +133,16 @@ class FavoriteLibrary(private val context: Context) {
                     val documentTitle = document.getString("title")
                     val documentUserEmail = document.getString("idUser")
 
-                    // Kiểm tra điều kiện nếu tài liệu khớp
                     if (documentTitle == newSong.title && documentUserEmail == newSong.idUser) {
-                        callback(true) // Gọi callback với giá trị true nếu tìm thấy
+                        callback(true)
                         return@addOnSuccessListener
                     }
                 }
-                callback(false) // Không tìm thấy
+                callback(false)
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Lỗi khi lấy dữ liệu: ", e)
-                callback(false) // Xử lý lỗi bằng cách trả về false
+                callback(false)
             }
     }
 
