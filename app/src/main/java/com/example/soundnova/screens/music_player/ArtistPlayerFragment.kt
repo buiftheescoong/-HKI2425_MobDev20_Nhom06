@@ -46,6 +46,10 @@ class ArtistPlayerFragment : Fragment() {
         } catch (e: Exception) {
             Log.e("ArtistPlayerFragment", "Error retrieving tracks", e)
         }
+
+        binding.backBtn.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun playArtist(index: Int) {

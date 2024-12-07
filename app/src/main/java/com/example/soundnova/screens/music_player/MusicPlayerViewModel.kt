@@ -1,57 +1,103 @@
 package com.example.soundnova.screens.music_player
 
 import android.media.MediaPlayer
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.soundnova.models.TrackData
+import androidx.lifecycle.viewModelScope
 import com.example.soundnova.models.Tracks
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class MusicPlayerViewModel : ViewModel() {
-    private lateinit var tracks: Tracks
-    private var currentIndex = 0
 
-    private val _currentTrack = MutableLiveData<TrackData>()
-    val currentTrack: LiveData<TrackData> get() = _currentTrack
+    private val _isPlaying = MutableStateFlow(false)
+    val isPlaying: StateFlow<Boolean> = _isPlaying
 
-    internal val mediaPlayer = MediaPlayer()
+    private val _heartBoolean = MutableStateFlow(false)
+    val heartBoolean: StateFlow<Boolean> = _heartBoolean
 
-    fun setTrack(tracks: Tracks, index: Int) {
-        this.tracks = tracks
-        this.currentIndex = index
-        playTrack()
+    private val _shuffleBoolean = MutableStateFlow(false)
+    val shuffleBoolean: StateFlow<Boolean> = _shuffleBoolean
+
+    private val _repeatBoolean = MutableStateFlow(false)
+    val repeatBoolean: StateFlow<Boolean> = _repeatBoolean
+
+    private val _tracks = MutableStateFlow(Tracks(emptyList()))
+    val tracks: StateFlow<Tracks> = _tracks
+
+    private val _currentSongIndex = MutableStateFlow(-1)
+    val currentSongIndex: StateFlow<Int> = _currentSongIndex
+
+    private val _currentPreColor = MutableStateFlow(0)
+    val currentPreColor: StateFlow<Int> = _currentPreColor
+
+    private val _currentSongLyrics = MutableStateFlow("")
+    val currentSongLyrics: StateFlow<String> = _currentSongLyrics
+
+    private val _seekBarProgress = MutableStateFlow(0)
+    val seekBarProgress: StateFlow<Int> = _seekBarProgress
+
+    val mediaPlayer: MediaPlayer = MediaPlayer()
+
+    private var seekBarUpdateJob: Job? = null
+
+    fun updateIsPlaying(isPlaying: Boolean) {
+        _isPlaying.value = isPlaying
     }
 
-    fun togglePlayPause() {
-        if (mediaPlayer.isPlaying) {
-            mediaPlayer.pause()
-        } else {
-            mediaPlayer.start()
+    fun updateHeartState(isHearted: Boolean) {
+        _heartBoolean.value = isHearted
+    }
+
+    fun updateShuffleState(isShuffled: Boolean) {
+        _shuffleBoolean.value = isShuffled
+    }
+
+    fun updateRepeatState(isRepeated: Boolean) {
+        _repeatBoolean.value = isRepeated
+    }
+
+    fun updateTracks(tracks: Tracks) {
+        _tracks.value = tracks
+    }
+
+    fun updateCurrentSongIndex(index: Int) {
+        _currentSongIndex.value = index
+    }
+
+    fun updateSeekBarProgress(progress: Int) {
+        _seekBarProgress.value = progress
+    }
+
+    fun updateCurrentPreColor(color: Int) {
+        _currentPreColor.value = color
+    }
+
+    fun updateCurrentSongLyrics(lyrics: String) {
+        _currentSongLyrics.value = lyrics
+    }
+
+    fun startSeekBarUpdate() {
+        seekBarUpdateJob = viewModelScope.launch {
+            while (mediaPlayer.isPlaying) {
+                val currentPosition = mediaPlayer.currentPosition
+                updateSeekBarProgress(currentPosition)
+                delay(1000L)
+            }
         }
     }
 
-    fun playNext() {
-        currentIndex = (currentIndex + 1) % tracks.data.size
-        playTrack()
+    fun stopSeekBarUpdate() {
+        seekBarUpdateJob?.cancel()
+        seekBarUpdateJob = null
     }
-
-    fun playPrevious() {
-        currentIndex = if (currentIndex == 0) tracks.data.size - 1 else currentIndex - 1
-        playTrack()
-    }
-
-    private fun playTrack() {
-        val track = tracks.data.get(currentIndex)
-        _currentTrack.postValue(track)
-        mediaPlayer.reset()
-        mediaPlayer.setDataSource(track.preview)
-        mediaPlayer.prepare()
-        mediaPlayer.start()
-    }
-
 
     override fun onCleared() {
         super.onCleared()
+        if (mediaPlayer.isPlaying) mediaPlayer.stop()
         mediaPlayer.release()
+        stopSeekBarUpdate()
     }
 }

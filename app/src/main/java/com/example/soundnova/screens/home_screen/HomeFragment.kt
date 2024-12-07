@@ -8,10 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.soundnova.History
 import com.example.soundnova.R
 import com.example.soundnova.databinding.HomeActivityBinding
 import com.example.soundnova.models.Albums
@@ -67,13 +65,11 @@ class HomeFragment : Fragment() {
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 adapterSong = SongAdapter(tracks, object : OnItemClickTrackListener {
                     override fun onItemClick(position: Int, tracks: Tracks) {
-                        findNavController().navigate(
-                            R.id.action_homeFragment_to_musicPlayerFragment,
-                            Bundle().apply {
-                                putParcelable("tracks", tracks)
-                                putInt("position", position)
-                            }
-                        )
+                        val bundle = Bundle().apply {
+                            putParcelable("tracks", tracks)
+                            putInt("position", position)
+                        }
+                        (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
                     }
                 }, 0)
                 binding.recyclerViewRecommendSongs.adapter = adapterSong
@@ -118,13 +114,11 @@ class HomeFragment : Fragment() {
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 adapterSong = SongAdapter(tracks, object : OnItemClickTrackListener {
                     override fun onItemClick(position: Int, tracks: Tracks) {
-                        findNavController().navigate(
-                            R.id.action_homeFragment_to_musicPlayerFragment,
-                            Bundle().apply {
-                                putParcelable("tracks", tracks)
-                                putInt("position", position)
-                            }
-                        )
+                        val bundle = Bundle().apply {
+                            putParcelable("tracks", tracks)
+                            putInt("position", position)
+                        }
+                        (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
                     }
                 }, 0)
                 binding.recyclerViewRecommendSongs.adapter = adapterSong
