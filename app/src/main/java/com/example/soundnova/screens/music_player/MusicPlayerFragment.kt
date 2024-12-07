@@ -31,7 +31,6 @@ class MusicPlayerFragment : Fragment() {
     private lateinit var fav: FavoriteLibrary
     private lateinit var binding: PlayerActivityBinding
     private val viewModel: MusicPlayerViewModel by activityViewModels()
-    private lateinit var rotationAnimator: ObjectAnimator
     private var isRotating = false
 
     override fun onCreateView(
@@ -44,6 +43,15 @@ class MusicPlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = PlayerActivityBinding.bind(view)
+
+        if (viewModel.rotationAnimator == null) {
+            viewModel.rotationAnimator =
+                ObjectAnimator.ofFloat(binding.coverArt, "rotation", 0f, 360f).apply {
+                    duration = 30000L
+                    repeatCount = ObjectAnimator.INFINITE
+                    interpolator = LinearInterpolator()
+                }
+        }
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -143,12 +151,6 @@ class MusicPlayerFragment : Fragment() {
                     curBackgroundPreLyrics.setColor(color)
                 }
             }
-        }
-
-        rotationAnimator = ObjectAnimator.ofFloat(binding.coverArt, "rotation", 0f, 360f).apply {
-            duration = 30000L
-            repeatCount = ObjectAnimator.INFINITE
-            interpolator = LinearInterpolator()
         }
 
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -279,15 +281,6 @@ class MusicPlayerFragment : Fragment() {
         }
         viewModel.updateCurrentSongIndex(newIndex)
         playSong(newIndex)
-        
-        fav = FavoriteLibrary(requireContext())
-        fav.checkFavSong(viewModel.tracks.value.data[viewModel.currentSongIndex.value].title!!) { isFavorite ->
-            if (isFavorite) {
-                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
-            } else {
-                binding.heartBtn.setImageResource(R.drawable.icon_heart)
-            }
-        }
     }
 
     private fun playPreviousSong() {
@@ -302,28 +295,20 @@ class MusicPlayerFragment : Fragment() {
         }
         viewModel.updateCurrentSongIndex(newIndex)
         playSong(newIndex)
-
-        fav = FavoriteLibrary(requireContext())
-        fav.checkFavSong(viewModel.tracks.value.data[viewModel.currentSongIndex.value].title!!) { isFavorite ->
-            if (isFavorite) {
-                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
-            } else {
-                binding.heartBtn.setImageResource(R.drawable.icon_heart)
-            }
-        }
     }
 
     private fun playSong(index: Int) {
         viewModel.stopSeekBarUpdate()
 
         val song = viewModel.tracks.value.data[index]
-
-        fav = FavoriteLibrary(requireContext())
-        fav.checkFavSong(viewModel.tracks.value.data[viewModel.currentSongIndex.value].title!!) { isFavorite ->
-            if (isFavorite) {
-                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
-            } else {
-                binding.heartBtn.setImageResource(R.drawable.icon_heart)
+        if (context != null) {
+            fav = FavoriteLibrary(requireContext())
+            fav.checkFavSong(viewModel.tracks.value.data[viewModel.currentSongIndex.value].title!!) { isFavorite ->
+                if (isFavorite) {
+                    binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+                } else {
+                    binding.heartBtn.setImageResource(R.drawable.icon_heart)
+                }
             }
         }
         
@@ -349,17 +334,17 @@ class MusicPlayerFragment : Fragment() {
 
     private fun startRotationAnimator() {
         if (!isRotating) {
-            rotationAnimator.start()
+            viewModel.rotationAnimator?.start()
             isRotating = true
         } else {
-            rotationAnimator.resume()
+            viewModel.rotationAnimator?.resume()
         }
     }
 
 
 
     private fun stopRotationAnimator() {
-        rotationAnimator.pause()
+        viewModel.rotationAnimator?.pause()
         isRotating = false
     }
 
@@ -394,5 +379,6 @@ class MusicPlayerFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         stopRotationAnimator()
+        viewModel.updateRotationValue(binding.coverArt.rotation)
     }
 }
