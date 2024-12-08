@@ -325,8 +325,8 @@ class MusicPlayerFragment : Fragment() {
             }
         }
 
-//        history = History(requireContext())
-//        history.addHistorySong(song.title, song.artist.name.split(","), song.artist.pictureBig, song.duration, song.preview)
+        history = History(requireContext())
+        history.addHistorySong(song.title!!, song.artist!!.name!!.split(","), song.artist!!.pictureBig!!, song.preview!!)
 
         val curBackgroundPreLyrics = binding.previewLayout.background as GradientDrawable
         val currentPreColor = getRandomColor()

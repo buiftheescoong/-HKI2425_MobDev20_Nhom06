@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -33,12 +34,14 @@ class HomeActivity : AppCompatActivity() {
     private val viewModel: MusicPlayerViewModel by viewModels()
     private lateinit var gestureDetector: GestureDetector
     private lateinit var fav: FavoriteLibrary
+    private lateinit var history: History
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
         fav = FavoriteLibrary(this)
+        history = History(this)
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -290,6 +293,7 @@ class HomeActivity : AppCompatActivity() {
         viewModel.mediaPlayer.reset()
         viewModel.mediaPlayer.setDataSource(song.preview)
         viewModel.mediaPlayer.prepare()
+        history.addHistorySong(song.title!!, song.artist!!.name!!.split(","), song.artist!!.pictureBig!!, song.preview!!)
 
         if (!viewModel.mediaPlayer.isPlaying) {
             viewModel.mediaPlayer.start()

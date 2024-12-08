@@ -167,13 +167,11 @@ class HomeFragment : Fragment() {
                         LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                     adapterRecent = SongAdapter(historyTracks, object : OnItemClickTrackListener {
                         override fun onItemClick(position: Int, tracks: Tracks) {
-                            findNavController().navigate(
-//                                R.id.,
-                                Bundle().apply {
-                                    putParcelable("tracks", tracks)
-                                    putInt("position", position)
-                                }
-                            )
+                            val bundle = Bundle().apply {
+                                putParcelable("tracks", tracks)
+                                putInt("position", position)
+                            }
+                            (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
                         }
                     }, 1)
                     binding.recyclerViewRecentSongs.adapter = adapterRecent

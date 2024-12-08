@@ -5,9 +5,6 @@ data class SongData(
     val title: String? = null,
     val artist: List<String> = emptyList(),
     val image: String? = null,
-//    val duration: String? = null,
-//    val album: String? = null,
     val audioUrl: String? = null,
-//    val genre: String? = null,
-    val id: Int? = null
+    var id: Int? = null
 )
