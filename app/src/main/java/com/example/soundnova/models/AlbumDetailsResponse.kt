@@ -1,3 +1,52 @@
+//package com.example.soundnova.models
+//
+//import android.os.Parcelable
+//import com.google.gson.annotations.SerializedName
+//import kotlinx.parcelize.Parcelize
+//
+//@Parcelize
+//data class AlbumDetailsResponse(
+//    @SerializedName("tracks")
+//    val tracks: Tracks,
+//
+//    @SerializedName("release_date")
+//    val releaseDate: String,
+//
+//    var albumName: String,
+//
+//    var albumPicture: String
+//) : Parcelable
+//
+//@Parcelize
+//data class Tracks(
+//    @SerializedName("data")
+//    val data: List<TrackData>
+//) : Parcelable
+//
+//@Parcelize
+//data class TrackData(
+//    @SerializedName("id")
+//    val id: Long,
+//
+//    @SerializedName("title")
+//    val title: String,
+//
+//    @SerializedName("duration")
+//    val duration: Int,
+//
+//    @SerializedName("artist")
+//    var artist: Artist,
+//
+//    @SerializedName("album")
+//    var album: Album,
+//
+//    @SerializedName("preview")
+//    val preview: String,
+//    var isLiked: Boolean = false,
+//) : Parcelable
+
+
+
 package com.example.soundnova.models
 
 import android.os.Parcelable
@@ -7,10 +56,10 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class AlbumDetailsResponse(
     @SerializedName("tracks")
-    val tracks: Tracks,
+    var tracks: Tracks?,
 
     @SerializedName("release_date")
-    val releaseDate: String,
+    var releaseDate: String,
 
     var albumName: String,
 
@@ -20,27 +69,30 @@ data class AlbumDetailsResponse(
 @Parcelize
 data class Tracks(
     @SerializedName("data")
-    val data: List<TrackData>
+    var data: MutableList<TrackData> = mutableListOf()
 ) : Parcelable
 
 @Parcelize
 data class TrackData(
     @SerializedName("id")
-    val id: Long,
+    var id: Long?,
 
     @SerializedName("title")
-    val title: String,
+    var title: String?,
 
     @SerializedName("duration")
-    val duration: Int,
+    var duration: Int?,
 
     @SerializedName("artist")
-    var artist: Artist,
+    var artist: Artist?,
 
     @SerializedName("album")
-    var album: Album,
+    var album: Album?,
 
     @SerializedName("preview")
-    val preview: String,
+    var preview: String?,
+
+    var karaokeTrack: String? = null,
     var isLiked: Boolean = false,
 ) : Parcelable
+

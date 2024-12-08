@@ -10,9 +10,6 @@
         android:label="home_activity"
         tools:layout="@layout/home_activity">
         <action
-            android:id="@+id/action_homeFragment_to_musicPlayerFragment"
-            app:destination="@id/musicPlayerFragment" />
-        <action
             android:id="@+id/action_homeFragment_to_albumPlayerFragment"
             app:destination="@id/albumPlayerFragment" />
         <action
@@ -28,9 +25,19 @@
 
     <fragment
         android:id="@+id/libraryFragment"
-        android:name="com.example.soundnova.LibraryFragment"
+        android:name="com.example.soundnova.screens.music_player.LibraryFragment"
         android:label="library_fragment"
-        tools:layout="@layout/library" />
+        tools:layout="@layout/library" >
+        <argument
+            android:name="tracks"
+            app:argType="com.example.soundnova.models.Tracks" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_lib_to_music"
+            app:destination="@id/musicPlayerFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/settingsFragment"
@@ -50,25 +57,27 @@
             android:name="position"
             app:argType="integer" />
         <action
-            android:id="@+id/action_musicPlayerFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_musicPlayerFragment_to_lyricsFragment"
-            app:destination="@id/lyricsFragment"
-            />
+            app:destination="@id/lyricsFragment" />
+        <action
+            android:id="@+id/action_mucsic_to_record"
+            app:destination="@id/karaokeFragment"/>
     </fragment>
+
+<!--    <fragment-->
+<!--        android:id="@+id/recordingFragment"-->
+<!--        android:name="com.example.soundnova.screens.music_player.RecordingFragment"-->
+<!--        tools:layout="@layout/record"/>-->
+    <fragment
+        android:id="@+id/karaokeFragment"
+        android:name="com.example.soundnova.screens.music_player.KaraokeFragment"
+        tools:layout="@layout/karaoke"/>
 
     <fragment
         android:id="@+id/lyricsFragment"
         android:name="com.example.soundnova.screens.music_player.LyricsFragment"
         android:label="lyrics_fragment"
         tools:layout="@layout/lyrics_fragment">
-        <action
-            android:id="@+id/action_lyricsPlayerFragment_to_musicPlayerFragment"
-            app:destination="@id/musicPlayerFragment"
-            />
     </fragment>
 
     <fragment
@@ -82,11 +91,6 @@
         <argument
             android:name="position"
             app:argType="integer" />
-        <action
-            android:id="@+id/action_albumPlayerFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_albumPlayerFragment_to_musicPlayerFragment"
             app:destination="@id/musicPlayerFragment" />
@@ -104,15 +108,14 @@
             android:name="position"
             app:argType="integer" />
         <action
-            android:id="@+id/action_artistPlayerFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_artistPlayerFragment_to_musicPlayerFragment"
             app:destination="@id/musicPlayerFragment" />
     </fragment>
 
-
+    <fragment
+        android:id="@+id/changePassword"
+        android:name="com.example.soundnova.ChangePassword"
+        android:label="change_password"
+        tools:layout="@layout/change_password" />
 
 </navigation>

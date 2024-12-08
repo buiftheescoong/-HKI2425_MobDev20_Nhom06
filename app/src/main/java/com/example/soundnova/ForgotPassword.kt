@@ -2,55 +2,44 @@ package com.example.soundnova
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import androidx.activity.ComponentActivity
-import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.example.soundnova.databinding.ForgetPasswordActivityBinding
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 
-class ForgotPassword : AppCompatActivity() {
-    private lateinit var editSignUpEmail: EditText
-    private lateinit var buttonSendBTN: Button
-    private lateinit var buttonBack : Button
-    private lateinit var note : TextView
+class ForgotPassword : Fragment() {
+    private lateinit var binding: ForgetPasswordActivityBinding
     private lateinit var validator : Validator
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        binding = ForgetPasswordActivityBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.forget_password_activity)
-
-        editSignUpEmail = findViewById(R.id.editTextSignUpEmail)
-        buttonSendBTN = findViewById(R.id.buttonSendBTN)
-        buttonBack = findViewById(R.id.buttonBack)
-        note = findViewById(R.id.note)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val binding = ForgetPasswordActivityBinding.bind(view)
         validator = Validator()
 
-
-        buttonBack.setOnClickListener {
-            val intent = Intent(applicationContext, Login::class.java)
-            startActivity(intent)
-
+        binding.buttonBack.setOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
         }
 
-
-        buttonSendBTN.setOnClickListener {
-            val email = editSignUpEmail.text.toString()
+        binding.buttonSendBTN.setOnClickListener {
+            val email = binding.editTextSignUpEmail.text.toString()
             val emailStatus = validator.checkEmail(email)
             if (email.isEmpty()) {
-                note.setText("Email is empty")
+                binding.note.text = "Email is empty"
             } else if (emailStatus == "valid"){
                 // gui thong bao ve email
                 Firebase.auth.sendPasswordResetEmail(email)
             } else
-                note.setText("Email is $emailStatus")
+                binding.note.text = "Email is $emailStatus"
         }
-
     }
-
 }

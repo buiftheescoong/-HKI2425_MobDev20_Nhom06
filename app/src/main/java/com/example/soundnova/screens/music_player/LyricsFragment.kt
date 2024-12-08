@@ -12,8 +12,6 @@ import com.example.soundnova.R
 import com.example.soundnova.databinding.LyricsFragmentBinding
 import com.example.soundnova.databinding.PlayerActivityBinding
 import com.example.soundnova.models.Tracks
-import com.example.soundnova.screens.music_player.MusicPlayerFragment.Companion.currentSongLyrics
-import com.example.soundnova.screens.music_player.MusicPlayerFragment.Companion.heartBoolean
 
 class LyricsFragment : Fragment() {
 
@@ -28,10 +26,14 @@ class LyricsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.lyricsContent.setText(currentSongLyrics)
+
+        super.onViewCreated(view, savedInstanceState)
+        val binding = LyricsFragmentBinding.bind(view)
+
+//        binding.lyricsContent.text = currentSongLyrics
 
         binding.backBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_lyricsPlayerFragment_to_musicPlayerFragment)
+            findNavController().popBackStack(R.id.musicPlayerFragment, false)
         }
     }
 }

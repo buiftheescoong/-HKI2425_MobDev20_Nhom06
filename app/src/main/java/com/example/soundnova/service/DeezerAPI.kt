@@ -4,6 +4,7 @@ import com.example.soundnova.models.Albums
 import com.example.soundnova.models.AlbumsResponse
 import com.example.soundnova.models.Artist
 import com.example.soundnova.models.Artists
+import com.example.soundnova.models.TrackData
 import com.example.soundnova.models.Tracks
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -35,6 +36,9 @@ interface DeezerApi {
 
     @GET("album/{album_id}/tracks")
     suspend fun getTracksOfAlbum(@Path("album_id") albumID: Long) : Response<Tracks>
+
+    @GET("track/{track_id}")
+    suspend fun getTrack(@Path("track_id") trackId: String): Response<TrackData>
 }
 object DeezerApiHelper {
     private val retrofit = Retrofit.Builder()
@@ -47,6 +51,16 @@ object DeezerApiHelper {
     @Throws(RuntimeException::class)
     suspend fun fetchPopularTracks(): Tracks {
         val response = api.getPopularTracks()
+        if (response.isSuccessful) {
+            return response.body() ?: throw RuntimeException("No data")
+        } else {
+            throw RuntimeException("API call failed: ${response.errorBody()?.string()}")
+        }
+    }
+
+    @Throws(RuntimeException::class)
+    suspend fun getTrack(trackId: String): TrackData {
+        val response = api.getTrack(trackId)
         if (response.isSuccessful) {
             return response.body() ?: throw RuntimeException("No data")
         } else {
@@ -107,7 +121,8 @@ object DeezerApiHelper {
 
 suspend fun main() {
     val deezerApiHelper = DeezerApiHelper
-    println(deezerApiHelper.fetchPopularAlbums())
-    println(deezerApiHelper.fetchPopularArtists())
+//    println(deezerApiHelper.fetchPopularAlbums())
+//    println(deezerApiHelper.fetchPopularArtists())
+    println(deezerApiHelper.getTrack("2830386932"))
 
 }

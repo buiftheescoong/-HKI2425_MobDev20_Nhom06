@@ -1,70 +1,288 @@
 package com.example.soundnova
 
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
+import android.view.GestureDetector
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.findNavController
+import com.bumptech.glide.Glide
 import com.example.soundnova.databinding.ActivityMainBinding
+import com.example.soundnova.models.Tracks
+import com.example.soundnova.screens.music_player.MusicPlayerFragment
+import com.example.soundnova.screens.music_player.MusicPlayerViewModel
+import com.example.soundnova.service.LyricsApiHelper
+import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 class HomeActivity : AppCompatActivity() {
-//    private lateinit var recentRecyclerView: RecyclerView
-//    private lateinit var favoriteRecyclerView: RecyclerView
-//    private lateinit var btnsetting:ImageView
+
+    private lateinit var binding: ActivityMainBinding
+    private val viewModel: MusicPlayerViewModel by viewModels()
+    private lateinit var gestureDetector: GestureDetector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
+        binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.musicPlayerFragment -> {
+                R.id.musicPlayerFragment, R.id.lyricsFragment, R.id.karaokeFragment -> {
                     binding.bottomNavigationView.visibility = View.GONE
                 }
+
                 else -> {
                     binding.bottomNavigationView.visibility = View.VISIBLE
                 }
             }
         }
 
-        binding.bottomNavigationView.setupWithNavController(navController)
-    //
-//        recentRecyclerView = findViewById(R.id.recyclerViewTabsSongs)
-//        favoriteRecyclerView = findViewById(R.id.recyclerViewFavoriteSongs)
-//        btnsetting = findViewById(R.id.buttonSettings)
+        binding.bottomNavigationView.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.homeFragment -> {
+                    navController.navigate(R.id.homeFragment)
+                    true
+                }
 
-//        btnsetting.setOnClickListener {
-//            startActivity(Intent(applicationContext, Setting::class.java))
-//        }
+                R.id.libraryFragment -> {
+                    navController.navigate(R.id.libraryFragment)
+                    true
+                }
 
-//        lifecycleScope.launch {
-//            loadSongs()
-//        }
+                R.id.searchFragment -> {
+                    navController.navigate(R.id.searchFragment)
+                    true
+                }
 
-//        SpotifyService.getAccessToken { token ->
-//            if (token != null) {
-//                loadSongs()
-//            }
-//        }
+                R.id.settingsFragment -> {
+                    navController.navigate(R.id.settingsFragment)
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.homeFragment -> binding.bottomNavigationView.menu.findItem(R.id.homeFragment).isChecked = true
+                R.id.libraryFragment -> binding.bottomNavigationView.menu.findItem(R.id.libraryFragment).isChecked = true
+                R.id.searchFragment -> binding.bottomNavigationView.menu.findItem(R.id.searchFragment).isChecked = true
+                R.id.settingsFragment -> binding.bottomNavigationView.menu.findItem(R.id.settingsFragment).isChecked = true
+            }
+        }
+
+        binding.musicBottomBar.visibility = View.GONE
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.isPlaying.collect { isPlaying ->
+                    val playPauseIcon =
+                        if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play
+                    binding.playPause.setImageResource(playPauseIcon)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.heartBoolean.collect { heartBoolean ->
+                    val heartIcon =
+                        if (heartBoolean) R.drawable.icon_heart_on else R.drawable.icon_heart
+                    binding.heartBtn.setImageResource(heartIcon)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentSongIndex.collect { index ->
+                    if (index != -1) {
+                        val song = viewModel.tracks.value.data[index]
+                        binding.songName.text = song.title
+                        binding.songName.isSelected = true
+                        binding.songArtist.text = song.artist!!.name
+                        binding.songArtist.isSelected = true
+                        Glide.with(this@HomeActivity).load(song.artist!!.pictureBig).circleCrop()
+                            .into(binding.coverArt)
+                        binding.songSeekBar.max = 30000
+                        viewModel.updateSeekBarProgress(0)
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.seekBarProgress.collect { progress ->
+                    binding.songSeekBar.progress = progress
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentPreColor.collect { color ->
+                    val curBackgroundBottomBar = binding.musicBottomBar.background as GradientDrawable
+                    curBackgroundBottomBar.setColor(color)
+                }
+            }
+        }
+
     }
 
-//    private suspend fun loadSongs() {
-//        val deezerApiHelper = DeezerApiHelper
-//        val popularTracks : Tracks = deezerApiHelper.fetchPopularTracks()
-//        Log.d("TAG", "0")
-//        runOnUiThread {
-//            recentRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-//            recentRecyclerView.adapter = SongAdapter(popularTracks)
-//        }
-//        runOnUiThread {
-//            favoriteRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-//            favoriteRecyclerView.adapter = SongAdapter(popularTracks)
-//        }
-//    }
+    @SuppressLint("ClickableViewAccessibility")
+    fun handleMusicBottomBar(bundle: Bundle) {
+        val currentSongIndex = bundle.getInt("position")
+        if (currentSongIndex == viewModel.currentSongIndex.value) return;
+        try {
+            val tracks = bundle.getParcelable<Tracks>("tracks")!!
+            viewModel.updateTracks(tracks)
+            viewModel.updateCurrentSongIndex(currentSongIndex)
+            playSong(currentSongIndex)
+        } catch (e: Exception) {
+            Log.e("MusicPlayerFragment", "Error retrieving tracks", e)
+        }
+
+        binding.musicBottomBar.visibility = View.VISIBLE
+
+        binding.musicBottomBar.setOnClickListener {
+            supportFragmentManager.beginTransaction()
+                .replace(android.R.id.content, MusicPlayerFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.heartBtn.setOnClickListener {
+            val newHeartState = !viewModel.heartBoolean.value
+            viewModel.updateHeartState(newHeartState)
+        }
+
+        binding.playPause.setOnClickListener {
+            if (viewModel.mediaPlayer.isPlaying) {
+                viewModel.mediaPlayer.pause()
+                viewModel.updateIsPlaying(false)
+                viewModel.stopSeekBarUpdate()
+            } else {
+                viewModel.mediaPlayer.start()
+                viewModel.updateIsPlaying(true)
+                viewModel.startSeekBarUpdate()
+            }
+        }
+
+        viewModel.mediaPlayer.setOnCompletionListener {
+            playNextSong()
+        }
+
+        gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+            private val SWIPE_THRESHOLD = 100
+            private val SWIPE_VELOCITY_THRESHOLD = 100
+
+            override fun onFling(
+                e1: MotionEvent?,
+                e2: MotionEvent,
+                velocityX: Float,
+                velocityY: Float
+            ): Boolean {
+                val diffX = e2.x.minus(e1?.x ?: 0f)
+                if (abs(diffX) > SWIPE_THRESHOLD && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        playPreviousSong()
+                    } else {
+                        playNextSong()
+                    }
+                    return true
+                }
+                return false
+            }
+
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                supportFragmentManager.beginTransaction()
+                    .replace(android.R.id.content, MusicPlayerFragment())
+                    .addToBackStack(null)
+                    .commit()
+                return super.onSingleTapUp(e)
+            }
+        })
+
+        binding.musicScrollView.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            true
+        }
+    }
+
+    private fun playNextSong() {
+        val newIndex = (viewModel.currentSongIndex.value + 1) % viewModel.tracks.value.data.size
+        viewModel.updateCurrentSongIndex(newIndex)
+        playSong(newIndex)
+    }
+
+    private fun playPreviousSong() {
+        val newIndex = if (viewModel.currentSongIndex.value == 0) {
+            viewModel.tracks.value.data.size - 1
+        } else {
+            viewModel.currentSongIndex.value - 1
+        }
+        viewModel.updateCurrentSongIndex(newIndex)
+        playSong(newIndex)
+    }
+
+    private fun playSong(index: Int) {
+        viewModel.stopSeekBarUpdate()
+
+        val song = viewModel.tracks.value.data[index]
+
+        val curBackgroundBottomBar = binding.musicBottomBar.background as GradientDrawable
+        val currentPreColor = getRandomColor()
+        viewModel.updateCurrentPreColor(currentPreColor)
+        curBackgroundBottomBar.setColor(currentPreColor)
+
+        viewModel.mediaPlayer.reset()
+        viewModel.mediaPlayer.setDataSource(song.preview)
+        viewModel.mediaPlayer.prepare()
+
+        if (!viewModel.mediaPlayer.isPlaying) {
+            viewModel.mediaPlayer.start()
+            viewModel.updateIsPlaying(true)
+            viewModel.startSeekBarUpdate()
+        }
+    }
+
+    private fun getRandomColor(): Int {
+        val random = java.util.Random()
+
+        val red = random.nextInt(130)
+        val green = random.nextInt(130)
+        val blue = random.nextInt(130)
+
+        return Color.rgb(red, green, blue)
+    }
+
+    override fun onBackPressed() {
+        val navController = findNavController(R.id.nav_host_fragment)
+
+        val currentEntry = navController.currentBackStackEntry
+
+        if (currentEntry?.destination?.id == R.id.homeFragment && navController.previousBackStackEntry == null) {
+            super.onBackPressed()
+        } else {
+            navController.popBackStack()
+        }
+    }
 }

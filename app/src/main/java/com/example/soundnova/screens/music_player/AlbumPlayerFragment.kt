@@ -37,6 +37,7 @@ class AlbumPlayerFragment: Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val binding = AlbumListBinding.bind(view)
 
         try {
@@ -46,18 +47,24 @@ class AlbumPlayerFragment: Fragment() {
         } catch (e: Exception) {
             Log.e("MusicPlayerFragment", "Error retrieving tracks", e)
         }
+
+        binding.backBtn.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun playAlbum(Index: Int) {
-        val album = albums.data[Index]
-        Glide.with(this).load(album.coverBig).circleCrop().into(binding.imageAlbumCover)
+        val album = albums.data!![Index]
+        Glide.with(this).load(album.coverBig).into(binding.imageAlbumCover)
         binding.textAlbumName.text = album.title
+        binding.textAlbumName.isSelected = true
         binding.textArtistName.text = "BLACKPINK"
+        binding.textArtistName.isSelected = true
 
         lifecycleScope.launch {
             //val tracks = album.tracks
             val artist = DeezerApiHelper.getArtist()
-            val tracks = DeezerApiHelper.getTracksOfAlbum(album.id)
+            val tracks = DeezerApiHelper.getTracksOfAlbum(album.id!!)
             for (track in tracks.data) {
                 track.artist = artist
                 track.album = album
