@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.soundnova.databinding.SearchBinding
 import com.example.soundnova.databinding.SearchTestBinding
 import com.example.soundnova.models.Tracks
 import com.example.soundnova.screens.adapters.OnItemClickTrackListener
@@ -21,7 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SearchFragment : Fragment() {
-    private var _binding: SearchTestBinding? = null
+    private var _binding: SearchBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: SongAdapter
     private var tracks: Tracks = Tracks()
@@ -30,48 +31,39 @@ class SearchFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = SearchTestBinding.inflate(inflater, container, false)
+        _binding = SearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val binding = SearchTestBinding.bind(view)
+        val binding = SearchBinding.bind(view)
 
-        binding.searchText.requestFocus()
-        binding.searchText.isFocusable = true
-        binding.searchText.isFocusableInTouchMode = true
-        binding.searchText.requestFocus()
+        binding.editTextSearch.requestFocus()
+        binding.editTextSearch.isFocusable = true
+        binding.editTextSearch.isFocusableInTouchMode = true
+        binding.editTextSearch.requestFocus()
 
-        binding.recyclerviewsearch.layoutManager = LinearLayoutManager(requireContext())
+        binding.recentSearchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = SongAdapter(tracks, object : OnItemClickTrackListener {
             override fun onItemClick(position: Int, tracks: Tracks) {
-                val track = tracks.data[position]
-                Toast.makeText(
-                    requireContext(),
-                    "Clicked: ${track.title} by ${track.artist?.name}",
-                    Toast.LENGTH_SHORT
-                ).show()
-                findNavController().navigate(
-                    R.id.action_search_to_music,
-                    Bundle().apply {
-                        putParcelable("tracks", tracks)
-                        putInt("position", position)
-                    }
-                )
+                val bundle = Bundle().apply {
+                    putParcelable("tracks", tracks)
+                    putInt("position", position)
+                }
+                (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
             }
         }, viewType = 1)
-        binding.recyclerviewsearch.adapter = adapter
+        binding.recentSearchRecyclerView.adapter = adapter
 
-        binding.searchText.addTextChangedListener(object : TextWatcher {
+        binding.editTextSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString().trim()
                 if (query.isNotEmpty()) {
-                    fetchTracks(query) // Cập nhật RecyclerView theo thời gian thực
+                    fetchTracks(query)
                 } else {
-                    // Xóa danh sách khi không có từ khóa
                     tracks.data.clear()
                     adapter.notifyDataSetChanged()
                 }

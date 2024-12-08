@@ -42,10 +42,9 @@ class History(private val context: Context) {
                     count++
                 }
 
-                // Xóa tất cả các tài liệu cũ (ID không phải là số)
                 for (document in documents) {
                     val documentId = document.id
-                    if (!documentId.matches(Regex("\\d+"))) { // Kiểm tra nếu ID không phải số
+                    if (!documentId.matches(Regex("\\d+"))) {
                         historyCollection.document(documentId).delete()
                             .addOnSuccessListener {
                                 Log.d("Firestore", "Tài liệu cũ với ID: $documentId đã được xóa")
@@ -72,7 +71,6 @@ class History(private val context: Context) {
         val userEmail = currentUser?.email
 
         val historyCollection = db.collection("history")
-        var maxId : Int
 
         val maxIdDeferred = CompletableDeferred<Int>()
         historyCollection.get()
