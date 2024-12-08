@@ -34,10 +34,9 @@ class FavoriteLibrary(private val context: Context) {
                     count++
                 }
 
-                // Xóa tất cả các tài liệu cũ (ID không phải là số)
                 for (document in documents) {
                     val documentId = document.id
-                    if (!documentId.matches(Regex("\\d+"))) { // Kiểm tra nếu ID không phải số
+                    if (!documentId.matches(Regex("\\d+"))) {
                         favCollection.document(documentId).delete()
                             .addOnSuccessListener {
                                 Log.d("Firestore", "Tài liệu cũ với ID: $documentId đã được xóa")

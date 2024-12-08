@@ -53,15 +53,5 @@
             android:textColor="#A5A5A5" />
     </LinearLayout>
 
-    <!-- Song Duration -->
-    <ImageView
-        android:id="@+id/deleteBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:src="@drawable/icon_delete"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/song_container"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

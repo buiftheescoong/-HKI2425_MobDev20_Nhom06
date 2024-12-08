@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.soundnova.databinding.SearchBinding
 import com.example.soundnova.databinding.SearchTestBinding
+import com.example.soundnova.models.TrackData
 import com.example.soundnova.models.Tracks
 import com.example.soundnova.screens.adapters.OnItemClickTrackListener
 import com.example.soundnova.screens.adapters.SongAdapter
@@ -38,6 +39,8 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = SearchBinding.bind(view)
+        val searchRecent = SearchRecent(requireContext())
+
 
         binding.editTextSearch.requestFocus()
         binding.editTextSearch.isFocusable = true
@@ -47,14 +50,25 @@ class SearchFragment : Fragment() {
         binding.recentSearchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = SongAdapter(tracks, object : OnItemClickTrackListener {
             override fun onItemClick(position: Int, tracks: Tracks) {
-                val bundle = Bundle().apply {
-                    putParcelable("tracks", tracks)
-                    putInt("position", position)
+                val selectedTrack = tracks.data[position]
+                lifecycleScope.launch {
+                    saveTrackToFirebase(selectedTrack, searchRecent)
+                    val bundle = Bundle().apply {
+                        putParcelable("tracks", tracks)
+                        putInt("position", position)
+                    }
+                    (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
                 }
-                (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
             }
+
         }, viewType = 1)
         binding.recentSearchRecyclerView.adapter = adapter
+
+        lifecycleScope.launch {
+            val recentTracks = searchRecent.fetchRecentSongs()
+            tracks.data = recentTracks.data.toMutableList()
+            adapter.notifyDataSetChanged()
+        }
 
         binding.editTextSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -64,13 +78,17 @@ class SearchFragment : Fragment() {
                 if (query.isNotEmpty()) {
                     fetchTracks(query)
                 } else {
-                    tracks.data.clear()
-                    adapter.notifyDataSetChanged()
+                    lifecycleScope.launch {
+                        val recentTracks = searchRecent.fetchRecentSongs()
+                        tracks.data = recentTracks.data.toMutableList()
+                        adapter.notifyDataSetChanged()
+                    }
                 }
             }
 
             override fun afterTextChanged(s: Editable?) {}
         })
+
     }
     private fun fetchTracks(query: String) {
         lifecycleScope.launch(Dispatchers.IO) {
@@ -91,6 +109,16 @@ class SearchFragment : Fragment() {
             }
         }
     }
+    private fun saveTrackToFirebase(track: TrackData, searchRecent: SearchRecent) {
+        val title = track.title ?: ""
+        val artist = listOf(track.artist?.name ?: "Unknown Artist")
+        val image = track.artist?.pictureBig ?: ""
+        val audioUrl = track.preview ?: ""
+
+        searchRecent.addSearchRecent(title, artist, image, audioUrl)
+
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

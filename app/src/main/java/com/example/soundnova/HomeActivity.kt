@@ -118,6 +118,13 @@ class HomeActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.seekBarProgress.collect { progress ->
+                    binding.songSeekBar.progress = progress
+                }
+            }
+        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currentSongIndex.collect { index ->
                     if (index != -1) {
                         val song = viewModel.tracks.value.data[index]
