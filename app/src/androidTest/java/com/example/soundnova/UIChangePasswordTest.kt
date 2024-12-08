@@ -76,14 +76,16 @@ class UIChangePasswordTest {
 
     @Test
     fun testCancelFunctionality() {
-        // Nhấn nút "Cancel"
-        onView(withId(R.id.buttonCancel)).perform(click())
+        fun testCancelFunctionality() {
+            // Nhấn nút "Cancel"
+            onView(withId(R.id.buttonCancel)).perform(click())
 
-        // Kiểm tra rằng HomeActivity đã được mở
-        onView(withId(R.id.textWelcome)).check(matches(isDisplayed()))
+            // Kiểm tra rằng HomeActivity đã được mở
+            onView(withId(R.id.textWelcome)).check(matches(isDisplayed()))
 
-        // Kiểm tra rằng RecyclerView "Recommend Songs" cũng hiển thị (tùy chọn)
-        onView(withId(R.id.recyclerViewRecommendSongs)).check(matches(isDisplayed()))
+            // Kiểm tra rằng RecyclerView "Recommend Songs" cũng hiển thị (tùy chọn)
+            onView(withId(R.id.recyclerViewRecommendSongs)).check(matches(isDisplayed()))
+        }
     }
 
 

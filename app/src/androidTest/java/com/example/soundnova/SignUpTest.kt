@@ -22,16 +22,13 @@ class SignUpTest {
 
     @Test
     fun testSignUpSuccess() {
-        fun testSignUpSuccess() {
+
             // Case 1: Valid email and valid password
             onView(withId(R.id.editTextSignUpEmail))
-                .perform(typeText("user@gmail.com"))
+                .perform(typeText("testhm@gmail.com"))
             onView(withId(R.id.editTextSignUpPassword))
-                .perform(typeText("123456789"))
-
-            // Click the sign-up button
+                .perform(typeText("Abc123456@"))
             onView(withId(R.id.buttonRegister)).perform(click())
-        }
     }
 
     @Test
@@ -70,18 +67,18 @@ class SignUpTest {
 
     @Test
     fun testSignUpInvalidEmailAndPassword() {
-        fun testSignUpInvalidEmailAndPassword() {
+
             // Case 4: Invalid email and invalid password
             onView(withId(R.id.editTextSignUpEmail))
                 .perform(typeText("invalid-email"))
             onView(withId(R.id.editTextSignUpPassword))
-                .perform(typeText("123")) // Invalid password format
-
-            // Click the sign-up button
+                .perform(typeText("123"))
             onView(withId(R.id.buttonRegister)).perform(click())
 
-            // Check for "Invalid email format" or combined error message
             onView(withId(R.id.note)).check(matches(withText("Invalid email format")))
         }
     }
-}
+
+
+
+
