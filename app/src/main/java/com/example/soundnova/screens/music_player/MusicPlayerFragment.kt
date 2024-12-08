@@ -345,7 +345,6 @@ class MusicPlayerFragment : Fragment() {
 
     private fun stopRotationAnimator() {
         viewModel.rotationAnimator?.pause()
-        isRotating = false
     }
 
     @SuppressLint("DefaultLocale")
