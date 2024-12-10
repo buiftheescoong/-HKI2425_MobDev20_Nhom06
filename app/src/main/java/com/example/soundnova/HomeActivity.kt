@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -19,6 +20,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.example.soundnova.databinding.ActivityMainBinding
+import com.example.soundnova.models.TrackData
 import com.example.soundnova.models.Tracks
 import com.example.soundnova.screens.music_player.MusicPlayerFragment
 import com.example.soundnova.screens.music_player.MusicPlayerViewModel
@@ -31,11 +33,15 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MusicPlayerViewModel by viewModels()
     private lateinit var gestureDetector: GestureDetector
+    private lateinit var fav: FavoriteLibrary
+    private lateinit var history: History
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+        fav = FavoriteLibrary(this)
+        history = History(this)
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -112,6 +118,13 @@ class HomeActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.seekBarProgress.collect { progress ->
+                    binding.songSeekBar.progress = progress
+                }
+            }
+        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currentSongIndex.collect { index ->
                     if (index != -1) {
                         val song = viewModel.tracks.value.data[index]
@@ -130,8 +143,17 @@ class HomeActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.seekBarProgress.collect { progress ->
-                    binding.songSeekBar.progress = progress
+                viewModel.currentSongIndex.collect { index ->
+                    if (index != -1) {
+                        val song = viewModel.tracks.value.data[index]
+                        fav.checkFavSong(song.title!!) { isFavorite ->
+                            runOnUiThread {
+                                val heartIcon =
+                                    if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
+                                binding.heartBtn.setImageResource(heartIcon)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -170,9 +192,32 @@ class HomeActivity : AppCompatActivity() {
         }
 
         binding.heartBtn.setOnClickListener {
-            val newHeartState = !viewModel.heartBoolean.value
-            viewModel.updateHeartState(newHeartState)
+            val currentSongIndex = viewModel.currentSongIndex.value
+            if (currentSongIndex != -1) {
+                val song = viewModel.tracks.value.data[currentSongIndex]
+
+                fav.checkFavSong(song.title!!) { isFavorite ->
+                    if (isFavorite) {
+                        fav.removeFavSong(song.title!!)
+                        runOnUiThread {
+                            binding.heartBtn.setImageResource(R.drawable.icon_heart)
+                        }
+                    } else {
+                        fav.addFavSong(
+                            idSong = song.id!!,
+                            title = song.title!!,
+                            artist = listOf(song.artist!!.name!!),
+                            image = song.artist!!.pictureBig!!,
+                            audioUrl = song.preview!!
+                        )
+                        runOnUiThread {
+                            binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+                        }
+                    }
+                }
+            }
         }
+
 
         binding.playPause.setOnClickListener {
             if (viewModel.mediaPlayer.isPlaying) {
@@ -256,6 +301,7 @@ class HomeActivity : AppCompatActivity() {
         viewModel.mediaPlayer.reset()
         viewModel.mediaPlayer.setDataSource(song.preview)
         viewModel.mediaPlayer.prepare()
+        history.addHistorySong(song.id!!,song.title!!, song.artist!!.name!!.split(","), song.artist!!.pictureBig!!, song.preview!!)
 
         if (!viewModel.mediaPlayer.isPlaying) {
             viewModel.mediaPlayer.start()

@@ -21,7 +21,6 @@ class FavoriteLibrary(private val context: Context) {
                 for (document in sortedDocuments) {
                     val data = document.data
 
-                    // Tạo tài liệu mới với ID là số thứ tự
                     favCollection.document(count.toString())
                         .set(data)
                         .addOnSuccessListener {
@@ -34,10 +33,9 @@ class FavoriteLibrary(private val context: Context) {
                     count++
                 }
 
-                // Xóa tất cả các tài liệu cũ (ID không phải là số)
                 for (document in documents) {
                     val documentId = document.id
-                    if (!documentId.matches(Regex("\\d+"))) { // Kiểm tra nếu ID không phải số
+                    if (!documentId.matches(Regex("\\d+"))) {
                         favCollection.document(documentId).delete()
                             .addOnSuccessListener {
                                 Log.d("Firestore", "Tài liệu cũ với ID: $documentId đã được xóa")
@@ -54,28 +52,26 @@ class FavoriteLibrary(private val context: Context) {
     }
 
     fun addFavSong(
+        idSong: Long,
         title: String,
         artist: List<String>,
         image: String,
         audioUrl: String,
-//        album: String,
-//        genre: String
     ) {
         val currentUser = firebaseAuth.currentUser
         val userEmail = currentUser?.email
         val newSong = SongData(
+            idSong = idSong,
             idUser = userEmail,
             title = title,
             artist = artist,
             image = image,
-//            album = album,
             audioUrl = audioUrl,
         )
         db.collection("favorite_library")
             .add(newSong)
             .addOnSuccessListener { documentReference ->
                 Log.d("Song", "DocumentSnapshot added with ID: ${documentReference.id}")
-                // Gọi hàm sắp xếp lại ID sau khi thêm bài hát
                 reorderDocumentIds()
             }
             .addOnFailureListener { exception ->
@@ -92,7 +88,6 @@ class FavoriteLibrary(private val context: Context) {
             idUser = userEmail,
             title = title,
         )
-        ///remove song if title = newSong.title
         db.collection("favorite_library")
             .get()
             .addOnSuccessListener { documents ->
@@ -102,7 +97,6 @@ class FavoriteLibrary(private val context: Context) {
                     val documentUserEmail =
                         document.getString("idUser") // Lấy giá trị "idUser" từ tài liệu
 
-                    // Kiểm tra điều kiện nếu tài liệu khớp
                     if (documentTitle == newSong.title && documentUserEmail == newSong.idUser) {
                         val documentId = document.id
                         db.collection("favorite_library").document(documentId).delete()
@@ -139,17 +133,16 @@ class FavoriteLibrary(private val context: Context) {
                     val documentTitle = document.getString("title")
                     val documentUserEmail = document.getString("idUser")
 
-                    // Kiểm tra điều kiện nếu tài liệu khớp
                     if (documentTitle == newSong.title && documentUserEmail == newSong.idUser) {
-                        callback(true) // Gọi callback với giá trị true nếu tìm thấy
+                        callback(true)
                         return@addOnSuccessListener
                     }
                 }
-                callback(false) // Không tìm thấy
+                callback(false)
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Lỗi khi lấy dữ liệu: ", e)
-                callback(false) // Xử lý lỗi bằng cách trả về false
+                callback(false)
             }
     }
 
