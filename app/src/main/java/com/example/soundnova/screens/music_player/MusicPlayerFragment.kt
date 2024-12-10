@@ -240,8 +240,10 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.karaokeBtn.setOnClickListener {
+            viewModel.mediaPlayer.stop()
             findNavController().navigate(R.id.action_music_to_record)
 
+            // start
 //            val song = tracks.data.get(currentSongIndex)
 //            if (mediaPlayer.isPlaying) {
 //                mediaPlayer.stop()
@@ -283,7 +285,7 @@ class MusicPlayerFragment : Fragment() {
 //                    }
 //                }
 //            }
-//        }
+//        } // end
 
         }
 

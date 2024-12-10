@@ -28,8 +28,13 @@ import java.io.File
 import java.io.IOException
 import android.media.MediaExtractor
 import android.media.MediaFormat
+import android.util.Log
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.soundnova.file.downloadAndSaveZipFile
+import com.example.soundnova.file.sendSongUrlToServer
+import com.example.soundnova.models.TrackData
 import java.nio.ByteBuffer
 
 class KaraokeFragment : Fragment() {
@@ -38,6 +43,7 @@ class KaraokeFragment : Fragment() {
     private val viewModel: MusicPlayerViewModel by activityViewModels()
     private var mediaRecorder: MediaRecorder? = null
     private var outputFile: String = ""
+    private lateinit var song: TrackData
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,8 +63,7 @@ class KaraokeFragment : Fragment() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currentSongIndex.collect { index ->
                     if (index != -1) {
-                        val song = viewModel.tracks.value.data[index]
-
+                        song = viewModel.tracks.value.data[index]
                     }
                 }
             }
@@ -84,9 +89,41 @@ class KaraokeFragment : Fragment() {
 
         // Set up button listeners
         binding.btnMuteMic.setOnClickListener {
-            startRecording()
+            val karaokeFile = File(
+                requireContext().getExternalFilesDir(null),
+                "karaoke_files_${song.id}/karaoke_track.wav"
+            )
+            if (karaokeFile.exists()) {
+                val karaokePath = karaokeFile.absolutePath
+                startRecording()
+                playKaraokeFromPath(karaokePath)
+            } else {
+                val ngrokUrl = "https://8af3-118-70-125-165.ngrok-free.app";
+                val songUrl = song.preview!!
+                val id = song.id!!
+                lifecycleScope.launch {
+                    val result = sendSongUrlToServer(songUrl, ngrokUrl)
+                    Log.e("MusicPlayerFragment", "Result: $result")
+                    if (result != null) {
+                        val transcription = result.first
+                        val zipFileUrl = result.second
+                        Toast.makeText(requireContext(), "Transcription: $transcription", Toast.LENGTH_SHORT).show()
+                        zipFileUrl?.let {
+                            val karaokePath = downloadAndSaveZipFile(it, requireContext(), id)
+                            if (karaokePath != null) {
+                                startRecording()
+                                playKaraokeFromPath(karaokePath)
+                                Toast.makeText(requireContext(), "Karaoke track saved at: $karaokePath", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(requireContext(), "Failed to save karaoke track", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to process audio", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
-
         binding.btnStop.setOnClickListener {
             stopRecording()
         }
@@ -125,11 +162,14 @@ class KaraokeFragment : Fragment() {
         try {
            // val currentSong = viewModel.tracks.value.data[viewModel.currentSongIndex.value]
             // Đường dẫn bài hát gốc và file ghi âm
-            val songFilePath = outputFile // Cập nhật đường dẫn chính xác
+            val songFilePath = File(
+                requireContext().getExternalFilesDir(null),
+                "karaoke_files_${song.id}/vocals.wav"
+            )
             val recordingFilePath = outputFile
 
             // Chuyển đổi file sang dữ liệu PCM
-            val songPcm = extractPCMData(songFilePath)
+            val songPcm = extractPCMData(songFilePath.toString())
             val recordingPcm = extractPCMData(recordingFilePath)
 
             if (songPcm != null && recordingPcm != null) {
@@ -242,6 +282,12 @@ class KaraokeFragment : Fragment() {
         return pitchSimilarity.toInt()
     }
 
+    fun playKaraokeFromPath(path: String) {
+        viewModel.mediaPlayer.reset()
+        viewModel.mediaPlayer.setDataSource(path)
+        viewModel.mediaPlayer.prepare()
+        viewModel.mediaPlayer.start()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
