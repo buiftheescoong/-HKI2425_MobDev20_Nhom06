@@ -6,6 +6,7 @@ import com.example.soundnova.models.Album
 import com.example.soundnova.models.Artist
 import com.example.soundnova.models.TrackData
 import com.example.soundnova.models.Tracks
+import com.example.soundnova.service.DeezerApiHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -142,7 +143,7 @@ class History(private val context: Context) {
                         id = document.id.toIntOrNull() ?: 0
                     }
                     val track = songToTrack(song)
-                    recentSongs.data.add(track)
+                    recentSongs.data.add(track!!)
 
                     Log.d(
                         "HistoryFragment",
@@ -151,7 +152,7 @@ class History(private val context: Context) {
                 }
             }
 
-            Log.d("HistoryFragment", "Fetched song count: ${recentSongs.data.size}")
+            Log.d("HistoryFragment1", "Fetched song count: ${recentSongs.data.size}")
 
             return@withContext recentSongs
 
@@ -161,23 +162,44 @@ class History(private val context: Context) {
         }
     }
 
-    fun songToTrack(song: SongData): TrackData {
-        return TrackData(
-            id = song.idSong ?: 0,
-            title = song.title,
-            duration = 20000,
-            artist = Artist(
-                id = 123456789,
-                name = song.artist!!.getOrNull(0),
-                pictureBig = song.image
-            ),
-            album = Album(1,"1","1","1","1", Artist(
-                id = 123456789,
-                name = song.artist!!.getOrNull(0),
-                pictureBig = song.image
-            ),null),
-            preview = song.audioUrl,
-            isLiked = true
-        )
+//    fun songToTrack(song: SongData): TrackData {
+//        return TrackData(
+//            id = song.idSong ?: 0,
+//            title = song.title,
+//            duration = 20000,
+//            artist = Artist(
+//                id = 123456789,
+//                name = song.artist!!.getOrNull(0),
+//                pictureBig = song.image
+//            ),
+//            album = Album(1,"1","1","1","1", Artist(
+//                id = 123456789,
+//                name = song.artist!!.getOrNull(0),
+//                pictureBig = song.image
+//            ),null),
+//            preview = song.audioUrl,
+//            isLiked = true
+//        )
+//    }
+    suspend fun songToTrack(song: SongData): TrackData? {
+        val trackId = song.idSong?.toString() ?: return null // Đảm bảo trackId không null
+
+        return try {
+            val trackData = DeezerApiHelper.getTrack(trackId) // Gọi API Deezer để lấy track theo trackId
+
+            TrackData(
+                id = trackData.id,
+                title = trackData.title,
+                duration = trackData.duration ?: 0,
+                artist = trackData.artist ?: null,
+                album = trackData.album ?: null,
+                preview = trackData.preview ?: null,
+                isLiked = false
+            )
+        } catch (e: Exception) {
+            Log.e("songToTrack", "Error fetching track details: ${e.message}", e)
+            null
+        }
     }
+
 }
