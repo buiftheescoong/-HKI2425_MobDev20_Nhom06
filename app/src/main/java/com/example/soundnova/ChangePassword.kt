@@ -64,6 +64,9 @@ class ChangePassword : Fragment() {
                                         }
                                     }
                             } else {
+                                if (newPassword == oldPassword) {
+                                    binding.note.text = "New password is similar to old password"
+                                }
                                 binding.note.text = "New password is not correct"
                             }
                         } else {
