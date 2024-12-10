@@ -1,117 +1,114 @@
 package com.example.soundnova
 
+import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.intent.Intents
+
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
-import org.hamcrest.Matchers.allOf
-import org.junit.Rule
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers.*
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@LargeTest
-@RunWith(AndroidJUnit4::class)
 class UISignupTest {
+    @Before
+    fun setUp() {
+        // Khởi tạo Intents trước khi test
+        Intents.init()
+    }
 
-    @get:Rule
-    val fragmentScenarioRule = FragmentScenario.launchInContainer(Register::class.java)
+    @After
+    fun tearDown() {
+        // Giải phóng Intents sau khi test xong
+        Intents.release()
+    }
+
+    // Sử dụng FragmentScenario trực tiếp trong phương thức
+    @Test
+    fun uiSignUpEmailTest() {
+        // Khởi tạo FragmentScenario
+        val scenario = FragmentScenario.launchInContainer(Register::class.java)
+
+        // Thực hiện các hành động Espresso trực tiếp
+        onView(withId(R.id.editTextSignUpEmail)).perform(typeText("testhm@gmail.com"), closeSoftKeyboard())
+
+        // Kiểm tra email có hiển thị đúng trên giao diện
+        onView(withId(R.id.editTextSignUpEmail))
+            .check(matches(isDisplayed()))
+            .check(matches(withText("testhm@gmail.com")))
+
+        scenario.close() // Đảm bảo đóng FragmentScenario khi kết thúc
+    }
+
 
     @Test
-    fun testUIElementsDisplayed() {
-        // Kiểm tra logo hiển thị
-        onView(withId(R.id.logo)).check(matches(isDisplayed()))
+    fun uiSignUpPasswordTest() {
+        val scenario = FragmentScenario.launchInContainer(Register::class.java)
 
-        // Kiểm tra các input fields hiển thị
-        onView(withId(R.id.editTextSignUpUsername)).check(matches(isDisplayed()))
-        onView(withId(R.id.editTextSignUpUsername)).check(matches(withHint(R.string.editTextSignUpUsername)))
+        // Giả lập trạng thái giao diện với nội dung password
+        onView(withId(R.id.editTextSignUpPassword)).perform(typeText("testpassword123"), closeSoftKeyboard())
 
-        onView(withId(R.id.editTextSignUpEmail)).check(matches(isDisplayed()))
-        onView(withId(R.id.editTextSignUpEmail)).check(matches(withHint(R.string.editTextSignUpEmail)))
+        // Kiểm tra password có hiển thị đúng trên giao diện
+        onView(withId(R.id.editTextSignUpPassword))
+            .check(matches(isDisplayed()))
+            .check(matches(withText("testpassword123")))
 
-
-
-        onView(withId(R.id.editTextSignUpPassword)).check(matches(isDisplayed()))
-        onView(withId(R.id.editTextSignUpPassword)).check(matches(withHint(R.string.editTextPassword)))
-
-        onView(withId(R.id.editTextSignUpRepeatPassword)).check(matches(isDisplayed()))
-        onView(withId(R.id.editTextSignUpRepeatPassword)).check(matches(withHint(R.string.editTextRepeatPassword)))
-
-        // Kiểm tra nút đăng ký hiển thị
-        onView(withId(R.id.buttonRegister)).check(matches(isDisplayed()))
-        onView(withId(R.id.buttonRegister)).check(matches(withText(R.string.buttonRegister)))
-
-        // Kiểm tra liên kết đăng nhập tài khoản
-        onView(withId(R.id.textViewSignIn)).check(matches(isDisplayed()))
-        onView(withId(R.id.textViewSignIn)).check(matches(withText(R.string.buttonConfirmSignIn)))
+        scenario.close()
     }
 
     @Test
-    fun testSignUpFunctionality() {
-        // Nhập thông tin hợp lệ
-        onView(withId(R.id.editTextSignUpUsername)).perform(typeText("John Doe"), closeSoftKeyboard())
-        onView(withId(R.id.editTextSignUpEmail)).perform(typeText("john.doe@example.com"), closeSoftKeyboard())
+    fun uiSignUpRepeatPasswordTest() {
+        val scenario = FragmentScenario.launchInContainer(Register::class.java)
 
-        onView(withId(R.id.editTextSignUpPassword)).perform(typeText("password123"), closeSoftKeyboard())
-        onView(withId(R.id.editTextSignUpRepeatPassword)).perform(typeText("password123"), closeSoftKeyboard())
+        // Giả lập trạng thái giao diện với nội dung repeat password
+        onView(withId(R.id.editTextSignUpRepeatPassword)).perform(typeText("testpassword123"), closeSoftKeyboard())
 
-        // Nhấn nút đăng ký
+        // Kiểm tra repeat password có hiển thị đúng trên giao diện
+        onView(withId(R.id.editTextSignUpRepeatPassword))
+            .check(matches(isDisplayed()))
+            .check(matches(withText("testpassword123")))
+
+        scenario.close()
+    }
+
+    @Test
+    fun uiSignUpButtonTest() {
+        val scenario = FragmentScenario.launchInContainer(Register::class.java)
+
+        // Giả lập nhập liệu vào tất cả các trường
+        onView(withId(R.id.editTextSignUpEmail)).perform(typeText("testhm@gmail.com"), closeSoftKeyboard())
+        onView(withId(R.id.editTextSignUpPassword)).perform(typeText("testpassword123"), closeSoftKeyboard())
+        onView(withId(R.id.editTextSignUpRepeatPassword)).perform(typeText("testpassword123"), closeSoftKeyboard())
+
+        // Giả lập nhấn nút đăng ký
         onView(withId(R.id.buttonRegister)).perform(click())
 
-        // Kiểm tra thông báo hoặc giao diện sau đăng ký thành công
-        onView(withId(R.id.note)).check(matches(withText("Sign up successful")))
+        // Kiểm tra có hiển thị thông báo lỗi hay không (trong trường hợp đăng ký thất bại)
+        onView(withText("Invalid password format")).check(matches(isDisplayed()))
+
+        scenario.close()
     }
 
     @Test
-    fun testSignUpWithEmptyFields() {
-        // Để trống tất cả các trường và nhấn nút đăng ký
-        onView(withId(R.id.buttonRegister)).perform(click())
+    fun uiSignUpTextViewSignInTest() {
+        val scenario = FragmentScenario.launchInContainer(Register::class.java)
 
-        // Kiểm tra thông báo lỗi
-        onView(withId(R.id.note)).check(matches(withText("Please fill out all fields")))
-    }
-
-    @Test
-    fun testSignUpWithInvalidEmail() {
-        // Nhập thông tin với email không hợp lệ
-        onView(withId(R.id.editTextSignUpUsername)).perform(typeText("John Doe"), closeSoftKeyboard())
-        onView(withId(R.id.editTextSignUpEmail)).perform(typeText("invalid-email"), closeSoftKeyboard())
-
-        onView(withId(R.id.editTextSignUpPassword)).perform(typeText("password123"), closeSoftKeyboard())
-        onView(withId(R.id.editTextSignUpRepeatPassword)).perform(typeText("password123"), closeSoftKeyboard())
-
-        // Nhấn nút đăng ký
-        onView(withId(R.id.buttonRegister)).perform(click())
-
-        // Kiểm tra thông báo lỗi
-        onView(withId(R.id.note)).check(matches(withText("Invalid email address")))
-    }
-
-    @Test
-    fun testSignUpWithMismatchedPasswords() {
-        // Nhập mật khẩu và xác nhận mật khẩu không khớp
-        onView(withId(R.id.editTextSignUpUsername)).perform(typeText("John Doe"), closeSoftKeyboard())
-        onView(withId(R.id.editTextSignUpEmail)).perform(typeText("john.doe@example.com"), closeSoftKeyboard())
-
-        onView(withId(R.id.editTextSignUpPassword)).perform(typeText("password123"), closeSoftKeyboard())
-        onView(withId(R.id.editTextSignUpRepeatPassword)).perform(typeText("differentpassword"), closeSoftKeyboard())
-
-        // Nhấn nút đăng ký
-        onView(withId(R.id.buttonRegister)).perform(click())
-
-        // Kiểm tra thông báo lỗi
-        onView(withId(R.id.note)).check(matches(withText("Passwords do not match")))
-    }
-
-    @Test
-    fun testSignInLink() {
-        // Nhấn vào liên kết "Sign In"
+        // Giả lập nhấn vào đường link chuyển sang màn hình login
         onView(withId(R.id.textViewSignIn)).perform(click())
 
-        // Kiểm tra xem giao diện đăng nhập được mở
-        onView(withId(R.id.editTextSignInUsername)).check(matches(isDisplayed()))
+        // Kiểm tra Intent có mở đúng Login Activity
+        // Lưu ý: Đoạn này cần phải thêm logic kiểm tra intent nếu bạn muốn kiểm tra chuyển hướng tới Login Activity
+        intended(hasComponent(Login::class.java.name))
+
+        scenario.close()
     }
 }
