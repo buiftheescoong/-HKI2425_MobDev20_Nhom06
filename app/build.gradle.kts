@@ -99,11 +99,15 @@ dependencies {
     implementation (libs.androidx.media)
     // Thư viện kiểm thử
     testImplementation("junit:junit:4.13.2") // JUnit cho test đơn vị
-    testImplementation("org.mockito:mockito-core:4.2.0") // Mockito cho mock test
-
+//    testImplementation("org.mockito:mockito-core:4.2.0") // Mockito cho mock test
+    testImplementation ("org.mockito:mockito-android:4.0.0")
+    testImplementation ("io.mockk:mockk:1.13.4")
+    testImplementation("org.mockito:mockito-inline:4.2.0")
     // Thư viện kiểm thử Android Instrumentation
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation ("androidx.test.espresso:espresso-contrib:3.5.1")
+    androidTestImplementation ("androidx.test.espresso:espresso-idling-resource:3.5.1")
     implementation ("com.github.bumptech.glide:glide:4.13.0") // Glide library
     annotationProcessor ("com.github.bumptech.glide:compiler:4.13.0") // Glide annotation processor
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -112,6 +116,8 @@ dependencies {
     // Thư viện dành cho chế độ debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    debugImplementation ("androidx.fragment:fragment-testing:1.5.7")
+
 
     // AndroidX Test Core
     androidTestImplementation("androidx.test:core:1.5.0")
@@ -119,6 +125,8 @@ dependencies {
     androidTestImplementation("androidx.test:rules:1.5.0")
     // AndroidX Test Runner
     androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("org.mockito:mockito-android:4.2.0") // Dành cho các test Android Instrumentation
+
 
     // Chạy tập lệnh Kotlin
     implementation(kotlin("script-runtime"))

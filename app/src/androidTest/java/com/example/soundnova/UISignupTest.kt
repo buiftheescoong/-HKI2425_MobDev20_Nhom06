@@ -1,5 +1,6 @@
 package com.example.soundnova
 
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -17,7 +18,7 @@ import org.junit.runner.RunWith
 class UISignupTest {
 
     @get:Rule
-    val activityScenarioRule = ActivityScenarioRule(Register::class.java)
+    val fragmentScenarioRule = FragmentScenario.launchInContainer(Register::class.java)
 
     @Test
     fun testUIElementsDisplayed() {
@@ -31,8 +32,7 @@ class UISignupTest {
         onView(withId(R.id.editTextSignUpEmail)).check(matches(isDisplayed()))
         onView(withId(R.id.editTextSignUpEmail)).check(matches(withHint(R.string.editTextSignUpEmail)))
 
-        onView(withId(R.id.editTextSignUpPhoneNumber)).check(matches(isDisplayed()))
-        onView(withId(R.id.editTextSignUpPhoneNumber)).check(matches(withHint(R.string.editTextSignUpPhoneNumber)))
+
 
         onView(withId(R.id.editTextSignUpPassword)).check(matches(isDisplayed()))
         onView(withId(R.id.editTextSignUpPassword)).check(matches(withHint(R.string.editTextPassword)))
@@ -54,7 +54,7 @@ class UISignupTest {
         // Nhập thông tin hợp lệ
         onView(withId(R.id.editTextSignUpUsername)).perform(typeText("John Doe"), closeSoftKeyboard())
         onView(withId(R.id.editTextSignUpEmail)).perform(typeText("john.doe@example.com"), closeSoftKeyboard())
-        onView(withId(R.id.editTextSignUpPhoneNumber)).perform(typeText("123456789"), closeSoftKeyboard())
+
         onView(withId(R.id.editTextSignUpPassword)).perform(typeText("password123"), closeSoftKeyboard())
         onView(withId(R.id.editTextSignUpRepeatPassword)).perform(typeText("password123"), closeSoftKeyboard())
 
@@ -79,7 +79,7 @@ class UISignupTest {
         // Nhập thông tin với email không hợp lệ
         onView(withId(R.id.editTextSignUpUsername)).perform(typeText("John Doe"), closeSoftKeyboard())
         onView(withId(R.id.editTextSignUpEmail)).perform(typeText("invalid-email"), closeSoftKeyboard())
-        onView(withId(R.id.editTextSignUpPhoneNumber)).perform(typeText("123456789"), closeSoftKeyboard())
+
         onView(withId(R.id.editTextSignUpPassword)).perform(typeText("password123"), closeSoftKeyboard())
         onView(withId(R.id.editTextSignUpRepeatPassword)).perform(typeText("password123"), closeSoftKeyboard())
 
@@ -95,7 +95,7 @@ class UISignupTest {
         // Nhập mật khẩu và xác nhận mật khẩu không khớp
         onView(withId(R.id.editTextSignUpUsername)).perform(typeText("John Doe"), closeSoftKeyboard())
         onView(withId(R.id.editTextSignUpEmail)).perform(typeText("john.doe@example.com"), closeSoftKeyboard())
-        onView(withId(R.id.editTextSignUpPhoneNumber)).perform(typeText("123456789"), closeSoftKeyboard())
+
         onView(withId(R.id.editTextSignUpPassword)).perform(typeText("password123"), closeSoftKeyboard())
         onView(withId(R.id.editTextSignUpRepeatPassword)).perform(typeText("differentpassword"), closeSoftKeyboard())
 

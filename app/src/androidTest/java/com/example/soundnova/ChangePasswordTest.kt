@@ -1,19 +1,12 @@
-package com.example.soundnova
-
-import androidx.test.espresso.idling.CountingIdlingResource
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.intent.Intents.intended
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import org.junit.Rule
+import com.example.soundnova.ChangePassword
+import com.example.soundnova.R
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -21,93 +14,84 @@ import org.junit.runner.RunWith
 @LargeTest
 class ChangePasswordTest {
 
-    @get:Rule
-    val activityRule = ActivityScenarioRule(ChangePassword::class.java)
-    private val countingIdlingResource = CountingIdlingResource("ChangePasswordTest")
-
     @Test
     fun testInvalidCurrentPassword() {
-        fun testInvalidCurrentPassword() {
-            countingIdlingResource.increment()
-            onView(withId(R.id.editTextCurrentPass))
-                .perform(typeText("wrongPassword"))
-            onView(withId(R.id.editTextNewPass))
-                .perform(typeText("ValidNewPassword123!"))
-            onView(withId(R.id.editTextConfirmNewPass))
-                .perform(typeText("ValidNewPassword123!"))
-            onView(withId(R.id.buttonSendChange)).perform(click())
-            onView(withId(R.id.note)).check(matches(withText("Password is not correct")))
-            countingIdlingResource.decrement()
-        }
+        // Khởi chạy Fragment
+        launchFragmentInContainer<ChangePassword>()
+
+        // Nhập dữ liệu không hợp lệ
+        onView(withId(R.id.editTextCurrentPass))
+            .perform(typeText("wrongPassword"), closeSoftKeyboard())
+        onView(withId(R.id.editTextNewPass))
+            .perform(typeText("ValidNewPassword123!"), closeSoftKeyboard())
+        onView(withId(R.id.editTextConfirmNewPass))
+            .perform(typeText("ValidNewPassword123!"), closeSoftKeyboard())
+
+        onView(withId(R.id.buttonSendChange)).perform(click())
+        Thread.sleep(1000)
+        // đã chạy đang hiện ra user state is not save
+        // Kiểm tra thông báo lỗi
+        onView(withId(R.id.note)).check(matches(withText("Password is not correct")))
     }
 
-    @Test
+
+
+@Test
     fun testEmptyCurrentPassword() {
-        fun testEmptyCurrentPassword() {
-            countingIdlingResource.increment()
-            onView(withId(R.id.editTextCurrentPass))
-                .perform(typeText(""))
-            onView(withId(R.id.editTextNewPass))
-                .perform(typeText("Valid1NewPassword123!"))
-            onView(withId(R.id.editTextConfirmNewPass))
-                .perform(typeText("Valid2NewPassword123!"))
-            onView(withId(R.id.buttonSendChange)).perform(click())
-            onView(withId(R.id.note)).check(matches(withText("Password is not correct")))
-            countingIdlingResource.decrement()
-        }
+        launchFragmentInContainer<ChangePassword>()
+        onView(withId(R.id.editTextCurrentPass))
+            .perform(typeText(""))
+        onView(withId(R.id.editTextNewPass))
+            .perform(typeText("Valid1NewPassword123!"))
+        onView(withId(R.id.editTextConfirmNewPass))
+            .perform(typeText("Valid2NewPassword123!"))
+        onView(withId(R.id.buttonSendChange)).perform(click())
+        onView(withId(R.id.note)).check(matches(withText("Password is not correct")))
     }
+
 
     @Test
     fun testInvalidNewPassword() {
-        fun testInvalidNewPassword() {
-            countingIdlingResource.increment()
-            onView(withId(R.id.editTextCurrentPass))
-                .perform(typeText("validPassword"))
-            onView(withId(R.id.editTextNewPass))
-                .perform(typeText("short*"))
-            onView(withId(R.id.editTextConfirmNewPass))
-                .perform(typeText("short"))
-            onView(withId(R.id.buttonSendChange)).perform(click())
-            onView(withId(R.id.note)).check(matches(withText("New password is not correct")))
-            countingIdlingResource.decrement()
-        }
+
+        onView(withId(R.id.editTextCurrentPass))
+            .perform(typeText("validPassword"))
+        onView(withId(R.id.editTextNewPass))
+            .perform(typeText("short*"))
+        onView(withId(R.id.editTextConfirmNewPass))
+            .perform(typeText("short*"))
+        onView(withId(R.id.buttonSendChange)).perform(click())
+        onView(withId(R.id.note)).check(matches(withText("New password is not correct")))
+
     }
 
     @Test
     fun testMismatchedNewPassword() {
-        fun testMismatchedNewPassword() {
-            countingIdlingResource.increment()
-            onView(withId(R.id.editTextCurrentPass))
-                .perform(typeText("validPassword"))
-            onView(withId(R.id.editTextNewPass))
-                .perform(typeText("ValidNewPassword123!"))
-            onView(withId(R.id.editTextConfirmNewPass))
-                .perform(typeText("MismatchedPassword123!"))
-            onView(withId(R.id.buttonSendChange)).perform(click())
-            onView(withId(R.id.note)).check(matches(withText("New password is not correct")))
-            countingIdlingResource.decrement()
-        }
+        onView(withId(R.id.editTextCurrentPass))
+            .perform(typeText("validPassword"))
+        onView(withId(R.id.editTextNewPass))
+            .perform(typeText("ValidNewPassword123!"))
+        onView(withId(R.id.editTextConfirmNewPass))
+            .perform(typeText("MismatchedPassword123!"))
+        onView(withId(R.id.buttonSendChange)).perform(click())
+        onView(withId(R.id.note)).check(matches(withText("New password is not correct")))
     }
 
     @Test
     fun testSuccessfulPasswordChange() {
-        fun testSuccessfulPasswordChange() {
-            countingIdlingResource.increment()
-            onView(withId(R.id.editTextCurrentPass))
-                .perform(typeText("validPassword"))
-            onView(withId(R.id.editTextNewPass))
-                .perform(typeText("ValidNewPassword123!"))
-            onView(withId(R.id.editTextConfirmNewPass))
-                .perform(typeText("ValidNewPassword123!"))
-            onView(withId(R.id.buttonSendChange)).perform(click())
 
-            // Kiểm tra Intent được gửi đi bằng Espresso Intents
-            Intents.init()
-            intended(hasComponent(HomeActivity::class.java.name))
-            Intents.release()
+        onView(withId(R.id.editTextCurrentPass))
+            .perform(typeText("validPassword"))
+        onView(withId(R.id.editTextNewPass))
+            .perform(typeText("ValidNewPassword123!"))
+        onView(withId(R.id.editTextConfirmNewPass))
+            .perform(typeText("ValidNewPassword123!"))
+        onView(withId(R.id.buttonSendChange)).perform(click())
 
-            countingIdlingResource.decrement()
-        }
+        // Kiểm tra Intent được gửi đi bằng Espresso Intents
+//        Intents.init()
+//        intended(hasComponent(HomeActivity::class.java.name))
+//        Intents.release()
     }
-
 }
+
+

@@ -1,5 +1,6 @@
 package com.example.soundnova
 
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -16,7 +17,7 @@ import org.junit.runner.RunWith
 class UIChangePasswordTest {
 
     @get:Rule
-    val activityScenarioRule = ActivityScenarioRule(ChangePassword::class.java)
+    val fragmentScenarioRule = FragmentScenario.launchInContainer(ChangePassword::class.java)
 
     @Test
     fun testChangePasswordUIElementsDisplayed() {
