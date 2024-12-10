@@ -1,6 +1,7 @@
 package com.example.soundnova.screens.music_player
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
@@ -13,16 +14,23 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.bumptech.glide.Glide
+import com.example.soundnova.R
 import com.example.soundnova.databinding.KaraokeBinding
+import com.example.soundnova.databinding.PlayerActivityBinding
 import com.example.soundnova.databinding.RecordBinding
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 
 class KaraokeFragment : Fragment() {
 
-    private var _binding: KaraokeBinding? = null
-    private val binding get() = _binding!!
-
+    private lateinit var binding: KaraokeBinding
+    private val viewModel: MusicPlayerViewModel by activityViewModels()
     private var mediaRecorder: MediaRecorder? = null
     private var outputFile: String = ""
 
@@ -30,13 +38,26 @@ class KaraokeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding =KaraokeBinding.inflate(inflater, container, false)
+        binding = KaraokeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+    @SuppressLint("UnsafeRepeatOnLifecycleDetector")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding = KaraokeBinding.bind(view)
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentSongIndex.collect { index ->
+                    if (index != -1) {
+                        val song = viewModel.tracks.value.data[index]
+
+                    }
+                }
+            }
+        }
         // Request permissions
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -128,7 +149,6 @@ class KaraokeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
         mediaRecorder?.release()
         mediaRecorder = null
     }

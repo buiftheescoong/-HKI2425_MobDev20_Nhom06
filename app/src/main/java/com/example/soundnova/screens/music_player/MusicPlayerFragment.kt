@@ -20,6 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.navigateUp
 import com.example.soundnova.FavoriteLibrary
 import com.example.soundnova.History
 import com.example.soundnova.service.LyricsApiHelper
@@ -244,7 +245,7 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.karaokeBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_mucsic_to_record)
+            findNavController().navigate(R.id.action_music_to_record)
         }
 
 //        binding.karaokeBtn.setOnClickListener {

@@ -45,10 +45,12 @@ class HomeActivity : AppCompatActivity() {
             when (destination.id) {
                 R.id.musicPlayerFragment, R.id.lyricsFragment, R.id.karaokeFragment -> {
                     binding.bottomNavigationView.visibility = View.GONE
+                    binding.musicBottomBar.visibility = View.GONE
                 }
 
                 else -> {
                     binding.bottomNavigationView.visibility = View.VISIBLE
+                    binding.musicBottomBar.visibility = View.VISIBLE
                 }
             }
         }
@@ -163,10 +165,9 @@ class HomeActivity : AppCompatActivity() {
         binding.musicBottomBar.visibility = View.VISIBLE
 
         binding.musicBottomBar.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(android.R.id.content, MusicPlayerFragment())
-                .addToBackStack(null)
-                .commit()
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            val navController = navHostFragment.navController
+            navController.navigate(R.id.musicPlayerFragment)
         }
 
         binding.heartBtn.setOnClickListener {
@@ -213,10 +214,9 @@ class HomeActivity : AppCompatActivity() {
             }
 
             override fun onSingleTapUp(e: MotionEvent): Boolean {
-                supportFragmentManager.beginTransaction()
-                    .replace(android.R.id.content, MusicPlayerFragment())
-                    .addToBackStack(null)
-                    .commit()
+                val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                val navController = navHostFragment.navController
+                navController.navigate(R.id.musicPlayerFragment)
                 return super.onSingleTapUp(e)
             }
         })

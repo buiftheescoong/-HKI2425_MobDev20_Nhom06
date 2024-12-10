@@ -50,17 +50,11 @@
         android:name="com.example.soundnova.screens.music_player.MusicPlayerFragment"
         android:label="player_activity"
         tools:layout="@layout/player_activity">
-        <argument
-            android:name="tracks"
-            app:argType="com.example.soundnova.models.Tracks" />
-        <argument
-            android:name="position"
-            app:argType="integer" />
         <action
             android:id="@+id/action_musicPlayerFragment_to_lyricsFragment"
             app:destination="@id/lyricsFragment" />
         <action
-            android:id="@+id/action_mucsic_to_record"
+            android:id="@+id/action_music_to_record"
             app:destination="@id/karaokeFragment"/>
     </fragment>
 

@@ -14,7 +14,8 @@
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/musicBottomBar"
-        app:navGraph="@navigation/nav_graph" />
+        app:navGraph="@navigation/nav_graph"
+        app:defaultNavHost="true" />
 
     <!-- MusicBottomBar -->
     <LinearLayout
