@@ -242,51 +242,6 @@ class MusicPlayerFragment : Fragment() {
         binding.karaokeBtn.setOnClickListener {
             viewModel.mediaPlayer.stop()
             findNavController().navigate(R.id.action_music_to_record)
-
-            // start
-//            val song = tracks.data.get(currentSongIndex)
-//            if (mediaPlayer.isPlaying) {
-//                mediaPlayer.stop()
-//                mediaPlayer.reset()
-//            }
-//
-//            val karaokeFile = File(
-//                requireContext().getExternalFilesDir(null),
-//                "karaoke_files_${song.id}/karaoke_track.wav"
-//            )
-//
-//            if (karaokeFile.exists()) {
-//                val karaokePath = karaokeFile.absolutePath
-//                playKaraokeFromPath(karaokePath)
-////                Log.e("MusicPlayerFragment", "Playing karaoke from file: $karaokePath")
-//            } else {
-//                val ngrokUrl = "https://8af3-118-70-125-165.ngrok-free.app";
-//                val songUrl = song.preview!!
-//                val id = song.id!!
-//                lifecycleScope.launch {
-//                    val result = sendSongUrlToServer(songUrl, ngrokUrl)
-//                    Log.e("MusicPlayerFragment", "Result: $result")
-//                    if (result != null) {
-//                        val transcription = result.first
-//                        val zipFileUrl = result.second
-//                        Toast.makeText(requireContext(), "Transcription: $transcription", Toast.LENGTH_SHORT).show()
-//                        zipFileUrl?.let {
-//                            val karaokePath = downloadAndSaveZipFile(it, requireContext(), id)
-//                            if (karaokePath != null) {
-//                                playKaraokeFromPath(karaokePath)
-//                                Log.e("MusicPlayerFragment", "Playing karaoke from path: $karaokePath")
-//                                Toast.makeText(requireContext(), "Karaoke track saved at: $karaokePath", Toast.LENGTH_LONG).show()
-//                            } else {
-//                                Toast.makeText(requireContext(), "Failed to save karaoke track", Toast.LENGTH_SHORT).show()
-//                            }
-//                        }
-//                    } else {
-//                        Toast.makeText(requireContext(), "Failed to process audio", Toast.LENGTH_SHORT).show()
-//                    }
-//                }
-//            }
-//        } // end
-
         }
 
     }
@@ -399,29 +354,6 @@ class MusicPlayerFragment : Fragment() {
 
         return Color.rgb(red, green, blue)
     }
-
-//        private fun playKaraokeFromPath(path: String) {
-//            try {
-//                mediaPlayer.reset()
-//                mediaPlayer.setDataSource(path)
-//                mediaPlayer.prepare()
-//                mediaPlayer.start()
-//                Log.e("MusicPlayerFragment", "Playing karaoke from path: $path")
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//                Log.e("MusicPlayerFragment", "Error playing karaoke from path: $path", e)
-//            }
-    private fun playKaraokeFromPath(path: String) {
-        try {
-            viewModel.mediaPlayer.reset()
-            viewModel.mediaPlayer.setDataSource(path)
-            viewModel.mediaPlayer.prepare()
-            viewModel.mediaPlayer.start()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
 
 //        private fun sendRequest(songUrl: String, ngrokUrl: String, id: Long): Pair<String, String?>   {
 //            var transcription: String? = null
