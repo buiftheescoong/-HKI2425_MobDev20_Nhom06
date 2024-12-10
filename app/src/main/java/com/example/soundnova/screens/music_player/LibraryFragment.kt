@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.soundnova.HomeActivity
 import com.example.soundnova.R
-import com.example.soundnova.Song2
 import com.example.soundnova.SongData
 import com.example.soundnova.databinding.LibraryBinding
 import com.example.soundnova.models.Album
