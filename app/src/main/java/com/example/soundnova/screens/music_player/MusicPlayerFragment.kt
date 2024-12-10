@@ -19,6 +19,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.navigateUp
 import com.example.soundnova.FavoriteLibrary
 import com.example.soundnova.History
 import kotlinx.coroutines.launch
@@ -239,6 +240,7 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.karaokeBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_music_to_record)
 
 //            val song = tracks.data.get(currentSongIndex)
 //            if (mediaPlayer.isPlaying) {
@@ -282,7 +284,7 @@ class MusicPlayerFragment : Fragment() {
 //                }
 //            }
 //        }
-            findNavController().navigate(R.id.action_mucsic_to_record)
+
         }
 
     }
