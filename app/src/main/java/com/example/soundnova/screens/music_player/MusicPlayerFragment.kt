@@ -21,6 +21,8 @@ import com.example.soundnova.FavoriteLibrary
 import com.example.soundnova.History
 import com.example.soundnova.R
 import com.example.soundnova.databinding.PlayerActivityBinding
+import com.example.soundnova.file.downloadAndSaveZipFile
+import com.example.soundnova.file.getNgrokPublicUrl
 import com.example.soundnova.file.sendSongUrlToServer
 import com.example.soundnova.models.Tracks
 import com.example.soundnova.service.LyricsApiHelper
@@ -30,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 
@@ -187,24 +190,56 @@ class MusicPlayerFragment : Fragment() {
                 mediaPlayer.stop()
                 mediaPlayer.reset()
             }
-            val karaokeFile = File(requireContext().getExternalFilesDir(null), "karaoke_${song.id}.wav")
+
+            val karaokeFile = File(
+                requireContext().getExternalFilesDir(null),
+                "karaoke_files_${song.id}/karaoke_track.wav"
+            )
+
             if (karaokeFile.exists()) {
-                song.karaokeTrack = karaokeFile.absolutePath
-                playKaraokeFromPath(song.karaokeTrack!!)
-                Log.e("MusicPlayerFragment", "Playing karaoke from file: ${song.karaokeTrack}")
+                val karaokePath = karaokeFile.absolutePath
+                playKaraokeFromPath(karaokePath)
+//                Log.e("MusicPlayerFragment", "Playing karaoke from file: $karaokePath")
             } else {
-                val serverUrl = "https://d43e-123-30-177-118.ngrok-free.app/process-audio" // URL server
-                CoroutineScope(Dispatchers.Main).launch {
-                    val karaokePath = sendSongUrlToServer(song.id!!, song.preview!!, serverUrl, requireContext())
-                    if (karaokePath != null) {
-                        song.karaokeTrack = karaokePath
-                        playKaraokeFromPath(karaokePath)
-                        Log.e("MusicPlayerFragment", "Download file: ${song.karaokeTrack}")
+                val ngrokUrl = "https://8af3-118-70-125-165.ngrok-free.app";
+                val songUrl = song.preview!!
+                val id = song.id!!
+                lifecycleScope.launch {
+                    val result = sendSongUrlToServer(songUrl, ngrokUrl)
+                    Log.e("MusicPlayerFragment", "Result: $result")
+                    if (result != null) {
+                        val transcription = result.first
+                        val zipFileUrl = result.second
+                        Toast.makeText(requireContext(), "Transcription: $transcription", Toast.LENGTH_SHORT).show()
+                        zipFileUrl?.let {
+                            val karaokePath = downloadAndSaveZipFile(it, requireContext(), id)
+                            if (karaokePath != null) {
+                                playKaraokeFromPath(karaokePath)
+                                Log.e("MusicPlayerFragment", "Playing karaoke from path: $karaokePath")
+                                Toast.makeText(requireContext(), "Karaoke track saved at: $karaokePath", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(requireContext(), "Failed to save karaoke track", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     } else {
-                        Toast.makeText(requireContext(), "Không thể tải nhạc karaoke", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Failed to process audio", Toast.LENGTH_SHORT).show()
                     }
                 }
-        }}
+//                lifecycleScope.launch {
+//                    val response = sendRequest(song.preview!!, ngrokUrl, song.id!!)
+//                    response?.let {
+//                        val transcription = it.first
+//                        Log.e("MusicPlayerFragment", "Transcription: $transcription")
+//                        val karaokePath = it.second
+//                        if (karaokePath != null) {
+//                            playKaraokeFromPath(karaokePath)
+//                        } else {
+//                            Toast.makeText(requireContext(), "Không thể tải nhạc karaoke", Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
+//                }
+            }
+        }
     }
 
     private fun playNextSong() {
@@ -344,16 +379,47 @@ class MusicPlayerFragment : Fragment() {
         return Color.rgb(red, green, blue)
     }
 
-    private fun playKaraokeFromPath(path: String) {
-        try {
-            mediaPlayer.reset()
-            mediaPlayer.setDataSource(path)
-            mediaPlayer.prepare()
-            mediaPlayer.start()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        private fun playKaraokeFromPath(path: String) {
+            try {
+                mediaPlayer.reset()
+                mediaPlayer.setDataSource(path)
+                mediaPlayer.prepare()
+                mediaPlayer.start()
+                Log.e("MusicPlayerFragment", "Playing karaoke from path: $path")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("MusicPlayerFragment", "Error playing karaoke from path: $path", e)
+            }
         }
-    }
+
+
+        private fun sendRequest(songUrl: String, ngrokUrl: String, id: Long): Pair<String, String?>   {
+            var transcription: String? = null
+            var karaokePath: String? = null
+
+            lifecycleScope.launch {
+                    val result = sendSongUrlToServer(songUrl, ngrokUrl)
+                    Log.e("MusicPlayerFragment", "Result: $result")
+                    if (result != null) {
+                        transcription = result.first
+                        val zipFileUrl = result.second
+                        Toast.makeText(requireContext(), "Transcription: $transcription", Toast.LENGTH_SHORT).show()
+                        zipFileUrl?.let {
+                            karaokePath = downloadAndSaveZipFile(it, requireContext(), id)
+                            if (karaokePath != null) {
+                                Toast.makeText(requireContext(), "Karaoke track saved at: $karaokePath", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(requireContext(), "Failed to save karaoke track", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to process audio", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            return Pair(transcription ?: "", karaokePath)
+        }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
