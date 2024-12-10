@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.soundnova.HomeActivity
 import com.example.soundnova.R
 import com.example.soundnova.databinding.ArtistListBinding
 import com.example.soundnova.models.Artists
@@ -68,13 +69,11 @@ class ArtistPlayerFragment : Fragment() {
             if (tracks != null) {
                 adapterSong = SongAdapter(tracks, object : OnItemClickTrackListener {
                     override fun onItemClick(position: Int, tracks: Tracks) {
-                        findNavController().navigate(
-                            R.id.action_artistPlayerFragment_to_musicPlayerFragment,
-                            Bundle().apply {
-                                putParcelable("tracks", tracks)
-                                putInt("position", position)
-                            }
-                        )
+                        val bundle = Bundle().apply {
+                            putParcelable("tracks", tracks)
+                            putInt("position", position)
+                        }
+                        (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
                     }
                 }, 1)
             }
