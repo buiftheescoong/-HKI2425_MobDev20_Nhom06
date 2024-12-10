@@ -1,6 +1,7 @@
 package com.example.soundnova
 
 data class SongData(
+    val idSong: Long? = null,
     val idUser: String? = null,
     val title: String? = null,
     val artist: List<String> = emptyList(),

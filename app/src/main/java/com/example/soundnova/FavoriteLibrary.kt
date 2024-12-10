@@ -21,7 +21,6 @@ class FavoriteLibrary(private val context: Context) {
                 for (document in sortedDocuments) {
                     val data = document.data
 
-                    // Tạo tài liệu mới với ID là số thứ tự
                     favCollection.document(count.toString())
                         .set(data)
                         .addOnSuccessListener {
@@ -53,6 +52,7 @@ class FavoriteLibrary(private val context: Context) {
     }
 
     fun addFavSong(
+        idSong: Long,
         title: String,
         artist: List<String>,
         image: String,
@@ -61,6 +61,7 @@ class FavoriteLibrary(private val context: Context) {
         val currentUser = firebaseAuth.currentUser
         val userEmail = currentUser?.email
         val newSong = SongData(
+            idSong = idSong,
             idUser = userEmail,
             title = title,
             artist = artist,

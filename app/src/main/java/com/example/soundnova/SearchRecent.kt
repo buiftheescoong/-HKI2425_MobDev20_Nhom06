@@ -60,6 +60,7 @@ class SearchRecent(private val context: Context) {
     }
 
     fun addSearchRecent(
+        idSong: Long,
         title: String,
         artist: List<String>,
         image: String,
@@ -71,47 +72,6 @@ class SearchRecent(private val context: Context) {
 
         val recentCollection = db.collection("search_recent")
 
-//        val maxIdDeferred = CompletableDeferred<Int>()
-//        recentCollection.get()
-//            .addOnSuccessListener { documents ->
-//                val maxId = documents.size()
-//                maxIdDeferred.complete(maxId)
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.w("Song", "Error fetching documents for ID generation", exception)
-//                maxIdDeferred.complete(0)
-//            }
-//
-//
-//        maxIdDeferred.invokeOnCompletion {
-//            recentCollection.get()
-//                .addOnSuccessListener { documents ->
-//
-//                    val newId = maxIdDeferred.getCompleted() + 1
-//
-//                    val newSong = SongData(
-//                        idUser = userEmail,
-//                        title = title,
-//                        artist = artist,
-//                        image = image,
-//                        audioUrl = audioUrl,
-//                        id = newId
-//                    )
-//
-//                    recentCollection.document()
-//                        .set(newSong)
-//                        .addOnSuccessListener {
-//                            Log.d("Song", "DocumentSnapshot added with ID: $newId")
-//                            reorderDocumentIds()
-//                        }
-//                        .addOnFailureListener { exception ->
-//                            Log.w("Song", "Error adding document", exception)
-//                        }
-//                }
-//                .addOnFailureListener { exception ->
-//                    Log.w("Song", "Error fetching documents for ID generation", exception)
-//                }
-//        }
         recentCollection.whereEqualTo("title", title)
             .whereEqualTo("idUser", userEmail)
             .get()
@@ -131,6 +91,7 @@ class SearchRecent(private val context: Context) {
                     maxIdDeferred.invokeOnCompletion {
                         val newId = maxIdDeferred.getCompleted() + 1
                         val newSong = SongData(
+                            idSong = idSong,
                             idUser = userEmail,
                             title = title,
                             artist = artist,
@@ -205,7 +166,7 @@ class SearchRecent(private val context: Context) {
 
     fun songToTrack(song: SongData): TrackData {
         return TrackData(
-            id = 1,
+            id = song.idSong,
             title = song.title,
             duration = 20000,
             artist = Artist(

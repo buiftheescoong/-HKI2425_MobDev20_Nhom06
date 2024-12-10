@@ -60,6 +60,7 @@ class History(private val context: Context) {
     }
 
     fun addHistorySong(
+        idSong: Long,
         title: String,
         artist: List<String>,
         image: String,
@@ -90,6 +91,7 @@ class History(private val context: Context) {
                     val newId = maxIdDeferred.getCompleted() + 1
 
                     val newSong = SongData(
+                        idSong = idSong,
                         idUser = userEmail,
                         title = title,
                         artist = artist,
@@ -161,7 +163,7 @@ class History(private val context: Context) {
 
     fun songToTrack(song: SongData): TrackData {
         return TrackData(
-            id = 1,
+            id = song.idSong ?: 0,
             title = song.title,
             duration = 20000,
             artist = Artist(

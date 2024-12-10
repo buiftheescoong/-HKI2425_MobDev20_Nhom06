@@ -159,7 +159,7 @@ class HomeFragment : Fragment() {
             }
 
             try {
-                val historyTracks = history.fetchHistorySongs() ?: return@launch // Xử lý nếu null
+                val historyTracks = history.fetchHistorySongs()
                 Log.d("HistoryFragment", "History tracks: $historyTracks")
 
                 if (historyTracks.data.isNotEmpty()) {
@@ -167,11 +167,14 @@ class HomeFragment : Fragment() {
                         LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                     adapterRecent = SongAdapter(historyTracks, object : OnItemClickTrackListener {
                         override fun onItemClick(position: Int, tracks: Tracks) {
+                            val trackId = tracks.data[position].id.toString()
+
                             val bundle = Bundle().apply {
                                 putParcelable("tracks", tracks)
                                 putInt("position", position)
                             }
                             (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
+
                         }
                     }, 1)
                     binding.recyclerViewRecentSongs.adapter = adapterRecent

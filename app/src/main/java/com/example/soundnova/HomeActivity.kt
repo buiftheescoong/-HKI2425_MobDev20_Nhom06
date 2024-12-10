@@ -204,6 +204,7 @@ class HomeActivity : AppCompatActivity() {
                         }
                     } else {
                         fav.addFavSong(
+                            idSong = song.id!!,
                             title = song.title!!,
                             artist = listOf(song.artist!!.name!!),
                             image = song.artist!!.pictureBig!!,
@@ -300,7 +301,7 @@ class HomeActivity : AppCompatActivity() {
         viewModel.mediaPlayer.reset()
         viewModel.mediaPlayer.setDataSource(song.preview)
         viewModel.mediaPlayer.prepare()
-        history.addHistorySong(song.title!!, song.artist!!.name!!.split(","), song.artist!!.pictureBig!!, song.preview!!)
+        history.addHistorySong(song.id!!,song.title!!, song.artist!!.name!!.split(","), song.artist!!.pictureBig!!, song.preview!!)
 
         if (!viewModel.mediaPlayer.isPlaying) {
             viewModel.mediaPlayer.start()

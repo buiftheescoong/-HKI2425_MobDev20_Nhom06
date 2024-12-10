@@ -110,12 +110,13 @@ class SearchFragment : Fragment() {
         }
     }
     private fun saveTrackToFirebase(track: TrackData, searchRecent: SearchRecent) {
+        val idSong = track.id ?: 0
         val title = track.title ?: ""
         val artist = listOf(track.artist?.name ?: "Unknown Artist")
         val image = track.artist?.pictureBig ?: ""
         val audioUrl = track.preview ?: ""
 
-        searchRecent.addSearchRecent(title, artist, image, audioUrl)
+        searchRecent.addSearchRecent(idSong, title, artist, image, audioUrl)
 
     }
 
