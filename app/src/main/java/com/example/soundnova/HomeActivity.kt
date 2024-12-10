@@ -56,7 +56,6 @@ class HomeActivity : AppCompatActivity() {
 
                 else -> {
                     binding.bottomNavigationView.visibility = View.VISIBLE
-                    binding.musicBottomBar.visibility = View.VISIBLE
                 }
             }
         }
