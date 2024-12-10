@@ -32,6 +32,18 @@ class Validator {
         return Regex(passwordRegex).matches(password)
     }
 
+    fun isValidRepeatPassword(repeatpassword: String): Boolean {
+        return repeatpassword.isNotEmpty()
+    }
+
+    fun checkRepeatPassword(password: String, repeatpassword: String): String {
+        if (isValidRepeatPassword(repeatpassword) == false) return "empty"
+        else if(password == repeatpassword) {
+            return "correct"
+        }
+        else return "incorrect"
+    }
+
 }
 
 fun main() {

@@ -1,7 +1,6 @@
 package com.example.soundnova.screens.music_player
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,15 +21,15 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.soundnova.FavoriteLibrary
 import com.example.soundnova.History
-import com.example.soundnova.service.LyricsApiHelper
 import kotlinx.coroutines.launch
 
 class MusicPlayerFragment : Fragment() {
-    
+
     private lateinit var history: History
     private lateinit var fav: FavoriteLibrary
     private lateinit var binding: PlayerActivityBinding
     private val viewModel: MusicPlayerViewModel by activityViewModels()
+    private lateinit var rotationAnimator: ObjectAnimator
     private var isRotating = false
 
     override fun onCreateView(
@@ -39,19 +38,12 @@ class MusicPlayerFragment : Fragment() {
         binding = PlayerActivityBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+
     @SuppressLint("UnsafeRepeatOnLifecycleDetector")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = PlayerActivityBinding.bind(view)
-
-        if (viewModel.rotationAnimator == null) {
-            viewModel.rotationAnimator =
-                ObjectAnimator.ofFloat(binding.coverArt, "rotation", 0f, 360f).apply {
-                    duration = 30000L
-                    repeatCount = ObjectAnimator.INFINITE
-                    interpolator = LinearInterpolator()
-                }
-        }
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -69,13 +61,25 @@ class MusicPlayerFragment : Fragment() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.heartBoolean.collect { heartBoolean ->
-                    val heartIcon =
-                        if (heartBoolean) R.drawable.icon_heart_on else R.drawable.icon_heart
-                    binding.heartBtn.setImageResource(heartIcon)
+                viewModel.currentSongIndex.collect { index ->
+                    if (index != -1) {
+                        val song = viewModel.tracks.value.data[index]
+
+                        fav = FavoriteLibrary(requireContext())
+                        fav.checkFavSong(song.title!!) { isFavorite ->
+                            val heartIcon = if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
+                            binding.heartBtn.setImageResource(heartIcon)
+                        }
+
+                        binding.songName.text = song.title
+                        binding.songArtist.text = song.artist!!.name
+                        Glide.with(this@MusicPlayerFragment).load(song.artist!!.pictureBig).circleCrop()
+                            .into(binding.coverArt)
+                    }
                 }
             }
         }
+
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -114,22 +118,6 @@ class MusicPlayerFragment : Fragment() {
 
                         binding.durationPlayed.text = formatDuration(viewModel.seekBarProgress.value)
                         binding.durationTotal.text = formatDuration(30000)
-
-//                        lifecycleScope.launch {
-//                            try {
-//                                val lyrics = LyricsApiHelper.fetchLyrics(song.artist.name, song.title)
-//                                viewModel.updateCurrentSongLyrics(lyrics)
-//                            } catch (e: Exception) {
-//                                Log.e("LyricsFragment", "Error fetching lyrics", e)
-//                            }
-//                        }
-//                        if (viewModel.currentSongLyrics.value != "") {
-//                            binding.previewLyrics.text = viewModel.currentSongLyrics.value.split("\n").take(11).joinToString("\n")
-//                            binding.showFullLyricsButton.visibility = View.VISIBLE
-//                        } else {
-//                            binding.previewLyrics.text = getString(R.string.NoLyricsText)
-//                            binding.showFullLyricsButton.visibility = View.GONE
-//                        }
                     }
                 }
             }
@@ -151,6 +139,12 @@ class MusicPlayerFragment : Fragment() {
                     curBackgroundPreLyrics.setColor(color)
                 }
             }
+        }
+
+        rotationAnimator = ObjectAnimator.ofFloat(binding.coverArt, "rotation", 0f, 360f).apply {
+            duration = 30000L
+            repeatCount = ObjectAnimator.INFINITE
+            interpolator = LinearInterpolator()
         }
 
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -175,11 +169,12 @@ class MusicPlayerFragment : Fragment() {
         binding.heartBtn.setOnClickListener {
             val newHeartState = !viewModel.heartBoolean.value
             viewModel.updateHeartState(newHeartState)
-            
+
             fav = FavoriteLibrary(requireContext())
             if (viewModel.heartBoolean.value) {
                 val currentSong = viewModel.tracks.value.data[viewModel.currentSongIndex.value]
                 fav.addFavSong(
+                    currentSong.id!!,
                     currentSong.title!!,
                     currentSong.artist!!.name!!.split(","),
                     currentSong.artist!!.pictureBig!!,
@@ -244,33 +239,52 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.karaokeBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_mucsic_to_record)
-        }
 
-//        binding.karaokeBtn.setOnClickListener {
 //            val song = tracks.data.get(currentSongIndex)
 //            if (mediaPlayer.isPlaying) {
 //                mediaPlayer.stop()
 //                mediaPlayer.reset()
 //            }
-//            val karaokeFile = File(requireContext().getExternalFilesDir(null), "karaoke_${song.id}.wav")
+//
+//            val karaokeFile = File(
+//                requireContext().getExternalFilesDir(null),
+//                "karaoke_files_${song.id}/karaoke_track.wav"
+//            )
+//
 //            if (karaokeFile.exists()) {
-//                song.karaokeTrack = karaokeFile.absolutePath
-//                playKaraokeFromPath(song.karaokeTrack!!)
-//                Log.e("MusicPlayerFragment", "Playing karaoke from file: ${song.karaokeTrack}")
+//                val karaokePath = karaokeFile.absolutePath
+//                playKaraokeFromPath(karaokePath)
+////                Log.e("MusicPlayerFragment", "Playing karaoke from file: $karaokePath")
 //            } else {
-//                val serverUrl = "https://d43e-123-30-177-118.ngrok-free.app/process-audio" // URL server
-//                CoroutineScope(Dispatchers.Main).launch {
-//                    val karaokePath = sendSongUrlToServer(song.id!!, song.preview!!, serverUrl, requireContext())
-//                    if (karaokePath != null) {
-//                        song.karaokeTrack = karaokePath
-//                        playKaraokeFromPath(karaokePath)
-//                        Log.e("MusicPlayerFragment", "Download file: ${song.karaokeTrack}")
+//                val ngrokUrl = "https://8af3-118-70-125-165.ngrok-free.app";
+//                val songUrl = song.preview!!
+//                val id = song.id!!
+//                lifecycleScope.launch {
+//                    val result = sendSongUrlToServer(songUrl, ngrokUrl)
+//                    Log.e("MusicPlayerFragment", "Result: $result")
+//                    if (result != null) {
+//                        val transcription = result.first
+//                        val zipFileUrl = result.second
+//                        Toast.makeText(requireContext(), "Transcription: $transcription", Toast.LENGTH_SHORT).show()
+//                        zipFileUrl?.let {
+//                            val karaokePath = downloadAndSaveZipFile(it, requireContext(), id)
+//                            if (karaokePath != null) {
+//                                playKaraokeFromPath(karaokePath)
+//                                Log.e("MusicPlayerFragment", "Playing karaoke from path: $karaokePath")
+//                                Toast.makeText(requireContext(), "Karaoke track saved at: $karaokePath", Toast.LENGTH_LONG).show()
+//                            } else {
+//                                Toast.makeText(requireContext(), "Failed to save karaoke track", Toast.LENGTH_SHORT).show()
+//                            }
+//                        }
 //                    } else {
-//                        Toast.makeText(requireContext(), "Không thể tải nhạc karaoke", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(requireContext(), "Failed to process audio", Toast.LENGTH_SHORT).show()
 //                    }
 //                }
-//        }}
+//            }
+//        }
+            findNavController().navigate(R.id.action_mucsic_to_record)
+        }
+
     }
 
     private fun playNextSong() {
@@ -281,6 +295,15 @@ class MusicPlayerFragment : Fragment() {
         }
         viewModel.updateCurrentSongIndex(newIndex)
         playSong(newIndex)
+
+        fav = FavoriteLibrary(requireContext())
+        fav.checkFavSong(viewModel.tracks.value.data[viewModel.currentSongIndex.value].title!!) { isFavorite ->
+            if (isFavorite) {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+            } else {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart)
+            }
+        }
     }
 
     private fun playPreviousSong() {
@@ -295,25 +318,33 @@ class MusicPlayerFragment : Fragment() {
         }
         viewModel.updateCurrentSongIndex(newIndex)
         playSong(newIndex)
+
+        fav = FavoriteLibrary(requireContext())
+        fav.checkFavSong(viewModel.tracks.value.data[viewModel.currentSongIndex.value].title!!) { isFavorite ->
+            if (isFavorite) {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+            } else {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart)
+            }
+        }
     }
 
     private fun playSong(index: Int) {
         viewModel.stopSeekBarUpdate()
 
         val song = viewModel.tracks.value.data[index]
-        if (context != null) {
-            fav = FavoriteLibrary(requireContext())
-            fav.checkFavSong(viewModel.tracks.value.data[viewModel.currentSongIndex.value].title!!) { isFavorite ->
-                if (isFavorite) {
-                    binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
-                } else {
-                    binding.heartBtn.setImageResource(R.drawable.icon_heart)
-                }
+
+        fav = FavoriteLibrary(requireContext())
+        fav.checkFavSong(viewModel.tracks.value.data[viewModel.currentSongIndex.value].title!!) { isFavorite ->
+            if (isFavorite) {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart_on)
+            } else {
+                binding.heartBtn.setImageResource(R.drawable.icon_heart)
             }
         }
-        
-//        history = History(requireContext())
-//        history.addHistorySong(song.title, song.artist.name.split(","), song.artist.pictureBig, song.duration, song.preview)
+
+        history = History(requireContext())
+        history.addHistorySong(song.id!!,song.title!!, song.artist!!.name!!.split(","), song.artist!!.pictureBig!!, song.preview!!)
 
         val curBackgroundPreLyrics = binding.previewLayout.background as GradientDrawable
         val currentPreColor = getRandomColor()
@@ -334,17 +365,18 @@ class MusicPlayerFragment : Fragment() {
 
     private fun startRotationAnimator() {
         if (!isRotating) {
-            viewModel.rotationAnimator?.start()
+            rotationAnimator.start()
             isRotating = true
         } else {
-            viewModel.rotationAnimator?.resume()
+            rotationAnimator.resume()
         }
     }
 
 
 
     private fun stopRotationAnimator() {
-        viewModel.rotationAnimator?.pause()
+        rotationAnimator.pause()
+        isRotating = false
     }
 
     @SuppressLint("DefaultLocale")
@@ -364,6 +396,17 @@ class MusicPlayerFragment : Fragment() {
         return Color.rgb(red, green, blue)
     }
 
+//        private fun playKaraokeFromPath(path: String) {
+//            try {
+//                mediaPlayer.reset()
+//                mediaPlayer.setDataSource(path)
+//                mediaPlayer.prepare()
+//                mediaPlayer.start()
+//                Log.e("MusicPlayerFragment", "Playing karaoke from path: $path")
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                Log.e("MusicPlayerFragment", "Error playing karaoke from path: $path", e)
+//            }
     private fun playKaraokeFromPath(path: String) {
         try {
             viewModel.mediaPlayer.reset()
@@ -375,9 +418,35 @@ class MusicPlayerFragment : Fragment() {
         }
     }
 
+
+//        private fun sendRequest(songUrl: String, ngrokUrl: String, id: Long): Pair<String, String?>   {
+//            var transcription: String? = null
+//            var karaokePath: String? = null
+//
+//            lifecycleScope.launch {
+//                    val result = sendSongUrlToServer(songUrl, ngrokUrl)
+//                    Log.e("MusicPlayerFragment", "Result: $result")
+//                    if (result != null) {
+//                        transcription = result.first
+//                        val zipFileUrl = result.second
+//                        Toast.makeText(requireContext(), "Transcription: $transcription", Toast.LENGTH_SHORT).show()
+//                        zipFileUrl?.let {
+//                            karaokePath = downloadAndSaveZipFile(it, requireContext(), id)
+//                            if (karaokePath != null) {
+//                                Toast.makeText(requireContext(), "Karaoke track saved at: $karaokePath", Toast.LENGTH_LONG).show()
+//                            } else {
+//                                Toast.makeText(requireContext(), "Failed to save karaoke track", Toast.LENGTH_SHORT).show()
+//                            }
+//                        }
+//                    } else {
+//                        Toast.makeText(requireContext(), "Failed to process audio", Toast.LENGTH_SHORT).show()
+//                    }
+//            }
+//            return Pair(transcription ?: "", karaokePath)
+//        }
+
     override fun onDestroyView() {
         super.onDestroyView()
         stopRotationAnimator()
-        viewModel.updateRotationValue(binding.coverArt.rotation)
     }
 }
