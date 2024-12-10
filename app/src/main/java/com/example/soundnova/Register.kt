@@ -76,7 +76,15 @@ class Register : Fragment() {
                     repeatStatus == "incorrect" -> "repeatpassword is incorrect"
                     else -> "Unknown error"
                 }
-                binding.note.text = "$message"
+//                binding.note.text = "$message"
+                Log.d("RegisterFragment", "Validation Result - Email: $emailStatus, Password: $passwordStatus, Repeat Password: $repeatStatus")
+                Log.d("RegisterFragment", "Displayed Message: $message")
+
+// Cập nhật TextView hiển thị lỗi
+                binding.note.apply {
+                    text = message
+                    visibility = View.VISIBLE // Đảm bảo TextView hiển thị nếu bị ẩn
+                }
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
         }
