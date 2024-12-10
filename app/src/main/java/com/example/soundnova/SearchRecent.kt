@@ -15,14 +15,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class History(private val context: Context) {
+class SearchRecent(private val context: Context) {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db = Firebase.firestore
 
     fun reorderDocumentIds() {
-        val historyCollection = db.collection("history")
+        val searchRecent = db.collection("search_recent")
 
-        historyCollection.get()
+        searchRecent.get()
             .addOnSuccessListener { documents ->
                 val sortedDocuments = documents.sortedBy { it.id.toIntOrNull() ?: Int.MAX_VALUE }
                 var count = 1
@@ -30,7 +30,7 @@ class History(private val context: Context) {
                 for (document in sortedDocuments) {
                     val data = document.data
 
-                    historyCollection.document(count.toString())
+                    searchRecent.document(count.toString())
                         .set(data)
                         .addOnSuccessListener {
                             Log.d("Firestore", "Tài liệu mới với ID: $count được tạo thành công")
@@ -45,7 +45,7 @@ class History(private val context: Context) {
                 for (document in documents) {
                     val documentId = document.id
                     if (!documentId.matches(Regex("\\d+"))) {
-                        historyCollection.document(documentId).delete()
+                        searchRecent.document(documentId).delete()
                             .addOnSuccessListener {
                                 Log.d("Firestore", "Tài liệu cũ với ID: $documentId đã được xóa")
                             }
@@ -60,64 +60,67 @@ class History(private val context: Context) {
             }
     }
 
-    fun addHistorySong(
+    fun addSearchRecent(
         idSong: Long,
         title: String,
         artist: List<String>,
         image: String,
         audioUrl: String,
 
-    ) {
+        ) {
         val currentUser = firebaseAuth.currentUser
         val userEmail = currentUser?.email
 
-        val historyCollection = db.collection("history")
+        val recentCollection = db.collection("search_recent")
 
-        val maxIdDeferred = CompletableDeferred<Int>()
-        historyCollection.get()
+        recentCollection.whereEqualTo("title", title)
+            .whereEqualTo("idUser", userEmail)
+            .get()
             .addOnSuccessListener { documents ->
-                val maxId = documents.size()
-                maxIdDeferred.complete(maxId)
-            }
-            .addOnFailureListener { exception ->
-                Log.w("Song", "Error fetching documents for ID generation", exception)
-                maxIdDeferred.complete(0)
-            }
-
-
-        maxIdDeferred.invokeOnCompletion {
-            historyCollection.get()
-                .addOnSuccessListener { documents ->
-
-                    val newId = maxIdDeferred.getCompleted() + 1
-
-                    val newSong = SongData(
-                        idSong = idSong,
-                        idUser = userEmail,
-                        title = title,
-                        artist = artist,
-                        image = image,
-                        audioUrl = audioUrl,
-                        id = newId
-                    )
-
-                    historyCollection.document()
-                        .set(newSong)
-                        .addOnSuccessListener {
-                            Log.d("Song", "DocumentSnapshot added with ID: $newId")
-                            reorderDocumentIds()
+                if (documents.isEmpty) {
+                    val maxIdDeferred = CompletableDeferred<Int>()
+                    recentCollection.get()
+                        .addOnSuccessListener { allDocuments ->
+                            val maxId = allDocuments.size()
+                            maxIdDeferred.complete(maxId)
                         }
                         .addOnFailureListener { exception ->
-                            Log.w("Song", "Error adding document", exception)
+                            Log.w("Song", "Error fetching documents for ID generation", exception)
+                            maxIdDeferred.complete(0)
                         }
+
+                    maxIdDeferred.invokeOnCompletion {
+                        val newId = maxIdDeferred.getCompleted() + 1
+                        val newSong = SongData(
+                            idSong = idSong,
+                            idUser = userEmail,
+                            title = title,
+                            artist = artist,
+                            image = image,
+                            audioUrl = audioUrl,
+                            id = newId
+                        )
+
+                        recentCollection.document()
+                            .set(newSong)
+                            .addOnSuccessListener {
+                                Log.d("Song", "New song added with ID: $newId")
+                                reorderDocumentIds() // Sắp xếp lại các ID tài liệu
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.w("Song", "Error adding new song", exception)
+                            }
+                    }
+                } else {
+                    Log.d("SearchRecent", "Song already exists in the recent list.")
                 }
-                .addOnFailureListener { exception ->
-                    Log.w("Song", "Error fetching documents for ID generation", exception)
-                }
-        }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("SearchRecent", "Error checking for existing song: ", exception)
+            }
     }
 
-    suspend fun fetchHistorySongs(): Tracks = withContext(Dispatchers.IO) {
+    suspend fun fetchRecentSongs(): Tracks = withContext(Dispatchers.IO) {
         val currentUser = firebaseAuth.currentUser
         val userEmail = currentUser?.email
 
@@ -127,9 +130,8 @@ class History(private val context: Context) {
         }
 
         try {
-            val documents = db.collection("history")
+            val documents = db.collection("search_recent")
                 .orderBy("id", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                .limit(10)
                 .get()
                 .await()
 
@@ -153,7 +155,7 @@ class History(private val context: Context) {
                 }
             }
 
-            Log.d("HistoryFragment1", "Fetched song count: ${recentSongs.data.size}")
+            Log.d("HistoryFragment", "Fetched song count: ${recentSongs.data.size}")
 
             return@withContext recentSongs
 
@@ -165,7 +167,7 @@ class History(private val context: Context) {
 
 //    fun songToTrack(song: SongData): TrackData {
 //        return TrackData(
-//            id = song.idSong ?: 0,
+//            id = song.idSong,
 //            title = song.title,
 //            duration = 20000,
 //            artist = Artist(
@@ -183,10 +185,10 @@ class History(private val context: Context) {
 //        )
 //    }
     suspend fun songToTrack(song: SongData): TrackData? {
-        val trackId = song.idSong?.toString() ?: return null // Đảm bảo trackId không null
+        val trackId = song.idSong?.toString() ?: return null
 
         return try {
-            val trackData = DeezerApiHelper.getTrack(trackId) // Gọi API Deezer để lấy track theo trackId
+            val trackData = DeezerApiHelper.getTrack(trackId)
 
             TrackData(
                 id = trackData.id,
@@ -202,5 +204,4 @@ class History(private val context: Context) {
             null
         }
     }
-
 }

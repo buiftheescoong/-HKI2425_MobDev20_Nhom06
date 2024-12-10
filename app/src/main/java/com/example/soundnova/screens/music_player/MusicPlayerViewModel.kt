@@ -1,10 +1,6 @@
 package com.example.soundnova.screens.music_player
 
-import android.animation.ObjectAnimator
 import android.media.MediaPlayer
-import android.util.Log
-import android.view.View
-import android.view.animation.LinearInterpolator
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.soundnova.models.Tracks
@@ -28,7 +24,7 @@ class MusicPlayerViewModel : ViewModel() {
     private val _repeatBoolean = MutableStateFlow(false)
     val repeatBoolean: StateFlow<Boolean> = _repeatBoolean
 
-    private val _tracks = MutableStateFlow(Tracks(mutableListOf()))
+    private val _tracks = MutableStateFlow(Tracks())
     val tracks: StateFlow<Tracks> = _tracks
 
     private val _currentSongIndex = MutableStateFlow(-1)
@@ -43,11 +39,7 @@ class MusicPlayerViewModel : ViewModel() {
     private val _seekBarProgress = MutableStateFlow(0)
     val seekBarProgress: StateFlow<Int> = _seekBarProgress
 
-    private val _currentRotation = MutableStateFlow(0f)
-    val currentRotation: StateFlow<Float> = _currentRotation
-
     val mediaPlayer: MediaPlayer = MediaPlayer()
-    var rotationAnimator: ObjectAnimator? = null
 
     private var seekBarUpdateJob: Job? = null
 
@@ -85,10 +77,6 @@ class MusicPlayerViewModel : ViewModel() {
 
     fun updateCurrentSongLyrics(lyrics: String) {
         _currentSongLyrics.value = lyrics
-    }
-
-    fun updateRotationValue(rotation: Float) {
-        _currentRotation.value = rotation
     }
 
     fun startSeekBarUpdate() {

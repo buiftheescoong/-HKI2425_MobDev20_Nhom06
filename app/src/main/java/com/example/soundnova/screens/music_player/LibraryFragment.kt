@@ -9,17 +9,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.soundnova.HomeActivity
 import com.example.soundnova.R
-import com.example.soundnova.Song2
+import com.example.soundnova.SongData
 import com.example.soundnova.databinding.LibraryBinding
 import com.example.soundnova.models.Album
 import com.example.soundnova.models.Artist
 import com.example.soundnova.models.TrackData
 import com.example.soundnova.models.Tracks
-import com.example.soundnova.screens.adapters.OnItemClickSong2Listener
 import com.example.soundnova.screens.adapters.OnItemClickTrackListener
 import com.example.soundnova.screens.adapters.SongAdapter
-import com.example.soundnova.screens.adapters.SongAdapter2
 import com.example.soundnova.service.DeezerApiHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -32,7 +31,6 @@ import kotlinx.coroutines.withContext
 
 class LibraryFragment : Fragment() {
 
-    private var favoriteSongs: Tracks = Tracks(mutableListOf()) // Khởi tạo danh sách trống
     private lateinit var binding: LibraryBinding
     private lateinit var adapter: SongAdapter // Sử dụng adapter mới
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -46,72 +44,29 @@ class LibraryFragment : Fragment() {
         return binding.root
     }
 
-//    private suspend fun fetchFavoriteSongs() : Tracks {
-//        val currentUser = firebaseAuth.currentUser
-//        val userEmail = currentUser?.email
-//
-//        if (userEmail == null) {
-//            Log.e("LibraryFragment", "User is not logged in.")
-//        }
-//
-//
-//        db.collection("favorite_library")
-//            .get()
-//            .addOnSuccessListener { documents ->
-//                favoriteSongs.data = mutableListOf() // Reset danh sách trước khi thêm dữ liệu mới
-//                for (document in documents) {
-//                    val idUser = document.getString("idUser")
-//                    if (idUser == userEmail) {
-//                        val song = document.toObject(Song2::class.java)
-//                        val track = songToTrack(song)
-//                        favoriteSongs.data.add(track)
-//
-//                        Log.d(
-//                            "LibraryFragment",
-//                            "Fetched song: ${track.title}, Artist: ${track.artist?.name}"
-//                        )
-//
-//                    }
-//                }
-//                Log.d(
-//                    "LibraryFragment",
-//                    "Fetched song: ${favoriteSongs.data.size}"
-//                )
-//
-//                adapter.notifyDataSetChanged()
-//
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.e("LibraryFragment", "Error fetching favorite songs: ", exception)
-//            }
-//        return favoriteSongs
-//    }
-
     private suspend fun fetchFavoriteSongs(): Tracks = withContext(Dispatchers.IO) {
         val currentUser = firebaseAuth.currentUser
         val userEmail = currentUser?.email
 
         if (userEmail == null) {
             Log.e("LibraryFragment", "User is not logged in.")
-            return@withContext Tracks() // Trả về danh sách rỗng nếu người dùng chưa đăng nhập
+            return@withContext Tracks()
         }
 
         try {
-            // Lấy dữ liệu từ Firestore
             val documents = db.collection("favorite_library")
                 .get()
-                .await()  // Đợi Firebase trả về kết quả
+                .await()
 
-            val favoriteSongs = Tracks() // Tạo một đối tượng Tracks mới
-            favoriteSongs.data = mutableListOf() // Reset danh sách bài hát yêu thích
+            val favoriteSongs = Tracks()
+            favoriteSongs.data = mutableListOf()
 
-            // Lặp qua các tài liệu và thêm bài hát yêu thích vào danh sách
             for (document in documents) {
                 val idUser = document.getString("idUser")
                 if (idUser == userEmail) {
-                    val song = document.toObject(Song2::class.java)
+                    val song = document.toObject(SongData::class.java)
                     val track = songToTrack(song)
-                    favoriteSongs.data.add(track)
+                    favoriteSongs.data.add(track!!)
 
                     Log.d(
                         "LibraryFragment",
@@ -122,11 +77,11 @@ class LibraryFragment : Fragment() {
 
             Log.d("LibraryFragment", "Fetched song count: ${favoriteSongs.data.size}")
 
-            return@withContext favoriteSongs // Trả về kết quả
+            return@withContext favoriteSongs
 
         } catch (exception: Exception) {
             Log.e("LibraryFragment", "Error fetching favorite songs: ", exception)
-            throw exception // Ném lỗi nếu có
+            throw exception
         }
     }
 
@@ -142,13 +97,11 @@ class LibraryFragment : Fragment() {
 
             adapter = SongAdapter(tracks, object : OnItemClickTrackListener {
                 override fun onItemClick(position: Int, tracks: Tracks) {
-                    findNavController().navigate(
-                        R.id.action_lib_to_music,
-                        Bundle().apply {
-                            putParcelable("tracks", tracks)
-                            putInt("position", position)
-                        }
-                    )
+                    val bundle = Bundle().apply {
+                        putParcelable("tracks", tracks)
+                        putInt("position", position)
+                    }
+                    (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
                 }
             }, 1)
 
@@ -157,42 +110,45 @@ class LibraryFragment : Fragment() {
     }
 
 
+
 //    fun songToTrack(song: Song2): TrackData {
-//            return TrackData(
-//                id = null,
-//                title = song.title,
-//                duration = null,
-//                artist = Artist(
-//                    id = 123456789,
-//                    name = song.artist!!.getOrNull(0),
-//                    pictureBig = song.image
-//                ),
-//                album = null,
-//                preview = song.audioUrl,
-//                isLiked = true
-//            )
-//        }
+//        return TrackData(
+//            id = 1,
+//            title = song.title,
+//            duration = 20000,
+//            artist = Artist(
+//                id = 123456789,
+//                name = song.artist!!.getOrNull(0),
+//                pictureBig = song.image
+//            ),
+//            album = Album(1,"1","1","1","1",Artist(
+//                id = 123456789,
+//                name = song.artist!!.getOrNull(0),
+//                pictureBig = song.image
+//            ),null),
+//            preview = song.audioUrl,
+//            isLiked = true
+//        )
+//    }
+    suspend fun songToTrack(song: SongData): TrackData? {
+        val trackId = song.idSong?.toString() ?: return null
 
+        return try {
+            val trackData = DeezerApiHelper.getTrack(trackId)
 
-    fun songToTrack(song: Song2): TrackData {
-        return TrackData(
-            id = 1,
-            title = song.title,
-            duration = 20000,
-            artist = Artist(
-                id = 123456789,
-                name = song.artist!!.getOrNull(0),
-                pictureBig = song.image
-            ),
-            album = Album(1,"1","1","1","1",Artist(
-                id = 123456789,
-                name = song.artist!!.getOrNull(0),
-                pictureBig = song.image
-            ),null),
-            preview = song.audioUrl,
-            isLiked = true
-        )
+            TrackData(
+                id = trackData.id,
+                title = trackData.title,
+                duration = trackData.duration ?: 0,
+                artist = trackData.artist ?: null,
+                album = trackData.album ?: null,
+                preview = trackData.preview ?: null,
+                isLiked = false
+            )
+        } catch (e: Exception) {
+            Log.e("songToTrack", "Error fetching track details: ${e.message}", e)
+            null
+        }
     }
-
 
 }
