@@ -32,6 +32,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.fragment.findNavController
 import com.example.soundnova.file.downloadAndSaveZipFile
 import com.example.soundnova.file.sendSongUrlToServer
 import com.example.soundnova.models.TrackData
@@ -125,7 +126,22 @@ class KaraokeFragment : Fragment() {
             }
         }
         binding.btnStop.setOnClickListener {
+            viewModel.mediaPlayer.stop()
             stopRecording()
+        }
+        binding.btnPlayPause.setOnClickListener {
+            if (viewModel.mediaPlayer.isPlaying) {
+                viewModel.mediaPlayer.pause()
+                viewModel.updateIsPlaying(false)
+                viewModel.stopSeekBarUpdate()
+            } else {
+                viewModel.mediaPlayer.start()
+                viewModel.updateIsPlaying(true)
+                viewModel.startSeekBarUpdate()
+            }
+        }
+        binding.btnBack.setOnClickListener {
+            findNavController().navigate(R.id.action_kara_to_musicPlayerFragment)
         }
     }
 
