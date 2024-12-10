@@ -129,7 +129,7 @@ class KaraokeFragment : Fragment() {
             val recordingFilePath = outputFile
 
             // Chuyển đổi file sang dữ liệu PCM
-            val songPcm = extractPCMData(songFilePath.toString())
+            val songPcm = extractPCMData(songFilePath)
             val recordingPcm = extractPCMData(recordingFilePath)
 
             if (songPcm != null && recordingPcm != null) {
@@ -140,6 +140,7 @@ class KaraokeFragment : Fragment() {
                 // So sánh cao độ và chấm điểm
                 val similarity = comparePitch(listOf(songPitch), listOf(recordingPitch))
                 val score = calculateScore(similarity)
+                binding.score.text = score.toString()
 
                 // Hiển thị điểm trong giao diện
                // binding.tvScore.text = "Score: $score" // TextView trong `KaraokeBinding`
@@ -238,12 +239,7 @@ class KaraokeFragment : Fragment() {
     }
 
     fun calculateScore(pitchSimilarity: Double): Int {
-        return when {
-            pitchSimilarity > 90 -> 100
-            pitchSimilarity > 75 -> 80
-            pitchSimilarity > 50 -> 60
-            else -> 40
-        }
+        return pitchSimilarity.toInt()
     }
 
 
