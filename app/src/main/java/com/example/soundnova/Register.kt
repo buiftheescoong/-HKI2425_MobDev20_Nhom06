@@ -34,11 +34,13 @@ class Register : Fragment() {
             val email = binding.editTextSignUpEmail.text.toString()
             val password = binding.editTextSignUpPassword.text.toString()
             val name = binding.editTextSignUpUsername.text.toString()
+            val repeatpassword = binding.editTextSignUpRepeatPassword.text.toString()
 
             val emailStatus = validator.checkEmail(email)
             val passwordStatus = validator.checkPassword(password)
+            val repeatStatus = validator.checkRepeatPassword(password, repeatpassword)
 
-            if (emailStatus == "valid" && passwordStatus == "valid") {
+            if (emailStatus == "valid" && passwordStatus == "valid" && repeatStatus == "correct") {
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
@@ -70,6 +72,8 @@ class Register : Fragment() {
                     emailStatus == "invalid" -> "Invalid email format"
                     passwordStatus == "empty" -> "Password is empty"
                     passwordStatus == "invalid" -> "Invalid password format"
+                    repeatStatus == "empty" -> "repeatpassword is empty"
+                    repeatStatus == "incorrect" -> "repeatpassword is incorrect"
                     else -> "Unknown error"
                 }
                 binding.note.text = "$message"
