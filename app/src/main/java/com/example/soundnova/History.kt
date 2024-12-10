@@ -129,6 +129,7 @@ class History(private val context: Context) {
         try {
             val documents = db.collection("history")
                 .orderBy("id", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .limit(10)
                 .get()
                 .await()
 
