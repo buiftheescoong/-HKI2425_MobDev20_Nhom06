@@ -10,6 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.soundnova.History
+import com.example.soundnova.HomeActivity
 import com.example.soundnova.R
 import com.example.soundnova.databinding.HomeActivityBinding
 import com.example.soundnova.models.Albums
@@ -31,6 +33,10 @@ class HomeFragment : Fragment() {
     private lateinit var adapterSong: SongAdapter
     private lateinit var adapterAlbum: AlbumAdapter
     private lateinit var adapterArtist: ArtistAdapter
+    private lateinit var adapterRecent: SongAdapter
+
+    private lateinit var history: History
+
     companion object {
         const val REQUEST_CODE = 100
     }
@@ -49,6 +55,8 @@ class HomeFragment : Fragment() {
         val binding = HomeActivityBinding.bind(view)
 //        binding.recyclerViewTabsSongs.layoutManager =
 //            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        history = History(requireContext())
+
         lifecycleScope.launch {
 
             if (viewModel.tracks == null || viewModel.albums == null || viewModel.artists == null) {
@@ -59,13 +67,11 @@ class HomeFragment : Fragment() {
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 adapterSong = SongAdapter(tracks, object : OnItemClickTrackListener {
                     override fun onItemClick(position: Int, tracks: Tracks) {
-                        findNavController().navigate(
-                            R.id.action_homeFragment_to_musicPlayerFragment,
-                            Bundle().apply {
-                                putParcelable("tracks", tracks)
-                                putInt("position", position)
-                            }
-                        )
+                        val bundle = Bundle().apply {
+                            putParcelable("tracks", tracks)
+                            putInt("position", position)
+                        }
+                        (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
                     }
                 }, 0)
                 binding.recyclerViewRecommendSongs.adapter = adapterSong
@@ -75,7 +81,7 @@ class HomeFragment : Fragment() {
                 binding.recyclerViewPopularAlbums.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 adapterAlbum = AlbumAdapter(albums, object : OnItemClickAlbumListener {
-                    override fun onItemClick(position: Int, albums : Albums) {
+                    override fun onItemClick(position: Int, albums: Albums) {
                         findNavController().navigate(
                             R.id.action_homeFragment_to_albumPlayerFragment,
                             Bundle().apply {
@@ -92,7 +98,7 @@ class HomeFragment : Fragment() {
                 binding.recyclerViewFavoriteArtists.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 adapterArtist = ArtistAdapter(artists, object : OnItemClickArtistListener {
-                    override fun onItemClick(position: Int, artists : Artists) {
+                    override fun onItemClick(position: Int, artists: Artists) {
                         findNavController().navigate(
                             R.id.action_homeFragment_to_artistPlayerFragment,
                             Bundle().apply {
@@ -110,13 +116,11 @@ class HomeFragment : Fragment() {
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 adapterSong = SongAdapter(tracks, object : OnItemClickTrackListener {
                     override fun onItemClick(position: Int, tracks: Tracks) {
-                        findNavController().navigate(
-                            R.id.action_homeFragment_to_musicPlayerFragment,
-                            Bundle().apply {
-                                putParcelable("tracks", tracks)
-                                putInt("position", position)
-                            }
-                        )
+                        val bundle = Bundle().apply {
+                            putParcelable("tracks", tracks)
+                            putInt("position", position)
+                        }
+                        (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
                     }
                 }, 0)
                 binding.recyclerViewRecommendSongs.adapter = adapterSong
@@ -125,7 +129,7 @@ class HomeFragment : Fragment() {
                 binding.recyclerViewPopularAlbums.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 adapterAlbum = AlbumAdapter(albums, object : OnItemClickAlbumListener {
-                    override fun onItemClick(position: Int, albums : Albums) {
+                    override fun onItemClick(position: Int, albums: Albums) {
                         findNavController().navigate(
                             R.id.action_homeFragment_to_albumPlayerFragment,
                             Bundle().apply {
@@ -141,7 +145,7 @@ class HomeFragment : Fragment() {
                 binding.recyclerViewFavoriteArtists.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 adapterArtist = ArtistAdapter(artists, object : OnItemClickArtistListener {
-                    override fun onItemClick(position: Int, artists : Artists) {
+                    override fun onItemClick(position: Int, artists: Artists) {
                         findNavController().navigate(
                             R.id.action_homeFragment_to_artistPlayerFragment,
                             Bundle().apply {
@@ -152,6 +156,33 @@ class HomeFragment : Fragment() {
                     }
                 })
                 binding.recyclerViewFavoriteArtists.adapter = adapterArtist
+            }
+
+            try {
+                val historyTracks = history.fetchHistorySongs()
+                Log.d("HistoryFragment", "History tracks: $historyTracks")
+
+                if (historyTracks.data.isNotEmpty()) {
+                    binding.recyclerViewRecentSongs.layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    adapterRecent = SongAdapter(historyTracks, object : OnItemClickTrackListener {
+                        override fun onItemClick(position: Int, tracks: Tracks) {
+                            val trackId = tracks.data[position].id.toString()
+
+                            val bundle = Bundle().apply {
+                                putParcelable("tracks", tracks)
+                                putInt("position", position)
+                            }
+                            (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
+
+                        }
+                    }, 1)
+                    binding.recyclerViewRecentSongs.adapter = adapterRecent
+                } else {
+                    Log.d("HomeFragment", "No recent songs found.")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeFragment", "Error fetching history songs", e)
             }
         }
     }

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.example.soundnova.databinding.SettingBinding
@@ -79,9 +80,7 @@ class SettingsFragment: Fragment() {
             requireActivity().finish()
         }
         binding.changePasswordRow.setOnClickListener {
-            val intent = Intent(requireContext(), ChangePassword::class.java)
-            startActivity(intent)
-            requireActivity().finish()
+            findNavController().navigate(R.id.changePassword)
         }
     }
 
