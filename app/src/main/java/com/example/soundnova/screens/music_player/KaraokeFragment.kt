@@ -3,6 +3,7 @@ package com.example.soundnova.screens.music_player
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -32,6 +33,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.fragment.findNavController
 import com.example.soundnova.file.downloadAndSaveZipFile
 import com.example.soundnova.file.sendSongUrlToServer
 import com.example.soundnova.models.TrackData
@@ -64,9 +66,22 @@ class KaraokeFragment : Fragment() {
                 viewModel.currentSongIndex.collect { index ->
                     if (index != -1) {
                         song = viewModel.tracks.value.data[index]
+                        binding.tvSongTitle.text = song.title
+                        binding.score.visibility = View.GONE
+                        val id = song.id
+                        val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
+                        val savedTranscription = sharedPreferences.getString("transcription_$id", null)
+                        if (savedTranscription != null) {
+                            binding.tvLyrics.text = savedTranscription
+                        }
                     }
                 }
             }
+        }
+        viewModel.mediaPlayer.setOnCompletionListener {
+            viewModel.mediaPlayer.stop()
+            Log.e("KaraokeFragment", "MediaPlayer completed")
+            stopRecording()
         }
         // Request permissions
         if (ContextCompat.checkSelfPermission(
@@ -98,22 +113,29 @@ class KaraokeFragment : Fragment() {
                 startRecording()
                 playKaraokeFromPath(karaokePath)
             } else {
-                val ngrokUrl = "https://8af3-118-70-125-165.ngrok-free.app";
+                val ngrokUrl = "https://8ad2-42-118-237-135.ngrok-free.app";
                 val songUrl = song.preview!!
                 val id = song.id!!
                 lifecycleScope.launch {
                     val result = sendSongUrlToServer(songUrl, ngrokUrl)
-                    Log.e("MusicPlayerFragment", "Result: $result")
+                    Log.e("KaraokeFragment", "Result: $result")
                     if (result != null) {
                         val transcription = result.first
-                        val zipFileUrl = result.second
                         Toast.makeText(requireContext(), "Transcription: $transcription", Toast.LENGTH_SHORT).show()
+                        binding.tvLyrics.text = transcription
+                        val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
+                        with(sharedPreferences.edit()) {
+                            putString("transcription_$id", transcription)
+                            apply()
+                        }
+                        val zipFileUrl = result.second
                         zipFileUrl?.let {
                             val karaokePath = downloadAndSaveZipFile(it, requireContext(), id)
                             if (karaokePath != null) {
                                 startRecording()
                                 playKaraokeFromPath(karaokePath)
                                 Toast.makeText(requireContext(), "Karaoke track saved at: $karaokePath", Toast.LENGTH_LONG).show()
+                                Log.e("KaraokeFragment", "Karaoke track saved at: $karaokePath")
                             } else {
                                 Toast.makeText(requireContext(), "Failed to save karaoke track", Toast.LENGTH_SHORT).show()
                             }
@@ -125,7 +147,25 @@ class KaraokeFragment : Fragment() {
             }
         }
         binding.btnStop.setOnClickListener {
+            viewModel.mediaPlayer.stop()
             stopRecording()
+        }
+        binding.btnPlayPause.setOnClickListener {
+            if (viewModel.mediaPlayer.isPlaying) {
+                viewModel.mediaPlayer.pause()
+                viewModel.updateIsPlaying(false)
+                mediaRecorder!!.pause()
+//                viewModel.stopSeekBarUpdate()
+            } else {
+                mediaRecorder!!.resume()
+                viewModel.mediaPlayer.start()
+                viewModel.updateIsPlaying(true)
+//                viewModel.startSeekBarUpdate()
+            }
+
+        }
+        binding.btnBack.setOnClickListener {
+            findNavController().navigate(R.id.action_kara_to_musicPlayerFragment)
         }
     }
 

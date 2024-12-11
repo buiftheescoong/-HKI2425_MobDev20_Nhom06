@@ -76,7 +76,11 @@
     <fragment
         android:id="@+id/karaokeFragment"
         android:name="com.example.soundnova.screens.music_player.KaraokeFragment"
-        tools:layout="@layout/karaoke"/>
+        tools:layout="@layout/karaoke">
+    <action
+        android:id="@+id/action_kara_to_musicPlayerFragment"
+        app:destination="@id/musicPlayerFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/lyricsFragment"

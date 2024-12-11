@@ -9,6 +9,7 @@ from zipfile import ZipFile
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+import shutil
 
 app = FastAPI()
 app.add_middleware(
@@ -25,6 +26,11 @@ app.mount("/static", StaticFiles(directory="."), name="static")
 class AudioRequest(BaseModel):
     url: str  
     ngrok_url: str
+
+def clean_output_dir(output_dir):
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir) 
+    os.makedirs(output_dir, exist_ok=True) 
 
 def download_audio(url, output_path="audio.mp3"):
     try:
@@ -67,17 +73,20 @@ async def process_audio(audio_request: AudioRequest, background_tasks: Backgroun
     audio_path = download_audio(url)
 
     output_dir = "output"
-    os.makedirs(output_dir, exist_ok=True)
+    clean_output_dir(output_dir)
 
-    background_tasks.add_task(extract_karaoke, audio_path, output_dir)
-    transcription = audio_to_text(audio_path)
+    # background_tasks.add_task(extract_karaoke, audio_path, output_dir)
+    # transcription = audio_to_text(audio_path)
     
-    # with ThreadPoolExecutor() as executor:
-    #     executor.submit(extract_karaoke, audio_path)
-    #     transcription = executor.submit(audio_to_text, audio_path).result()
-
+    with ThreadPoolExecutor() as executor:
+        extract_future = executor.submit(extract_karaoke, audio_path)
+        transcription_future = executor.submit(audio_to_text, audio_path)
+        # Wait for extract to complete
+        extract_future.result()  # Block until finished
+        # Transcription can run in parallel and doesn't block the main thread
+        transcription = transcription_future.result()
+ 
     zip_file = create_zip()
     zip_file_url = f"{ngrok_url}/static/{os.path.basename(zip_file)}"
-
     return {"message": "Processing Complete", "transcription": transcription, "zip_file": zip_file_url}
 
