@@ -12,6 +12,10 @@ import kotlinx.coroutines.launch
 
 class MusicPlayerViewModel : ViewModel() {
 
+    private val _isMusicPlayed = MutableStateFlow(false)
+    val isMusicPlayed: StateFlow<Boolean> = _isMusicPlayed
+
+
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying: StateFlow<Boolean> = _isPlaying
 
@@ -42,6 +46,10 @@ class MusicPlayerViewModel : ViewModel() {
     val mediaPlayer: MediaPlayer = MediaPlayer()
 
     private var seekBarUpdateJob: Job? = null
+
+    fun updateIsMusicPlayed(isPlayed: Boolean) {
+        _isMusicPlayed.value = isPlayed
+    }
 
     fun updateIsPlaying(isPlaying: Boolean) {
         _isPlaying.value = isPlaying

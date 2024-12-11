@@ -232,7 +232,7 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.backBtn.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            findNavController().popBackStack()
         }
 
         binding.showFullLyricsButton.setOnClickListener {
@@ -335,7 +335,6 @@ class MusicPlayerFragment : Fragment() {
 
     private fun stopRotationAnimator() {
         rotationAnimator.pause()
-        isRotating = false
     }
 
     @SuppressLint("DefaultLocale")

@@ -56,6 +56,13 @@ class HomeActivity : AppCompatActivity() {
 
                 else -> {
                     binding.bottomNavigationView.visibility = View.VISIBLE
+                    lifecycleScope.launch {
+                        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            viewModel.isMusicPlayed.collect { isPlayed ->
+                                binding.musicBottomBar.visibility = if (isPlayed) View.VISIBLE else View.GONE
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -94,8 +101,6 @@ class HomeActivity : AppCompatActivity() {
                 R.id.settingsFragment -> binding.bottomNavigationView.menu.findItem(R.id.settingsFragment).isChecked = true
             }
         }
-
-        binding.musicBottomBar.visibility = View.GONE
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -182,8 +187,6 @@ class HomeActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e("MusicPlayerFragment", "Error retrieving tracks", e)
         }
-
-        binding.musicBottomBar.visibility = View.VISIBLE
 
         binding.musicBottomBar.setOnClickListener {
             val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -302,11 +305,10 @@ class HomeActivity : AppCompatActivity() {
         viewModel.mediaPlayer.prepare()
         history.addHistorySong(song.id!!,song.title!!, song.artist!!.name!!.split(","), song.artist!!.pictureBig!!, song.preview!!)
 
-        if (!viewModel.mediaPlayer.isPlaying) {
-            viewModel.mediaPlayer.start()
-            viewModel.updateIsPlaying(true)
-            viewModel.startSeekBarUpdate()
-        }
+        viewModel.mediaPlayer.start()
+        viewModel.updateIsPlaying(true)
+        viewModel.updateIsMusicPlayed(true)
+        viewModel.startSeekBarUpdate()
     }
 
     private fun getRandomColor(): Int {
