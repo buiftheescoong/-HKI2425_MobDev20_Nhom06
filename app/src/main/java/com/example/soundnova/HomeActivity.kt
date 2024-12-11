@@ -134,6 +134,13 @@ class HomeActivity : AppCompatActivity() {
                 viewModel.currentSongIndex.collect { index ->
                     if (index != -1) {
                         val song = viewModel.tracks.value.data[index]
+                        fav.checkFavSong(song.title!!) { isFavorite ->
+                            runOnUiThread {
+                                val heartIcon =
+                                    if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
+                                binding.heartBtn.setImageResource(heartIcon)
+                            }
+                        }
                         binding.songName.text = song.title
                         binding.songName.isSelected = true
                         binding.songArtist.text = song.artist!!.name
@@ -142,23 +149,6 @@ class HomeActivity : AppCompatActivity() {
                             .into(binding.coverArt)
                         binding.songSeekBar.max = 30000
                         viewModel.updateSeekBarProgress(0)
-                    }
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.currentSongIndex.collect { index ->
-                    if (index != -1) {
-                        val song = viewModel.tracks.value.data[index]
-                        fav.checkFavSong(song.title!!) { isFavorite ->
-                            runOnUiThread {
-                                val heartIcon =
-                                    if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
-                                binding.heartBtn.setImageResource(heartIcon)
-                            }
-                        }
                     }
                 }
             }
@@ -305,10 +295,12 @@ class HomeActivity : AppCompatActivity() {
         viewModel.mediaPlayer.prepare()
         history.addHistorySong(song.id!!,song.title!!, song.artist!!.name!!.split(","), song.artist!!.pictureBig!!, song.preview!!)
 
-        viewModel.mediaPlayer.start()
-        viewModel.updateIsPlaying(true)
-        viewModel.updateIsMusicPlayed(true)
-        viewModel.startSeekBarUpdate()
+        if (!viewModel.mediaPlayer.isPlaying) {
+            viewModel.mediaPlayer.start()
+            viewModel.updateIsPlaying(true)
+            viewModel.updateIsMusicPlayed(true)
+            viewModel.startSeekBarUpdate()
+        }
     }
 
     private fun getRandomColor(): Int {
