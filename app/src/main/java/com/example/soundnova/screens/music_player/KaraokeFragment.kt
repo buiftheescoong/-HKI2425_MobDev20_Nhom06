@@ -37,6 +37,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.soundnova.file.downloadAndSaveZipFile
 import com.example.soundnova.file.sendSongUrlToServer
 import com.example.soundnova.models.TrackData
+import java.io.FileInputStream
 import java.nio.ByteBuffer
 
 class KaraokeFragment : Fragment() {
@@ -113,8 +114,9 @@ class KaraokeFragment : Fragment() {
                 startRecording()
                 playKaraokeFromPath(karaokePath)
             } else {
-                val ngrokUrl = "https://3b86-2405-4802-1c88-b4e0-c8d6-c114-455c-8c7b.ngrok-free.app";
+                val ngrokUrl = "https://37d6-2405-4802-1c88-b4e0-c8d6-c114-455c-8c7b.ngrok-free.app"
                 val songUrl = song.preview!!
+                Log.e("KaraokeFragment", "Song URL: $songUrl")
                 val id = song.id!!
                 lifecycleScope.launch {
                     val result = sendSongUrlToServer(songUrl, ngrokUrl)
@@ -262,24 +264,55 @@ class KaraokeFragment : Fragment() {
         }
     }
     fun extractPCMData(audioFilePath: String): ByteArray? {
+        val file = File(audioFilePath)
+        if (!file.exists() || !file.canRead()) {
+            throw IllegalArgumentException("Cannot access the file at $audioFilePath")
+        }
+
+        return if (audioFilePath.endsWith(".wav", ignoreCase = true)) {
+            extractPCMFromWAV(file)
+        } else if (audioFilePath.endsWith(".3gp", ignoreCase = true)) {
+            extractPCMFrom3GP(audioFilePath)
+        } else {
+            throw UnsupportedOperationException("Unsupported file format: ${file.extension}")
+        }
+    }
+
+    private fun extractPCMFromWAV(file: File): ByteArray? {
+        val inputStream = FileInputStream(file)
+        val buffer = inputStream.readBytes()
+        inputStream.close()
+
+        // WAV headers are typically the first 44 bytes, skip them to get raw PCM data
+        return if (buffer.size > 44) buffer.copyOfRange(44, buffer.size) else null
+    }
+
+    private fun extractPCMFrom3GP(audioFilePath: String): ByteArray? {
         val extractor = MediaExtractor()
         extractor.setDataSource(audioFilePath)
+
         for (i in 0 until extractor.trackCount) {
             val format = extractor.getTrackFormat(i)
             if (format.getString(MediaFormat.KEY_MIME)?.startsWith("audio/") == true) {
                 extractor.selectTrack(i)
+
                 val pcmData = mutableListOf<Byte>()
                 val buffer = ByteBuffer.allocate(1024)
+
                 while (true) {
                     val sampleSize = extractor.readSampleData(buffer, 0)
                     if (sampleSize < 0) break
+
                     pcmData.addAll(buffer.array().take(sampleSize))
+                    buffer.clear()
                     extractor.advance()
                 }
+
                 extractor.release()
                 return pcmData.toByteArray()
             }
         }
+
         extractor.release()
         return null
     }
@@ -307,7 +340,7 @@ class KaraokeFragment : Fragment() {
     }
 
     fun comparePitch(songPitch: Double, userPitch: Double): Double {
-        val dis = kotlin.math.abs(userPitch-songPitch)/100
+        val dis = kotlin.math.abs(userPitch-songPitch)/15
         if (dis > songPitch) {
             return 5.0
         }
