@@ -193,7 +193,7 @@ class KaraokeFragment : Fragment() {
         mediaRecorder = null
 
         // Lưu file vào thư mục công khai
-        saveRecordingToPublicStorage()
+        //saveRecordingToPublicStorage()
 
         binding.btnMuteMic.isEnabled = true
         binding.btnStop.isEnabled = false
