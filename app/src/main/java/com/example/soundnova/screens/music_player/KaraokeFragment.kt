@@ -67,7 +67,6 @@ class KaraokeFragment : Fragment() {
                     if (index != -1) {
                         song = viewModel.tracks.value.data[index]
                         binding.tvSongTitle.text = song.title
-                        binding.score.visibility = View.GONE
                         val id = song.id
                         val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
                         val savedTranscription = sharedPreferences.getString("transcription_$id", null)
@@ -202,10 +201,11 @@ class KaraokeFragment : Fragment() {
         try {
            // val currentSong = viewModel.tracks.value.data[viewModel.currentSongIndex.value]
             // Đường dẫn bài hát gốc và file ghi âm
-            val songFilePath = File(
-                requireContext().getExternalFilesDir(null),
-                "karaoke_files_${song.id}/vocals.wav"
-            )
+//            val songFilePath = File(
+//                requireContext().getExternalFilesDir(null),
+//                "karaoke_files_${song.id}/vocals.wav"
+//            )
+            val songFilePath = outputFile
             val recordingFilePath = outputFile
 
             // Chuyển đổi file sang dữ liệu PCM
@@ -218,7 +218,7 @@ class KaraokeFragment : Fragment() {
                 val recordingPitch = calculatePitch(recordingPcm, 44100)
 
                 // So sánh cao độ và chấm điểm
-                val similarity = comparePitch(listOf(songPitch), listOf(recordingPitch))
+                val similarity = comparePitch(songPitch, recordingPitch)
                 val score = calculateScore(similarity)
                 binding.score.text = score.toString()
 
@@ -307,15 +307,12 @@ class KaraokeFragment : Fragment() {
         return if (bestLag > 0) sampleRate.toDouble() / bestLag else -1.0
     }
 
-    fun comparePitch(songPitch: List<Double>, userPitch: List<Double>): Double {
-        val minSize = minOf(songPitch.size, userPitch.size)
-        var matchCount = 0
-        for (i in 0 until minSize) {
-            if (kotlin.math.abs(songPitch[i] - userPitch[i]) < 50) { // Sai số tối đa 50 Hz
-                matchCount++
-            }
+    fun comparePitch(songPitch: Double, userPitch: Double): Double {
+        val dis = kotlin.math.abs(userPitch-songPitch)
+        if (dis > songPitch) {
+            return 5.0
         }
-        return (matchCount.toDouble() / minSize) * 100
+        return ((songPitch - dis) / songPitch)*100
     }
 
     fun calculateScore(pitchSimilarity: Double): Int {
