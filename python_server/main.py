@@ -71,7 +71,7 @@ async def process_audio(audio_request: AudioRequest, background_tasks: Backgroun
     ngrok_url = audio_request.ngrok_url
 
     audio_path = download_audio(url)
-
+    print(audio_path)
     output_dir = "output"
     clean_output_dir(output_dir)
 
