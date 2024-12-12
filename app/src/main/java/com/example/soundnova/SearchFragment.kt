@@ -92,6 +92,15 @@ class SearchFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
+        binding.clearBtn.setOnClickListener {
+            lifecycleScope.launch {
+                searchRecent.clear()
+                tracks.data.clear()
+                adapter.notifyDataSetChanged()
+                updateClearButtonVisibility()
+            }
+        }
+
     }
     private fun fetchTracks(query: String) {
         lifecycleScope.launch(Dispatchers.IO) {
@@ -122,6 +131,11 @@ class SearchFragment : Fragment() {
         searchRecent.addSearchRecent(idSong, title, artist, image, audioUrl)
 
     }
+
+    private fun updateClearButtonVisibility() {
+        binding.clearBtn.visibility = if (tracks.data.isEmpty()) View.GONE else View.VISIBLE
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
