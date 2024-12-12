@@ -155,7 +155,7 @@ class History(private val context: Context) {
 //                }
 //            }
             for (document in documents) {
-                if (count >= 10) break // Dừng nếu đã đủ 10 bài hát
+                if (count >= 5) break
 
                 val idUser = document.getString("idUser")
                 if (idUser == userEmail) {
