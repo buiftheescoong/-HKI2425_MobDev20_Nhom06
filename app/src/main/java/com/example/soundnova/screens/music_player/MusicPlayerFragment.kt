@@ -263,7 +263,7 @@ class MusicPlayerFragment : Fragment() {
     }
 
     private fun playPreviousSong() {
-        val newIndex = if (!viewModel.shuffleBoolean.value) {
+        val newIndex = if (viewModel.shuffleBoolean.value) {
             (0 until viewModel.tracks.value.data.size).random()
         } else {
             if (viewModel.currentSongIndex.value == 0) {
