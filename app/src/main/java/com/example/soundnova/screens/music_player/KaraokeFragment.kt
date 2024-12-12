@@ -112,7 +112,7 @@ class KaraokeFragment : Fragment() {
                 startRecording()
                 playKaraokeFromPath(karaokePath)
             } else {
-                val ngrokUrl = "https://8ad2-42-118-237-135.ngrok-free.app";
+                val ngrokUrl = "https://3b86-2405-4802-1c88-b4e0-c8d6-c114-455c-8c7b.ngrok-free.app";
                 val songUrl = song.preview!!
                 val id = song.id!!
                 lifecycleScope.launch {
@@ -153,7 +153,7 @@ class KaraokeFragment : Fragment() {
             if (viewModel.mediaPlayer.isPlaying) {
                 viewModel.mediaPlayer.pause()
                 viewModel.updateIsPlaying(false)
-                mediaRecorder!!.pause()
+
 //                viewModel.stopSeekBarUpdate()
             } else {
                 mediaRecorder!!.resume()
