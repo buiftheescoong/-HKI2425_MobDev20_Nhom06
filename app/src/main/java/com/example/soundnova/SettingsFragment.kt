@@ -34,7 +34,7 @@ class SettingsFragment: Fragment() {
         val binding = SettingBinding.bind(view)
         // Sử dụng binding để thao tác với View
         val toggleSaveVisibility: (Boolean) -> Unit = { isVisible ->
-            binding.changeProfileRow.visibility = if (isVisible) View.VISIBLE else View.GONE
+            binding.changeProfile.visibility = if (isVisible) View.VISIBLE else View.GONE
         }
 
         binding.userName.setOnFocusChangeListener { _, hasFocus ->
@@ -57,7 +57,7 @@ class SettingsFragment: Fragment() {
             Toast.makeText(requireContext(), "User not logged in!", Toast.LENGTH_SHORT).show()
         }
 
-        binding.changeProfileRow.setOnClickListener {
+        binding.changeProfile.setOnClickListener {
             binding.userName.clearFocus()
             loadAvatar()
             if (currentUser != null) {
