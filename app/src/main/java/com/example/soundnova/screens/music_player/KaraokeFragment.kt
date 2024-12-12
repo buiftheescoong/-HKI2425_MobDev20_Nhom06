@@ -156,7 +156,6 @@ class KaraokeFragment : Fragment() {
 
 //                viewModel.stopSeekBarUpdate()
             } else {
-                mediaRecorder!!.resume()
                 viewModel.mediaPlayer.start()
                 viewModel.updateIsPlaying(true)
 //                viewModel.startSeekBarUpdate()
