@@ -129,30 +129,50 @@ class History(private val context: Context) {
         try {
             val documents = db.collection("history")
                 .orderBy("id", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                .limit(10)
                 .get()
                 .await()
 
             val recentSongs = Tracks()
             recentSongs.data = mutableListOf()
 
+            val seenSongs = HashSet<Long>()
+            var count = 0
+
+//            for (document in documents) {
+//                val idUser = document.getString("idUser")
+//                if (idUser == userEmail) {
+//
+//                    val song = document.toObject(SongData::class.java).apply {
+//                        id = document.id.toIntOrNull() ?: 0
+//                    }
+//                    val track = songToTrack(song)
+//                    recentSongs.data.add(track!!)
+//
+//                    Log.d(
+//                        "HistoryFragment",
+//                        "Fetched song: ${track.title}, Artist: ${track.artist?.name}"
+//                    )
+//                }
+//            }
             for (document in documents) {
+                if (count >= 10) break // Dừng nếu đã đủ 10 bài hát
+
                 val idUser = document.getString("idUser")
                 if (idUser == userEmail) {
-
                     val song = document.toObject(SongData::class.java).apply {
                         id = document.id.toIntOrNull() ?: 0
                     }
-                    val track = songToTrack(song)
-                    recentSongs.data.add(track!!)
 
-                    Log.d(
-                        "HistoryFragment",
-                        "Fetched song: ${track.title}, Artist: ${track.artist?.name}"
-                    )
+                    if (!seenSongs.contains(song.idSong)) {
+                        val track = songToTrack(song)
+                        if (track != null) {
+                            recentSongs.data.add(track)
+                            seenSongs.add(song.idSong!!)
+                            count++
+                        }
+                    }
                 }
             }
-
             Log.d("HistoryFragment1", "Fetched song count: ${recentSongs.data.size}")
 
             return@withContext recentSongs
