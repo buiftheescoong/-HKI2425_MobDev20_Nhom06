@@ -56,7 +56,13 @@ class HomeActivity : AppCompatActivity() {
 
                 else -> {
                     binding.bottomNavigationView.visibility = View.VISIBLE
-                    binding.musicBottomBar.visibility = View.VISIBLE
+                    lifecycleScope.launch {
+                        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            viewModel.isMusicPlayed.collect { isPlayed ->
+                                binding.musicBottomBar.visibility = if (isPlayed) View.VISIBLE else View.GONE
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -96,8 +102,6 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        binding.musicBottomBar.visibility = View.GONE
-
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.isPlaying.collect { isPlaying ->
@@ -130,6 +134,13 @@ class HomeActivity : AppCompatActivity() {
                 viewModel.currentSongIndex.collect { index ->
                     if (index != -1) {
                         val song = viewModel.tracks.value.data[index]
+                        fav.checkFavSong(song.title!!) { isFavorite ->
+                            runOnUiThread {
+                                val heartIcon =
+                                    if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
+                                binding.heartBtn.setImageResource(heartIcon)
+                            }
+                        }
                         binding.songName.text = song.title
                         binding.songName.isSelected = true
                         binding.songArtist.text = song.artist!!.name
@@ -138,23 +149,6 @@ class HomeActivity : AppCompatActivity() {
                             .into(binding.coverArt)
                         binding.songSeekBar.max = 30000
                         viewModel.updateSeekBarProgress(0)
-                    }
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.currentSongIndex.collect { index ->
-                    if (index != -1) {
-                        val song = viewModel.tracks.value.data[index]
-                        fav.checkFavSong(song.title!!) { isFavorite ->
-                            runOnUiThread {
-                                val heartIcon =
-                                    if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
-                                binding.heartBtn.setImageResource(heartIcon)
-                            }
-                        }
                     }
                 }
             }
@@ -183,8 +177,6 @@ class HomeActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e("MusicPlayerFragment", "Error retrieving tracks", e)
         }
-
-        binding.musicBottomBar.visibility = View.VISIBLE
 
         binding.musicBottomBar.setOnClickListener {
             val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -306,6 +298,7 @@ class HomeActivity : AppCompatActivity() {
         if (!viewModel.mediaPlayer.isPlaying) {
             viewModel.mediaPlayer.start()
             viewModel.updateIsPlaying(true)
+            viewModel.updateIsMusicPlayed(true)
             viewModel.startSeekBarUpdate()
         }
     }

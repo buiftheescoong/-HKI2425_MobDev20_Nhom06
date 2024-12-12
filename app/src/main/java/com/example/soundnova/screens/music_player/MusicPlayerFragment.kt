@@ -62,28 +62,6 @@ class MusicPlayerFragment : Fragment() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.currentSongIndex.collect { index ->
-                    if (index != -1) {
-                        val song = viewModel.tracks.value.data[index]
-
-                        fav = FavoriteLibrary(requireContext())
-                        fav.checkFavSong(song.title!!) { isFavorite ->
-                            val heartIcon = if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
-                            binding.heartBtn.setImageResource(heartIcon)
-                        }
-
-                        binding.songName.text = song.title
-                        binding.songArtist.text = song.artist!!.name
-                        Glide.with(this@MusicPlayerFragment).load(song.artist!!.pictureBig).circleCrop()
-                            .into(binding.coverArt)
-                    }
-                }
-            }
-        }
-
-
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.shuffleBoolean.collect { shuffleBoolean ->
                     val shuffleIcon =
                         if (shuffleBoolean) R.drawable.icon_shuffle_on else R.drawable.icon_shuffle_off
@@ -107,6 +85,13 @@ class MusicPlayerFragment : Fragment() {
                 viewModel.currentSongIndex.collect { index ->
                     if (index != -1) {
                         val song = viewModel.tracks.value.data[index]
+
+                        fav = FavoriteLibrary(requireContext())
+                        fav.checkFavSong(song.title!!) { isFavorite ->
+                            val heartIcon = if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
+                            binding.heartBtn.setImageResource(heartIcon)
+                        }
+
                         binding.songName.text = song.title
                         binding.songName.isSelected = true
                         binding.songArtist.text = song.artist!!.name
@@ -232,7 +217,7 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.backBtn.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            findNavController().popBackStack()
         }
 
         binding.showFullLyricsButton.setOnClickListener {
@@ -331,11 +316,8 @@ class MusicPlayerFragment : Fragment() {
         }
     }
 
-
-
     private fun stopRotationAnimator() {
         rotationAnimator.pause()
-        isRotating = false
     }
 
     @SuppressLint("DefaultLocale")

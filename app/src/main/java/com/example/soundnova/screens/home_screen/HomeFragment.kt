@@ -176,7 +176,7 @@ class HomeFragment : Fragment() {
                             (activity as? HomeActivity)?.handleMusicBottomBar(bundle)
 
                         }
-                    }, 1)
+                    }, 0)
                     binding.recyclerViewRecentSongs.adapter = adapterRecent
                 } else {
                     Log.d("HomeFragment", "No recent songs found.")
