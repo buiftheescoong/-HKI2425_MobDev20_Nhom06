@@ -165,25 +165,7 @@ class SearchRecent(private val context: Context) {
         }
     }
 
-//    fun songToTrack(song: SongData): TrackData {
-//        return TrackData(
-//            id = song.idSong,
-//            title = song.title,
-//            duration = 20000,
-//            artist = Artist(
-//                id = 123456789,
-//                name = song.artist!!.getOrNull(0),
-//                pictureBig = song.image
-//            ),
-//            album = Album(1,"1","1","1","1", Artist(
-//                id = 123456789,
-//                name = song.artist!!.getOrNull(0),
-//                pictureBig = song.image
-//            ),null),
-//            preview = song.audioUrl,
-//            isLiked = true
-//        )
-//    }
+
     suspend fun songToTrack(song: SongData): TrackData? {
         val trackId = song.idSong?.toString() ?: return null
 
@@ -204,4 +186,34 @@ class SearchRecent(private val context: Context) {
             null
         }
     }
+
+    fun clear() {
+        val currentUser = firebaseAuth.currentUser
+        val userEmail = currentUser?.email
+
+        if (userEmail == null) {
+            Log.e("SearchRecent", "User is not logged in.")
+            return
+        }
+        val searchRecent = db.collection("search_recent")
+
+        searchRecent.whereEqualTo("idUser", userEmail)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    searchRecent.document(document.id).delete()
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "Tài liệu với ID: ${document.id} đã được xóa")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("Firestore", "Lỗi khi xóa tài liệu với ID: ${document.id}", e)
+                        }
+                }
+                Log.d("Firestore", "Đã xóa toàn bộ tài liệu trong 'search_recent'")
+            }
+            .addOnFailureListener { exception ->
+                Log.w("Firestore", "Lỗi khi lấy dữ liệu để xóa", exception)
+            }
+    }
+
 }
