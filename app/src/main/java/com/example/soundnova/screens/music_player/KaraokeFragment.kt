@@ -306,7 +306,7 @@ class KaraokeFragment : Fragment() {
     }
 
     fun comparePitch(songPitch: Double, userPitch: Double): Double {
-        val dis = kotlin.math.abs(userPitch-songPitch)
+        val dis = kotlin.math.abs(userPitch-songPitch)/100
         if (dis > songPitch) {
             return 5.0
         }
