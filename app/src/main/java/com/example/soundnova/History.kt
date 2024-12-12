@@ -129,27 +129,49 @@ class History(private val context: Context) {
         try {
             val documents = db.collection("history")
                 .orderBy("id", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                .limit(10)
+//                .limit(10)
                 .get()
                 .await()
 
             val recentSongs = Tracks()
             recentSongs.data = mutableListOf()
 
+            val seenSongs = HashSet<Long>()
+            var count = 0
+
+//            for (document in documents) {
+//                val idUser = document.getString("idUser")
+//                if (idUser == userEmail) {
+//
+//                    val song = document.toObject(SongData::class.java).apply {
+//                        id = document.id.toIntOrNull() ?: 0
+//                    }
+//                    val track = songToTrack(song)
+//                    recentSongs.data.add(track!!)
+//
+//                    Log.d(
+//                        "HistoryFragment",
+//                        "Fetched song: ${track.title}, Artist: ${track.artist?.name}"
+//                    )
+//                }
+//            }
             for (document in documents) {
+                if (count >= 5) break
+
                 val idUser = document.getString("idUser")
                 if (idUser == userEmail) {
-
                     val song = document.toObject(SongData::class.java).apply {
                         id = document.id.toIntOrNull() ?: 0
                     }
-                    val track = songToTrack(song)
-                    recentSongs.data.add(track!!)
 
-                    Log.d(
-                        "HistoryFragment",
-                        "Fetched song: ${track.title}, Artist: ${track.artist?.name}"
-                    )
+                    if (!seenSongs.contains(song.idSong)) {
+                        val track = songToTrack(song)
+                        if (track != null) {
+                            recentSongs.data.add(track)
+                            seenSongs.add(song.idSong!!)
+                            count++
+                        }
+                    }
                 }
             }
 
@@ -163,30 +185,11 @@ class History(private val context: Context) {
         }
     }
 
-//    fun songToTrack(song: SongData): TrackData {
-//        return TrackData(
-//            id = song.idSong ?: 0,
-//            title = song.title,
-//            duration = 20000,
-//            artist = Artist(
-//                id = 123456789,
-//                name = song.artist!!.getOrNull(0),
-//                pictureBig = song.image
-//            ),
-//            album = Album(1,"1","1","1","1", Artist(
-//                id = 123456789,
-//                name = song.artist!!.getOrNull(0),
-//                pictureBig = song.image
-//            ),null),
-//            preview = song.audioUrl,
-//            isLiked = true
-//        )
-//    }
     suspend fun songToTrack(song: SongData): TrackData? {
-        val trackId = song.idSong?.toString() ?: return null // Đảm bảo trackId không null
+        val trackId = song.idSong?.toString() ?: return null
 
         return try {
-            val trackData = DeezerApiHelper.getTrack(trackId) // Gọi API Deezer để lấy track theo trackId
+            val trackData = DeezerApiHelper.getTrack(trackId)
 
             TrackData(
                 id = trackData.id,
