@@ -29,6 +29,7 @@ import java.io.File
 import java.io.IOException
 import android.media.MediaExtractor
 import android.media.MediaFormat
+import android.media.MediaPlayer
 import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
@@ -44,6 +45,7 @@ class KaraokeFragment : Fragment() {
 
     private lateinit var binding: KaraokeBinding
     private val viewModel: MusicPlayerViewModel by activityViewModels()
+    private val mediaPlayer : MediaPlayer = MediaPlayer()
     private var mediaRecorder: MediaRecorder? = null
     private var outputFile: String = ""
     private lateinit var song: TrackData
@@ -79,8 +81,8 @@ class KaraokeFragment : Fragment() {
                 }
             }
         }
-        viewModel.mediaPlayer.setOnCompletionListener {
-            viewModel.mediaPlayer.stop()
+        mediaPlayer.setOnCompletionListener {
+            mediaPlayer.stop()
             Log.e("KaraokeFragment", "MediaPlayer completed")
             stopRecording()
         }
@@ -114,7 +116,7 @@ class KaraokeFragment : Fragment() {
                 startRecording()
                 playKaraokeFromPath(karaokePath)
             } else {
-                val ngrokUrl = "https://37d6-2405-4802-1c88-b4e0-c8d6-c114-455c-8c7b.ngrok-free.app"
+                val ngrokUrl = "https://1c7d-123-30-177-118.ngrok-free.app"
                 val songUrl = song.preview!!
                 Log.e("KaraokeFragment", "Song URL: $songUrl")
                 val id = song.id!!
@@ -149,24 +151,23 @@ class KaraokeFragment : Fragment() {
             }
         }
         binding.btnStop.setOnClickListener {
-            viewModel.mediaPlayer.stop()
+            mediaPlayer.stop()
             stopRecording()
         }
         binding.btnPlayPause.setOnClickListener {
-            if (viewModel.mediaPlayer.isPlaying) {
-                viewModel.mediaPlayer.pause()
-                viewModel.updateIsPlaying(false)
-
-//                viewModel.stopSeekBarUpdate()
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
             } else {
-                viewModel.mediaPlayer.start()
-                viewModel.updateIsPlaying(true)
-//                viewModel.startSeekBarUpdate()
+                mediaPlayer.start()
             }
 
         }
         binding.btnBack.setOnClickListener {
-            findNavController().navigate(R.id.action_kara_to_musicPlayerFragment)
+            findNavController().popBackStack()
+            if (viewModel.isPlaying.value) {
+                viewModel.mediaPlayer.start()
+                viewModel.startSeekBarUpdate()
+            }
         }
     }
 
@@ -340,7 +341,7 @@ class KaraokeFragment : Fragment() {
     }
 
     fun comparePitch(songPitch: Double, userPitch: Double): Double {
-        val dis = kotlin.math.abs(userPitch-songPitch)/15
+        val dis = kotlin.math.abs(userPitch-songPitch)/10
         if (dis > songPitch) {
             return 5.0
         }
@@ -352,15 +353,16 @@ class KaraokeFragment : Fragment() {
     }
 
     fun playKaraokeFromPath(path: String) {
-        viewModel.mediaPlayer.reset()
-        viewModel.mediaPlayer.setDataSource(path)
-        viewModel.mediaPlayer.prepare()
-        viewModel.mediaPlayer.start()
+        mediaPlayer.reset()
+        mediaPlayer.setDataSource(path)
+        mediaPlayer.prepare()
+        mediaPlayer.start()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         mediaRecorder?.release()
         mediaRecorder = null
+        mediaPlayer.release()
     }
 }
