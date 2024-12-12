@@ -11,6 +11,7 @@ import com.example.soundnova.databinding.PlayerActivityBinding
 import android.view.animation.LinearInterpolator
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.widget.SeekBar
@@ -104,6 +105,17 @@ class MusicPlayerFragment : Fragment() {
 
                         binding.durationPlayed.text = formatDuration(viewModel.seekBarProgress.value)
                         binding.durationTotal.text = formatDuration(30000)
+
+                        val id = song.id
+                        val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
+                        val savedTranscription = sharedPreferences.getString("transcription_$id", null)
+                        if (savedTranscription != null) {
+                            binding.previewLyrics.text = savedTranscription
+                            binding.showFullLyricsButton.visibility = View.VISIBLE
+                        } else {
+                            binding.previewLyrics.text = "This song does not support lyrics"
+                            binding.showFullLyricsButton.visibility = View.GONE
+                        }
                     }
                 }
             }
@@ -294,6 +306,17 @@ class MusicPlayerFragment : Fragment() {
         val currentPreColor = getRandomColor()
         viewModel.updateCurrentPreColor(currentPreColor)
         curBackgroundPreLyrics.setColor(viewModel.currentPreColor.value)
+
+        val id = song.id
+        val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
+        val savedTranscription = sharedPreferences.getString("transcription_$id", null)
+        if (savedTranscription != null) {
+            binding.previewLyrics.text = savedTranscription
+            binding.showFullLyricsButton.visibility = View.VISIBLE
+        } else {
+            binding.previewLyrics.text = "This song does not support lyrics"
+            binding.showFullLyricsButton.visibility = View.GONE
+        }
 
         viewModel.mediaPlayer.reset()
         viewModel.mediaPlayer.setDataSource(song.preview)
