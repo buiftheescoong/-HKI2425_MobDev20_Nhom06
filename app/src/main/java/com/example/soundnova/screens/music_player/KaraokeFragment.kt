@@ -193,7 +193,7 @@ class KaraokeFragment : Fragment() {
         mediaRecorder = null
 
         // Lưu file vào thư mục công khai
-        saveRecordingToPublicStorage()
+        //saveRecordingToPublicStorage()
 
         binding.btnMuteMic.isEnabled = true
         binding.btnStop.isEnabled = false
@@ -201,11 +201,10 @@ class KaraokeFragment : Fragment() {
         try {
            // val currentSong = viewModel.tracks.value.data[viewModel.currentSongIndex.value]
             // Đường dẫn bài hát gốc và file ghi âm
-//            val songFilePath = File(
-//                requireContext().getExternalFilesDir(null),
-//                "karaoke_files_${song.id}/vocals.wav"
-//            )
-            val songFilePath = outputFile
+            val songFilePath = File(
+                requireContext().getExternalFilesDir(null),
+                "karaoke_files_${song.id}/vocals.wav"
+            )
             val recordingFilePath = outputFile
 
             // Chuyển đổi file sang dữ liệu PCM
