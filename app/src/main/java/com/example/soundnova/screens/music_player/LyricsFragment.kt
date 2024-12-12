@@ -2,6 +2,7 @@ package com.example.soundnova.screens.music_player
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -43,6 +44,7 @@ class LyricsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val binding = LyricsFragmentBinding.bind(view)
 
+
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.isPlaying.collect { isPlaying ->
@@ -80,13 +82,19 @@ class LyricsFragment : Fragment() {
                 viewModel.currentSongIndex.collect { index ->
                     if (index != -1) {
                         val song = viewModel.tracks.value.data[index]
-
                         fav = FavoriteLibrary(requireContext())
                         fav.checkFavSong(song.title!!) { isFavorite ->
                             val heartIcon = if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
                             binding.idHeart.setImageResource(heartIcon)
                         }
-
+                        val id = song.id
+                        val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
+                        val savedTranscription = sharedPreferences.getString("transcription_$id", null)
+                        if (savedTranscription != null) {
+                            binding.lyricsContent.text = savedTranscription
+                        } else {
+                            binding.lyricsContent.text = "This song does not support lyrics"
+                        }
                         binding.songName.text = song.title
                         binding.songName.isSelected = true
                         binding.songArtist.text = song.artist!!.name
@@ -248,7 +256,6 @@ class LyricsFragment : Fragment() {
         viewModel.stopSeekBarUpdate()
 
         val song = viewModel.tracks.value.data[index]
-
         fav = FavoriteLibrary(requireContext())
         fav.checkFavSong(viewModel.tracks.value.data[viewModel.currentSongIndex.value].title!!) { isFavorite ->
             if (isFavorite) {
