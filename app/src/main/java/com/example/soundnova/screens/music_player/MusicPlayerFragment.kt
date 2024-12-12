@@ -11,6 +11,7 @@ import com.example.soundnova.databinding.PlayerActivityBinding
 import android.view.animation.LinearInterpolator
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.widget.SeekBar
@@ -62,28 +63,6 @@ class MusicPlayerFragment : Fragment() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.currentSongIndex.collect { index ->
-                    if (index != -1) {
-                        val song = viewModel.tracks.value.data[index]
-
-                        fav = FavoriteLibrary(requireContext())
-                        fav.checkFavSong(song.title!!) { isFavorite ->
-                            val heartIcon = if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
-                            binding.heartBtn.setImageResource(heartIcon)
-                        }
-
-                        binding.songName.text = song.title
-                        binding.songArtist.text = song.artist!!.name
-                        Glide.with(this@MusicPlayerFragment).load(song.artist!!.pictureBig).circleCrop()
-                            .into(binding.coverArt)
-                    }
-                }
-            }
-        }
-
-
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.shuffleBoolean.collect { shuffleBoolean ->
                     val shuffleIcon =
                         if (shuffleBoolean) R.drawable.icon_shuffle_on else R.drawable.icon_shuffle_off
@@ -107,6 +86,13 @@ class MusicPlayerFragment : Fragment() {
                 viewModel.currentSongIndex.collect { index ->
                     if (index != -1) {
                         val song = viewModel.tracks.value.data[index]
+
+                        fav = FavoriteLibrary(requireContext())
+                        fav.checkFavSong(song.title!!) { isFavorite ->
+                            val heartIcon = if (isFavorite) R.drawable.icon_heart_on else R.drawable.icon_heart
+                            binding.heartBtn.setImageResource(heartIcon)
+                        }
+
                         binding.songName.text = song.title
                         binding.songName.isSelected = true
                         binding.songArtist.text = song.artist!!.name
@@ -119,6 +105,17 @@ class MusicPlayerFragment : Fragment() {
 
                         binding.durationPlayed.text = formatDuration(viewModel.seekBarProgress.value)
                         binding.durationTotal.text = formatDuration(30000)
+
+                        val id = song.id
+                        val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
+                        val savedTranscription = sharedPreferences.getString("transcription_$id", null)
+                        if (savedTranscription != null) {
+                            binding.previewLyrics.text = savedTranscription
+                            binding.showFullLyricsButton.visibility = View.VISIBLE
+                        } else {
+                            binding.previewLyrics.text = "This song does not support lyrics"
+                            binding.showFullLyricsButton.visibility = View.GONE
+                        }
                     }
                 }
             }
@@ -232,7 +229,7 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.backBtn.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            findNavController().popBackStack()
         }
 
         binding.showFullLyricsButton.setOnClickListener {
@@ -240,51 +237,11 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.karaokeBtn.setOnClickListener {
+            if (viewModel.mediaPlayer.isPlaying) {
+                viewModel.mediaPlayer.pause()
+                viewModel.stopSeekBarUpdate()
+            }
             findNavController().navigate(R.id.action_music_to_record)
-
-//            val song = tracks.data.get(currentSongIndex)
-//            if (mediaPlayer.isPlaying) {
-//                mediaPlayer.stop()
-//                mediaPlayer.reset()
-//            }
-//
-//            val karaokeFile = File(
-//                requireContext().getExternalFilesDir(null),
-//                "karaoke_files_${song.id}/karaoke_track.wav"
-//            )
-//
-//            if (karaokeFile.exists()) {
-//                val karaokePath = karaokeFile.absolutePath
-//                playKaraokeFromPath(karaokePath)
-////                Log.e("MusicPlayerFragment", "Playing karaoke from file: $karaokePath")
-//            } else {
-//                val ngrokUrl = "https://8af3-118-70-125-165.ngrok-free.app";
-//                val songUrl = song.preview!!
-//                val id = song.id!!
-//                lifecycleScope.launch {
-//                    val result = sendSongUrlToServer(songUrl, ngrokUrl)
-//                    Log.e("MusicPlayerFragment", "Result: $result")
-//                    if (result != null) {
-//                        val transcription = result.first
-//                        val zipFileUrl = result.second
-//                        Toast.makeText(requireContext(), "Transcription: $transcription", Toast.LENGTH_SHORT).show()
-//                        zipFileUrl?.let {
-//                            val karaokePath = downloadAndSaveZipFile(it, requireContext(), id)
-//                            if (karaokePath != null) {
-//                                playKaraokeFromPath(karaokePath)
-//                                Log.e("MusicPlayerFragment", "Playing karaoke from path: $karaokePath")
-//                                Toast.makeText(requireContext(), "Karaoke track saved at: $karaokePath", Toast.LENGTH_LONG).show()
-//                            } else {
-//                                Toast.makeText(requireContext(), "Failed to save karaoke track", Toast.LENGTH_SHORT).show()
-//                            }
-//                        }
-//                    } else {
-//                        Toast.makeText(requireContext(), "Failed to process audio", Toast.LENGTH_SHORT).show()
-//                    }
-//                }
-//            }
-//        }
-
         }
 
     }
@@ -309,7 +266,7 @@ class MusicPlayerFragment : Fragment() {
     }
 
     private fun playPreviousSong() {
-        val newIndex = if (!viewModel.shuffleBoolean.value) {
+        val newIndex = if (viewModel.shuffleBoolean.value) {
             (0 until viewModel.tracks.value.data.size).random()
         } else {
             if (viewModel.currentSongIndex.value == 0) {
@@ -353,6 +310,17 @@ class MusicPlayerFragment : Fragment() {
         viewModel.updateCurrentPreColor(currentPreColor)
         curBackgroundPreLyrics.setColor(viewModel.currentPreColor.value)
 
+        val id = song.id
+        val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
+        val savedTranscription = sharedPreferences.getString("transcription_$id", null)
+        if (savedTranscription != null) {
+            binding.previewLyrics.text = savedTranscription
+            binding.showFullLyricsButton.visibility = View.VISIBLE
+        } else {
+            binding.previewLyrics.text = "This song does not support lyrics"
+            binding.showFullLyricsButton.visibility = View.GONE
+        }
+
         viewModel.mediaPlayer.reset()
         viewModel.mediaPlayer.setDataSource(song.preview)
         viewModel.mediaPlayer.prepare()
@@ -374,11 +342,8 @@ class MusicPlayerFragment : Fragment() {
         }
     }
 
-
-
     private fun stopRotationAnimator() {
         rotationAnimator.pause()
-        isRotating = false
     }
 
     @SuppressLint("DefaultLocale")
@@ -391,35 +356,12 @@ class MusicPlayerFragment : Fragment() {
     private fun getRandomColor(): Int {
         val random = java.util.Random()
 
-        val red = random.nextInt(100)
-        val green = random.nextInt(100)
-        val blue = random.nextInt(100)
+        val red = random.nextInt(100) + 50
+        val green = random.nextInt(100) + 50
+        val blue = random.nextInt(100) + 50
 
         return Color.rgb(red, green, blue)
     }
-
-//        private fun playKaraokeFromPath(path: String) {
-//            try {
-//                mediaPlayer.reset()
-//                mediaPlayer.setDataSource(path)
-//                mediaPlayer.prepare()
-//                mediaPlayer.start()
-//                Log.e("MusicPlayerFragment", "Playing karaoke from path: $path")
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//                Log.e("MusicPlayerFragment", "Error playing karaoke from path: $path", e)
-//            }
-    private fun playKaraokeFromPath(path: String) {
-        try {
-            viewModel.mediaPlayer.reset()
-            viewModel.mediaPlayer.setDataSource(path)
-            viewModel.mediaPlayer.prepare()
-            viewModel.mediaPlayer.start()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
 
 //        private fun sendRequest(songUrl: String, ngrokUrl: String, id: Long): Pair<String, String?>   {
 //            var transcription: String? = null

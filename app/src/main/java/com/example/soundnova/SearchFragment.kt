@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.soundnova.databinding.SearchBinding
-import com.example.soundnova.databinding.SearchTestBinding
 import com.example.soundnova.models.TrackData
 import com.example.soundnova.models.Tracks
 import com.example.soundnova.screens.adapters.OnItemClickTrackListener
@@ -76,8 +75,12 @@ class SearchFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString().trim()
                 if (query.isNotEmpty()) {
+                    binding.textRecent.visibility = View.GONE
+                    binding.clearBtn.visibility = View.GONE
                     fetchTracks(query)
                 } else {
+                    binding.textRecent.visibility = View.VISIBLE
+                    binding.clearBtn.visibility = View.VISIBLE
                     lifecycleScope.launch {
                         val recentTracks = searchRecent.fetchRecentSongs()
                         tracks.data = recentTracks.data.toMutableList()
@@ -88,6 +91,15 @@ class SearchFragment : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        binding.clearBtn.setOnClickListener {
+            lifecycleScope.launch {
+                searchRecent.clear()
+                tracks.data.clear()
+                adapter.notifyDataSetChanged()
+                updateClearButtonVisibility()
+            }
+        }
 
     }
     private fun fetchTracks(query: String) {
@@ -119,6 +131,11 @@ class SearchFragment : Fragment() {
         searchRecent.addSearchRecent(idSong, title, artist, image, audioUrl)
 
     }
+
+    private fun updateClearButtonVisibility() {
+        binding.clearBtn.visibility = if (tracks.data.isEmpty()) View.GONE else View.VISIBLE
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -3,6 +3,7 @@ package com.example.soundnova.screens.music_player
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -28,16 +29,26 @@ import java.io.File
 import java.io.IOException
 import android.media.MediaExtractor
 import android.media.MediaFormat
+import android.media.MediaPlayer
+import android.util.Log
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.fragment.findNavController
+import com.example.soundnova.file.downloadAndSaveZipFile
+import com.example.soundnova.file.sendSongUrlToServer
+import com.example.soundnova.models.TrackData
+import java.io.FileInputStream
 import java.nio.ByteBuffer
 
 class KaraokeFragment : Fragment() {
 
     private lateinit var binding: KaraokeBinding
     private val viewModel: MusicPlayerViewModel by activityViewModels()
+    private val mediaPlayer : MediaPlayer = MediaPlayer()
     private var mediaRecorder: MediaRecorder? = null
     private var outputFile: String = ""
+    private lateinit var song: TrackData
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,11 +68,23 @@ class KaraokeFragment : Fragment() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currentSongIndex.collect { index ->
                     if (index != -1) {
-                        val song = viewModel.tracks.value.data[index]
-
+                        song = viewModel.tracks.value.data[index]
+                        binding.tvSongTitle.text = song.title
+                        binding.tvSongTitle.isSelected = true
+                        val id = song.id
+                        val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
+                        val savedTranscription = sharedPreferences.getString("transcription_$id", null)
+                        if (savedTranscription != null) {
+                            binding.tvLyrics.text = savedTranscription
+                        }
                     }
                 }
             }
+        }
+        mediaPlayer.setOnCompletionListener {
+            mediaPlayer.stop()
+            Log.e("KaraokeFragment", "MediaPlayer completed")
+            stopRecording()
         }
         // Request permissions
         if (ContextCompat.checkSelfPermission(
@@ -84,11 +107,67 @@ class KaraokeFragment : Fragment() {
 
         // Set up button listeners
         binding.btnMuteMic.setOnClickListener {
-            startRecording()
+            val karaokeFile = File(
+                requireContext().getExternalFilesDir(null),
+                "karaoke_files_${song.id}/karaoke_track.wav"
+            )
+            if (karaokeFile.exists()) {
+                val karaokePath = karaokeFile.absolutePath
+                startRecording()
+                playKaraokeFromPath(karaokePath)
+            } else {
+                val ngrokUrl = "https://1c7d-123-30-177-118.ngrok-free.app"
+                val songUrl = song.preview!!
+                Log.e("KaraokeFragment", "Song URL: $songUrl")
+                val id = song.id!!
+                lifecycleScope.launch {
+                    val result = sendSongUrlToServer(songUrl, ngrokUrl)
+                    Log.e("KaraokeFragment", "Result: $result")
+                    if (result != null) {
+                        val transcription = result.first
+                        Toast.makeText(requireContext(), "Transcription: $transcription", Toast.LENGTH_SHORT).show()
+                        binding.tvLyrics.text = transcription
+                        val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
+                        with(sharedPreferences.edit()) {
+                            putString("transcription_$id", transcription)
+                            apply()
+                        }
+                        val zipFileUrl = result.second
+                        zipFileUrl?.let {
+                            val karaokePath = downloadAndSaveZipFile(it, requireContext(), id)
+                            if (karaokePath != null) {
+                                startRecording()
+                                playKaraokeFromPath(karaokePath)
+                                Toast.makeText(requireContext(), "Karaoke track saved at: $karaokePath", Toast.LENGTH_LONG).show()
+                                Log.e("KaraokeFragment", "Karaoke track saved at: $karaokePath")
+                            } else {
+                                Toast.makeText(requireContext(), "Failed to save karaoke track", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to process audio", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
-
         binding.btnStop.setOnClickListener {
+            mediaPlayer.stop()
             stopRecording()
+        }
+        binding.btnPlayPause.setOnClickListener {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+            } else {
+                mediaPlayer.start()
+            }
+
+        }
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+            if (viewModel.isPlaying.value) {
+                viewModel.mediaPlayer.start()
+                viewModel.startSeekBarUpdate()
+            }
         }
     }
 
@@ -117,7 +196,7 @@ class KaraokeFragment : Fragment() {
         mediaRecorder = null
 
         // Lưu file vào thư mục công khai
-        saveRecordingToPublicStorage()
+        //saveRecordingToPublicStorage()
 
         binding.btnMuteMic.isEnabled = true
         binding.btnStop.isEnabled = false
@@ -125,11 +204,14 @@ class KaraokeFragment : Fragment() {
         try {
            // val currentSong = viewModel.tracks.value.data[viewModel.currentSongIndex.value]
             // Đường dẫn bài hát gốc và file ghi âm
-            val songFilePath = outputFile // Cập nhật đường dẫn chính xác
+            val songFilePath = File(
+                requireContext().getExternalFilesDir(null),
+                "karaoke_files_${song.id}/vocals.wav"
+            )
             val recordingFilePath = outputFile
 
             // Chuyển đổi file sang dữ liệu PCM
-            val songPcm = extractPCMData(songFilePath)
+            val songPcm = extractPCMData(songFilePath.toString())
             val recordingPcm = extractPCMData(recordingFilePath)
 
             if (songPcm != null && recordingPcm != null) {
@@ -138,7 +220,7 @@ class KaraokeFragment : Fragment() {
                 val recordingPitch = calculatePitch(recordingPcm, 44100)
 
                 // So sánh cao độ và chấm điểm
-                val similarity = comparePitch(listOf(songPitch), listOf(recordingPitch))
+                val similarity = comparePitch(songPitch, recordingPitch)
                 val score = calculateScore(similarity)
                 binding.score.text = score.toString()
 
@@ -183,24 +265,55 @@ class KaraokeFragment : Fragment() {
         }
     }
     fun extractPCMData(audioFilePath: String): ByteArray? {
+        val file = File(audioFilePath)
+        if (!file.exists() || !file.canRead()) {
+            throw IllegalArgumentException("Cannot access the file at $audioFilePath")
+        }
+
+        return if (audioFilePath.endsWith(".wav", ignoreCase = true)) {
+            extractPCMFromWAV(file)
+        } else if (audioFilePath.endsWith(".3gp", ignoreCase = true)) {
+            extractPCMFrom3GP(audioFilePath)
+        } else {
+            throw UnsupportedOperationException("Unsupported file format: ${file.extension}")
+        }
+    }
+
+    private fun extractPCMFromWAV(file: File): ByteArray? {
+        val inputStream = FileInputStream(file)
+        val buffer = inputStream.readBytes()
+        inputStream.close()
+
+        // WAV headers are typically the first 44 bytes, skip them to get raw PCM data
+        return if (buffer.size > 44) buffer.copyOfRange(44, buffer.size) else null
+    }
+
+    private fun extractPCMFrom3GP(audioFilePath: String): ByteArray? {
         val extractor = MediaExtractor()
         extractor.setDataSource(audioFilePath)
+
         for (i in 0 until extractor.trackCount) {
             val format = extractor.getTrackFormat(i)
             if (format.getString(MediaFormat.KEY_MIME)?.startsWith("audio/") == true) {
                 extractor.selectTrack(i)
+
                 val pcmData = mutableListOf<Byte>()
                 val buffer = ByteBuffer.allocate(1024)
+
                 while (true) {
                     val sampleSize = extractor.readSampleData(buffer, 0)
                     if (sampleSize < 0) break
+
                     pcmData.addAll(buffer.array().take(sampleSize))
+                    buffer.clear()
                     extractor.advance()
                 }
+
                 extractor.release()
                 return pcmData.toByteArray()
             }
         }
+
         extractor.release()
         return null
     }
@@ -227,25 +340,29 @@ class KaraokeFragment : Fragment() {
         return if (bestLag > 0) sampleRate.toDouble() / bestLag else -1.0
     }
 
-    fun comparePitch(songPitch: List<Double>, userPitch: List<Double>): Double {
-        val minSize = minOf(songPitch.size, userPitch.size)
-        var matchCount = 0
-        for (i in 0 until minSize) {
-            if (kotlin.math.abs(songPitch[i] - userPitch[i]) < 50) { // Sai số tối đa 50 Hz
-                matchCount++
-            }
+    fun comparePitch(songPitch: Double, userPitch: Double): Double {
+        val dis = kotlin.math.abs(userPitch-songPitch)/10
+        if (dis > songPitch) {
+            return 5.0
         }
-        return (matchCount.toDouble() / minSize) * 100
+        return ((songPitch - dis) / songPitch)*100
     }
 
     fun calculateScore(pitchSimilarity: Double): Int {
         return pitchSimilarity.toInt()
     }
 
+    fun playKaraokeFromPath(path: String) {
+        mediaPlayer.reset()
+        mediaPlayer.setDataSource(path)
+        mediaPlayer.prepare()
+        mediaPlayer.start()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         mediaRecorder?.release()
         mediaRecorder = null
+        mediaPlayer.release()
     }
 }

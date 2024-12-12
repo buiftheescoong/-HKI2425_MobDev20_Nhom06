@@ -32,6 +32,14 @@ class SettingsFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = SettingBinding.bind(view)
+        // Sử dụng binding để thao tác với View
+        val toggleSaveVisibility: (Boolean) -> Unit = { isVisible ->
+            binding.changeProfile.visibility = if (isVisible) View.VISIBLE else View.GONE
+        }
+
+        binding.userName.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) toggleSaveVisibility(true)
+        }
 
         val currentUser = FirebaseAuth.getInstance().currentUser
 
@@ -49,7 +57,7 @@ class SettingsFragment: Fragment() {
             Toast.makeText(requireContext(), "User not logged in!", Toast.LENGTH_SHORT).show()
         }
 
-        binding.changeProfileRow.setOnClickListener {
+        binding.changeProfile.setOnClickListener {
             binding.userName.clearFocus()
             loadAvatar()
             if (currentUser != null) {
@@ -67,10 +75,12 @@ class SettingsFragment: Fragment() {
                         }
                     }
             }
+            toggleSaveVisibility(false)
         }
 
         binding.profileImage.setOnClickListener {
             openGallery()
+            toggleSaveVisibility(true)
         }
 
         binding.logOut.setOnClickListener{
