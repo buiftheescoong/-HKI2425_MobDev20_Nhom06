@@ -237,7 +237,10 @@ class MusicPlayerFragment : Fragment() {
         }
 
         binding.karaokeBtn.setOnClickListener {
-            viewModel.mediaPlayer.stop()
+            if (viewModel.mediaPlayer.isPlaying) {
+                viewModel.mediaPlayer.pause()
+                viewModel.stopSeekBarUpdate()
+            }
             findNavController().navigate(R.id.action_music_to_record)
         }
 
