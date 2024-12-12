@@ -81,7 +81,7 @@
             android:lineSpacingMultiplier="1.3"
             android:scrollbars="none"
             android:text="Đây là toàn bộ lyrics"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold|italic" />
     </ScrollView>

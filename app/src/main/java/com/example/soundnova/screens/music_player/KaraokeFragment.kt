@@ -67,6 +67,7 @@ class KaraokeFragment : Fragment() {
                     if (index != -1) {
                         song = viewModel.tracks.value.data[index]
                         binding.tvSongTitle.text = song.title
+                        binding.tvSongTitle.isSelected = true
                         val id = song.id
                         val sharedPreferences = requireContext().getSharedPreferences("MusicPlayerPrefs", Context.MODE_PRIVATE)
                         val savedTranscription = sharedPreferences.getString("transcription_$id", null)

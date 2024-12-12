@@ -330,9 +330,9 @@ class MusicPlayerFragment : Fragment() {
     private fun getRandomColor(): Int {
         val random = java.util.Random()
 
-        val red = random.nextInt(100)
-        val green = random.nextInt(100)
-        val blue = random.nextInt(100)
+        val red = random.nextInt(100) + 50
+        val green = random.nextInt(100) + 50
+        val blue = random.nextInt(100) + 50
 
         return Color.rgb(red, green, blue)
     }

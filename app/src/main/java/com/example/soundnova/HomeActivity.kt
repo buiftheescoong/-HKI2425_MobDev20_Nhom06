@@ -49,7 +49,7 @@ class HomeActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.musicPlayerFragment, R.id.lyricsFragment, R.id.karaokeFragment -> {
+                R.id.musicPlayerFragment, R.id.lyricsFragment, R.id.karaokeFragment, R.id.changePassword -> {
                     binding.bottomNavigationView.visibility = View.GONE
                     binding.musicBottomBar.visibility = View.GONE
                 }
@@ -306,9 +306,9 @@ class HomeActivity : AppCompatActivity() {
     private fun getRandomColor(): Int {
         val random = java.util.Random()
 
-        val red = random.nextInt(130)
-        val green = random.nextInt(130)
-        val blue = random.nextInt(130)
+        val red = random.nextInt(100) + 50
+        val green = random.nextInt(100) + 50
+        val blue = random.nextInt(100) + 50
 
         return Color.rgb(red, green, blue)
     }
